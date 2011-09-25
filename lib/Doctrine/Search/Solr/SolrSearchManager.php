@@ -51,12 +51,17 @@ class SolrSearchManager implements SearchManager
         $this->$config = $config;
     }
 
-    public function find($searchString)
+    public function find(array $query);
     {
         
     }
     
-    public function findByApiCommand($apiCommand)
+    public function createIndex($index, array $data);
+    {
+        
+    }
+    
+    public function updateIndex(array $data)
     {
         
     }

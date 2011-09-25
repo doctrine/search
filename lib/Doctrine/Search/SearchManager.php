@@ -33,16 +33,27 @@ interface SearchManager
      * Finds ids of indexed objects by a search string.
      *
      *
-     * @param string $searchString
+     * @param array $query
      * @return array $id
      */
-    public function find($searchString);
+    public function find(array $query);
 
     /**
      * Allows to search by the search api of a backend like Solr directly
      *
-     * @param String $apiCommand The api command to search something.
+     * @param array $data The data to be indexed.
      */
-    public function findByApiCommand($apiCommand);
+    public function createIndex($index, array $data);
+    
+    /**
+     * 
+     * @param array $data
+     */
+    public function deleteIndex($index);
+    
+    /**
+     * @param array $data
+     */
+    public function bulkAction(array $data)
 
 }

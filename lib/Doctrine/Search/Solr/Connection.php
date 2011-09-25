@@ -27,5 +27,17 @@ namespace Doctrine\Search\Solr;
  */
 class Connection
 {
+    private $host;
     
+    private $port;
+    
+    private $path;
+    
+    
+    public function __construct($host = null, $port = null, $path = null)
+    {
+        $this->host = $host;
+        $this->port = $port;
+        $this->paht = $path;
+    }
 }
