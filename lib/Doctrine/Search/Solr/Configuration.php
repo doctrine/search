@@ -19,6 +19,8 @@
 
 namespace Doctrine\Search\Solr;
 
+use Zend\Http\Client;
+
 /**
  * Configuration handler for Solr-Backend
  *
@@ -27,6 +29,8 @@ namespace Doctrine\Search\Solr;
  */
 class Configuration
 {
+    
+    
     public function __construct()
     {
         

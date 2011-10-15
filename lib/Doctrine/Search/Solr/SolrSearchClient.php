@@ -19,30 +19,44 @@
 
 namespace Doctrine\Search\Solr;
 
+use Doctrine\Search\SearchClient;
+use Doctrine\Common\Persistence\ObjectManager;
+
 /**
- * Connections handler for Solr-Backend
+ * SearchManager for Solr-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class Connection
+class SolrSearchClient implements SearchClient
 {
-    private $host;
     
-    private $port;
+    private $config;
     
-    private $path;
+    private $connection;
     
-    
-    public function __construct($host = null, $port = null, $path = null, HttpClient $connector)
+    /*
+     * @param Doctrine\Search\Solr\Connection $conn
+     * @param Doctrine\Search\Solr\Configuration $config
+     */
+    public function __construct(Connection $conn = null, Configuration $config = null)
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->path = $path;
+        $this->$connection = $conn;
+        $this->$config = $config;
+    }
+
+    public function find(array $query);
+    {
+        
     }
     
-    public function initialize()
+    public function createIndex($index, array $data);
     {
-        $this->connector->
+        
+    }
+    
+    public function updateIndex(array $data)
+    {
+        
     }
 }

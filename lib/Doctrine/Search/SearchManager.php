@@ -20,6 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Search\SearchClient;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -27,33 +28,24 @@ use Doctrine\Common\Persistence\ObjectManager;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-interface SearchManager
+class SearchManager
 {
-    /**
-     * Finds ids of indexed objects by a search string.
-     *
-     *
-     * @param array $query
-     * @return array $id
-     */
-    public function find(array $query);
-
-    /**
-     * Allows to search by the search api of a backend like Solr directly
-     *
-     * @param array $data The data to be indexed.
-     */
-    public function createIndex($index, array $data);
+    private $searchClient;
     
-    /**
-     * 
-     * @param array $data
-     */
-    public function deleteIndex($index);
+    /* 
+     *  Holds the ObjectManager to access documents or entities
+    */
+    private $objectManager;
     
-    /**
-     * @param array $data
-     */
-    public function bulkAction(array $data)
+    
+    public function __construct(SearchClient $sc, ObjectManager $om)
+    {
+        $this->searchClient = $sc;
+        $this->objectManager = $om;
+    }
 
+    public function find($query)
+    {
+        $this->searchClient->find($query);
+    }
 }

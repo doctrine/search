@@ -17,32 +17,43 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Search\Solr;
+namespace Doctrine\Search;
+
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
- * Connections handler for Solr-Backend
+ * Interface for a Doctrine SearchManager class to implement.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class Connection
+interface SearchClient
 {
-    private $host;
+    /**
+     * Finds ids of indexed objects by a search string.
+     *
+     *
+     * @param array $query
+     * @return array $id
+     */
+    public function find(array $query);
+
+    /**
+     * Allows to search by the search api of a backend like Solr directly
+     *
+     * @param array $data The data to be indexed.
+     */
+    public function createIndex($index, array $data);
     
-    private $port;
+    /**
+     * 
+     * @param array $data
+     */
+    public function deleteIndex($index);
     
-    private $path;
-    
-    
-    public function __construct($host = null, $port = null, $path = null, HttpClient $connector)
-    {
-        $this->host = $host;
-        $this->port = $port;
-        $this->path = $path;
-    }
-    
-    public function initialize()
-    {
-        $this->connector->
-    }
+    /**
+     * @param array $data
+     */
+    public function bulkAction(array $data)
+
 }
