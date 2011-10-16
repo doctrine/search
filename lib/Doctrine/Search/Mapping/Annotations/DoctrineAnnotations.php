@@ -1,5 +1,7 @@
 <?php
 /*
+ *  $Id$
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -17,34 +19,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Search\Solr;
+namespace Doctrine\Search\Mapping\Annotations;
 
-/**
- * Connections handler for Solr-Backend
- *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
- */
-class Connection
-{
-    private $host;
-    
-    private $port;
-    
-    private $path;
-    
-    private $httpClient;
-    
-    public function __construct($host = null, $port = null, $path = null, HttpClient $httpClient)
-    {
-        $this->host = $host;
-        $this->port = $port;
-        $this->path = $path;
-        $this->httpClient = $httpClient;
-    }
-    
-    public function initialize()
-    {
-        $this->httpClient->set
-    }
-}
+use Doctrine\Common\Annotations\Annotation;
+
