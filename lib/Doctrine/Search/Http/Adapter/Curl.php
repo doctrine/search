@@ -13,6 +13,10 @@ class Curl implements Adapter
     
     private $headers = array('Accept' => '');
     
+    private $response;
+    
+    private $request;
+    
     public function __construct()
     {
         if (!extension_loaded('curl')) {
@@ -36,8 +40,8 @@ class Curl implements Adapter
         curl_setopt($this->curlConnection, CURLOPT_CONNECTTIMEOUT, $this->config['timeout']);
         curl_setopt($this->curlConnection, CURLOPT_MAXREDIRS, $this->config['maxredirects']);
 
-        if (!$this->curl) {
-            $this->close();
+        if (!$this->curlConnection) {
+            $this->closeConnection();
 
             throw new AdapterExecutionException('Connection to ' .  $host . ':' . $port . 'is impossible.');
         }
@@ -47,26 +51,31 @@ class Curl implements Adapter
     {
         $this->headers = array_merge($this->headers, $headers);
         
-        curl_setopt($this->curl, CURLOPT_URL, $url);
-        curl_setopt($this->curl, CURL_HTTP_VERSION_1_1, true);
+        curl_setopt($this->curlConnection, CURLOPT_URL, $url);
+        curl_setopt($this->curlConnection, CURL_HTTP_VERSION_1_1, true);
         
         $curlMethod = $this->getCurlMethod($method);
-        curl_setopt($this->curl, $curlMethod['method'], $curlMethod['methodValue']);
+        curl_setopt($this->curlConnection, $curlMethod['method'], $curlMethod['methodValue']);
         
-        curl_setopt($this->curl, CURLOPT_HEADER, true);
+        curl_setopt($this->curlConnection, CURLOPT_HEADER, true);
         // ensure actual response is returned
-        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curlConnection, CURLOPT_RETURNTRANSFER, true);
         
-        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
+        curl_setopt($this->curlConnection, CURLOPT_HTTPHEADER, $this->headers);
         
-        if(strtoupper($method) == 'POST')
+        if(strtoupper($method) == 'POST' || strtoupper($method) == 'PUT')
         {
-            
+            curl_setopt($this->curlConnection, CURLOPT_POSTFIELDS, $body);
         }
-        elseif(strtoupper($method) == 'PUT')
-        {
-            
+       
+        $this->response = curl_exec($this->curlConnection);
+        
+        if (empty($this->response)) {
+            throw new AdapterExecutionException("The cURL request produced an error: " . curl_error($this->curlConnection));
         }
+        
+        $this->request = curl_getinfo($this->curlConnection, CURLINFO_HEADER_OUT);
+        $this->request .= $body;
     }
     
     private function getCurlMethod($method)
@@ -117,17 +126,24 @@ class Curl implements Adapter
         return array('method' => $curlMethod, 'methodValue' => $curlMethodValue);
     }
     
+    public function getRequest()
+    {
+        return $this->request;
+    }
+    
     /**
      * 
      * @return String $data;
      */
     public function readData()
     {
-        
+        return $this->response;
     }
     
     public function closeConnection()
     {
-        
+        if(is_resource($this->curlConnection)) {
+            curl_close($this->curlConnection);
+        }
     }
 }

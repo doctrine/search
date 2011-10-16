@@ -16,4 +16,6 @@ interface Adapter
     public function readData();
     
     public function closeConnection();
+    
+    public function getRequest()
 }

@@ -1,56 +1,52 @@
 <?php
 namespace Doctrine\Search\Http;
 
-interface Client
+use Doctrine\Search\Http\Adapter as ConnectionAdapter;
+
+class Client
 {
+    private $adapter;
     
-    /**
-     * 
-     * Override the default configuration if needed
-     * @param HttpClientConfiguration $config
+    private $config;
+    
+    private $host;
+    
+    private $url;
+    
+    private $port;
+    
+    public function __construct(ConnectionAdapter $adapter, $host, $url, $port = 80)
+    {
+        $this->host = $host;
+        $this->url = $url;
+        $this->port = $port;
+        $this->adapter = $adapter;
+        $this->config = $config;
+    }
+    
+    /* (non-PHPdoc)
+     * @see Doctrine\Search\Http.Client::getRequest()
      */
-    public function setConfig(\Doctrine\Search\Http\Configuration $config);
-    
-    /**
-     * 
-     * Choose curl, socket or something else as connection method
-     * @param HttpClientAdapter $adapter
+    public function getRequest() 
+    {
+        return $this->adapter->getRequest();
+    }
+
+    /* (non-PHPdoc)
+     * @see Doctrine\Search\Http.Client::getResponse()
      */
-    public function setAdapter(\Doctrine\Search\Http\Adapter $adapter);
-    
-    /**
-     * 
-     * returns a Request;
+    public function getResponse() 
+    {
+        return $this->adapter->readData();
+    }
+
+    /* (non-PHPdoc)
+     * @see Doctrine\Search\Http.Client::sendRequest()
      */
-    public function getRequest();
-    
-    /**
-     * 
-     * returns a Response
-     */
-    public function getResponse();
-    
-    /**
-     * 
-     * Sets the Http Client's request method
-     * @param String $method
-     */
-    public function setMethod($method);
-    
-    /**
-     * 
-     * Sets the parameters to be sent to the server, based on method choosen.
-     * (GET is default)
-     * @param array $parameter
-     */
-    public function setParameters(array $parameter);
-    
-    public function setHeaders(array $headers);
-    
-    /**
-     * 
-     * sends the request to the server
-     * 
-     */
-    public function sendRequest();
+    public function sendRequest($method = 'GET', $headers = array(), $body = '') 
+    {
+        $this->adapter->openConnection($this->host, $this->port);
+        $this->adapter->sendData($method, $this->url, $headers, $body);
+    }
+
 }
