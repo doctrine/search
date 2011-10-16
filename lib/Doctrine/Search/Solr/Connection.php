@@ -35,7 +35,7 @@ class Connection
     
     private $httpClient;
     
-    public function __construct($host = null, $port = null, $path = null, HttpClient $httpClient)
+    public function __construct($host = null, $port = null, $path = null, \Doctrine\Search\Http\Client $httpClient)
     {
         $this->host = $host;
         $this->port = $port;
