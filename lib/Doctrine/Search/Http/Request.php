@@ -1,7 +1,9 @@
 <?php
 namespace Doctrine\Search\Http;
 
-class Request
+interface Request
 {
+    public function __toString();
     
+    public function getUrl();
 }

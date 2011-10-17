@@ -1,7 +1,9 @@
 <?php
 namespace Doctrine\Search\Http;
 
-class Response
+interface Response
 {
+    public function __toString();
     
+    public function getContent();
 }
