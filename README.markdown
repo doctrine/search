@@ -4,10 +4,10 @@
 * SearchService
    * Aggregiert eine ObjectManager Instanz: $searchManager = new SearchManager($objectManager);
    * Direkt mit API (Solr, Lucene, ... Adapter nutzbar)
-   * Wandelt zurückgegebene IDs per Batch-Operation in Objekte um
-* EventListener für Indexierung, new SearchIndexListener($backendAdapter);
-* Nutzt ObjectManager::getClassMetadata() für Grundstruktur
-* Hat eigene Annotationen für komplexere Konfigurationszwecke
+   * Wandelt zurÃ¼ckgegebene IDs per Batch-Operation in Objekte um
+* EventListener fÃ¼r Indexierung, new SearchIndexListener($backendAdapter);
+* Nutzt ObjectManager::getClassMetadata() fÃ¼r Grundstruktur
+* Hat eigene Annotationen fÃ¼r komplexere Konfigurationszwecke
 
 An der Klasse:
 @ORM\Entity
