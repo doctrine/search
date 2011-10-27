@@ -4,7 +4,6 @@ namespace Doctrine\Search\Http;
 
 interface Client
 {
- 
     public function getRequest();
     
     public function getResponse();
