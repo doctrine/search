@@ -54,6 +54,6 @@ interface SearchClient
     /**
      * @param array $data
      */
-    public function bulkAction(array $data)
+    public function bulkAction(array $data);
 
 }
