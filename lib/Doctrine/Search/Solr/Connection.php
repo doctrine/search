@@ -45,6 +45,6 @@ class Connection
     
     public function initialize()
     {
-        $this->httpClient->set
+        // $this->httpClient->set
     }
 }
