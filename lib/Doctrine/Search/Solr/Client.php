@@ -45,12 +45,12 @@ class Client implements SearchClient
         $this->config = $config;
     }
 
-    public function find(array $query);
+    public function find(array $query)
     {
         
     }
     
-    public function createIndex($index, array $data);
+    public function createIndex($index, array $data)
     {
         
     }

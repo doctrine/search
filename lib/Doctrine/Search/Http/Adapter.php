@@ -17,5 +17,5 @@ interface Adapter
     
     public function closeConnection();
     
-    public function getRequest()
+    public function getRequest();
 }
