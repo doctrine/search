@@ -41,8 +41,8 @@ class Client implements SearchClient
      */
     public function __construct(Connection $conn = null, Configuration $config = null)
     {
-        $this->$connection = $conn;
-        $this->$config = $config;
+        $this->connection = $conn;
+        $this->config = $config;
     }
 
     public function find(array $query);
