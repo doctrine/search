@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit backupGlobals="false"
@@ -24,30 +23,3 @@
     </whitelist>
   </filter>
 </phpunit>
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         syntaxCheck="false"
-         bootstrap="tests/bootstrap.php"
->
-  <testsuites>
-    <testsuite name="Doctrine Search Test Suite">
-      <directory>./tests/Doctrine/Search</directory>
-    </testsuite>
-  </testsuites>
-
-  <filter>
-    <whitelist>
-      <directory suffix=".php">./lib/Doctrine/Search</directory>
-    </whitelist>
-  </filter>
-</phpunit>
->>>>>>> upstream/master

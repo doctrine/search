@@ -1,19 +1,8 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-<<<<<<< HEAD
 use Doctrine\Search\Http\Request\Buzz as Request;
 use Doctrine\Search\Http\Response\Buzz as Response;
-=======
-use Doctrine\Search\Http\Response\Buzz;
-
-use Doctrine\Search\Http\Request\Buzz;
-
-use Doctrine\Search\Http\Request;
-
-use Doctrine\Search\Http\Response;
-
->>>>>>> upstream/master
 use Doctrine\Search\Http\Client;
 use Buzz\Browser;
 
@@ -82,11 +71,7 @@ class Buzz implements Client
            $this->response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url, $body);
         }
         else {
-<<<<<<< HEAD
             $this->response = new Response($this->browser->$method($this->host . ':' . $this->port . '/' . $this->url));
-=======
-            $this->response = new BuzzResponse($this->browser->$method($this->url . ':' . $this->port . '/' . $this->url));
->>>>>>> upstream/master
         }
         
         $this->request = new BuzzRequest($this->browser->getJournal()->getLastRequest());
