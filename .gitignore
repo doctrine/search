@@ -2,4 +2,6 @@
 .buildpath
 .project
 .gitmodules
+.idea
 phpunit.xml
+

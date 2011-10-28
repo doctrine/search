@@ -1,3 +1,6 @@
 [submodule "lib/vendor/Buzz"]
 	path = lib/vendor/Buzz
 	url = https://github.com/kriswallsmith/Buzz.git
+[submodule "lib/vendor/doctrine-common"]
+	path = lib/vendor/doctrine-common
+	url = https://github.com/doctrine/common.git
