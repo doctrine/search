@@ -15,4 +15,13 @@ class BuzzTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('Doctrine\\Search\\Http\\Response', $response);
         $this->assertContains('<html>', $response->getContent());
     }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testCallNotExistingHost()
+    {
+        $client = new \Doctrine\Search\Http\Client\Buzz(new \Buzz\Browser(), 'not-existing-host.xyz', '/', 80);
+        $client->sendRequest('get');
+    }
 }
