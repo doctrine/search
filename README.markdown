@@ -2,17 +2,17 @@
 
 #Todo: convert this into items
 * SearchService
-   * Aggregiert eine ObjectManager Instanz: $searchManager = new SearchManager($objectManager);
-   * Direkt mit API (Solr, Lucene, ... Adapter nutzbar)
-   * Wandelt zurückgegebene IDs per Batch-Operation in Objekte um
-* EventListener für Indexierung, new SearchIndexListener($backendAdapter);
-* Nutzt ObjectManager::getClassMetadata() für Grundstruktur
-* Hat eigene Annotationen für komplexere Konfigurationszwecke
+   * aggregates a ObjectManager instance: $searchManager = new SearchManager($objectManager);
+   * supports direct API calls (Solr, Lucene, ... Adapter useable)
+   * transforms returned ID"s via batch operation into objects
+* EventListener for indexing, new SearchIndexListener($backendAdapter);
+* uses ObjectManager::getClassMetadata() as the base structure
+* adds new Annotationen for more complexe configuration needs
 
-An der Klasse:
+on the class:
 @ORM\Entity
 @Search\Searchable
 
-An den Feldern/Properties:
+omn field/properties:
 @Search\Field(boost=2.0,...)
-@Search\SolrField (explizitere konfiguration)
+@Search\SolrField (explcit configuration)
