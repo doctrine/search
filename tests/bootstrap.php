@@ -15,3 +15,6 @@ spl_autoload_register(function ($class) {
 	
 	return false;
 } );
+
+require_once __DIR__ . '/../lib/vendor/Buzz/lib/Buzz/ClassLoader.php';
+Buzz\ClassLoader::register();

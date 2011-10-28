@@ -68,10 +68,10 @@ class Buzz implements Client
         $method = strtolower($method);
         
         if($method == 'post' || $method == 'put' || $method == 'delete') {
-           $this->response = $this->browser->$method($this->url . ':' . $this->port . '/' . $this->url, $body);
+           $this->response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url, $body);
         }
         else {
-            $this->response = new Response($this->browser->$method($this->url . ':' . $this->port . '/' . $this->url));
+            $this->response = new Response($this->browser->$method($this->host . ':' . $this->port . '/' . $this->url));
         }
         
         $this->request = new Request($this->browser->getJournal()->getLastRequest());
