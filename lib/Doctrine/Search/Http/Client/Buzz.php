@@ -1,10 +1,8 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-use Doctrine\Search\Http\Request;
-
-use Doctrine\Search\Http\Response;
-
+use Doctrine\Search\Http\Request\Buzz as Request;
+use Doctrine\Search\Http\Response\Buzz as Response;
 use Doctrine\Search\Http\Client;
 use Buzz\Browser;
 
