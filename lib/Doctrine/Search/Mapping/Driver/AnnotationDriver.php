@@ -22,7 +22,7 @@ namespace Doctrine\Search\Mapping\Driver;
 use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\Reader,
-    Doctrine\Search\Mapping\Annotations as Search,
+    Doctrine\Search\Mapping\Annotations as Search;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
