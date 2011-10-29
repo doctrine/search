@@ -59,4 +59,22 @@ class Client implements SearchClient
     {
         
     }
+
+    /**
+     *
+     * @param array $data
+     */
+    public function deleteIndex($index)
+    {
+        // TODO: Implement deleteIndex() method.
+    }
+
+    /**
+     * @param array $data
+     */
+    public function bulkAction(array $data)
+    {
+        // TODO: Implement bulkAction() method.
+    }
+
 }

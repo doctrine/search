@@ -21,6 +21,7 @@ namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchClient;
+use Doctrine\Common\EventManager;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -30,18 +31,27 @@ use Doctrine\Search\SearchClient;
  */
 class SearchManager
 {
+    /**
+     * @var \Doctrine\Search\SearchClient
+     */
     private $searchClient;
     
-    /* 
-     *  Holds the ObjectManager to access documents or entities
-    */
+    /**
+     * @var \Doctrine\Common\Persistence\ObjectManager
+     */
     private $objectManager;
+
+    /**
+     * @var \Doctrine\Common\EventManager
+     */
+    private $eventmanager;
     
     
-    public function __construct(SearchClient $sc, ObjectManager $om)
+    public function __construct(SearchClient $sc, ObjectManager $om, EventManager $eventmanager)
     {
         $this->searchClient = $sc;
         $this->objectManager = $om;
+        $this->eventmanager = $eventmanager;
     }
 
     public function find($query)
