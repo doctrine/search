@@ -23,3 +23,14 @@ namespace Doctrine\Search\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class Field {}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class Searchable {}
