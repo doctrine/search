@@ -1,7 +1,7 @@
 <?php
 namespace Doctrine\Search\Http\Adapter;
 
-class CurlTest extends \PHPUnit_Framework_TestCase {
+class CurlTest /* extends \PHPUnit_Framework_TestCase */ {
 	
 	protected $adapter;
 	
