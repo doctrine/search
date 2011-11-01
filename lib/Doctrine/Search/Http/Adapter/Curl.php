@@ -1,10 +1,10 @@
 <?php
 namespace Doctrine\Search\Http\Adapter;
 
-use Doctrine\Search\Http\Adapter;
+use Doctrine\Search\Http\AdapterInterface;
 use Doctrine\Search\Http\Adapter\AdapterInvalidArgumentException;
 
-class Curl implements Adapter
+class Curl implements AdapterInterface
 {
     private $config = array('timeout' => 10,
                             'maxredirects' => 3);
