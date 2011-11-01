@@ -19,7 +19,7 @@
 
 namespace Doctrine\Search\Solr;
 
-use Doctrine\Search\SearchClient;
+use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -28,7 +28,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class Client implements SearchClient
+class Client implements SearchClientInterface
 {
     
     private $config;

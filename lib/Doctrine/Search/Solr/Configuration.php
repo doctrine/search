@@ -19,8 +19,6 @@
 
 namespace Doctrine\Search\Solr;
 
-use Zend\Http\Client;
-
 /**
  * Configuration handler for Solr-Backend
  *

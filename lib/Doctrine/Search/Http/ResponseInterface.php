@@ -1,7 +1,7 @@
 <?php
 namespace Doctrine\Search\Http;
 
-interface Response
+interface ResponseInterface
 {
     /**
      * Get the statuscode

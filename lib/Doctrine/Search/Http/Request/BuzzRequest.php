@@ -1,15 +1,14 @@
 <?php
 namespace Doctrine\Search\Http\Request;
 
-use Buzz\Message\Request as BuzzRequest;
+use Buzz\Message\Request;
+use Doctrine\Search\Http\RequestInterface;
 
-use Doctrine\Search\Http\Request;
-
-class Buzz implements Request
+class BuzzRequest implements RequestInterface
 {
     private $request;
     
-    public function __construct(BuzzRequest $request)
+    public function __construct(Request $request)
     {
         $this->request = $request;
     }

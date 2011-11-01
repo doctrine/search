@@ -27,7 +27,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-interface SearchClient
+interface SearchClientInterface
 {
     /**
      * Finds ids of indexed objects by a search string.

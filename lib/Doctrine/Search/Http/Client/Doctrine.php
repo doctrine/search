@@ -1,11 +1,11 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-use Doctrine\Search\Http\Client;
-use Doctrine\Search\Http\Adapter;
-use Doctrine\Search\Http\Configuration;
+use Doctrine\Search\Http\ClientInterface;
+use Doctrine\Search\Http\AdapterInterface;
+use Doctrine\Search\Http\ConfigurationInterface;
 
-class Doctrine implements Client
+class Doctrine implements ClientInterface
 {
     public function __construct()
     {
@@ -42,7 +42,7 @@ class Doctrine implements Client
     /* (non-PHPdoc)
      * @see Doctrine\Search\Http.Client::setAdapter()
      */
-    public function setAdapter(\Doctrine\Search\Http\Adapter $adapter) 
+    public function setAdapter(AdapterInterface $adapter)
     {
         // TODO Auto-generated method stub
         
@@ -51,7 +51,7 @@ class Doctrine implements Client
     /* (non-PHPdoc)
      * @see Doctrine\Search\Http.Client::setConfig()
      */
-    public function setConfig(\Doctrine\Search\Http\Configuration $config) 
+    public function setConfig(ConfigurationInterface $config)
     {
         
         // TODO Auto-generated method stub
