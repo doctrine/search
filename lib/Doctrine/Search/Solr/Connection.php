@@ -19,7 +19,7 @@
 
 namespace Doctrine\Search\Solr;
 
-use Doctrine\Search\Http\ClientInterface;
+use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
 /**
  * Connections handler for Solr-Backend
@@ -37,7 +37,7 @@ class Connection
     
     private $httpClient;
     
-    public function __construct($host = null, $port = null, $path = null, ClientInterface $httpClient)
+    public function __construct($host = null, $port = null, $path = null, HttpClientInterface $httpClient)
     {
         $this->host = $host;
         $this->port = $port;
