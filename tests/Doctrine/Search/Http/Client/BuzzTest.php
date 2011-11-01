@@ -6,8 +6,6 @@ namespace Doctrine\Search\Http\Adapter\Client;
  */
 class BuzzTest extends \PHPUnit_Framework_TestCase
 {
-
-
     public function testCallExistingHost()
     {
         $browser = new \Buzz\Browser();
@@ -16,7 +14,7 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
         $response = $client->getResponse();
         $this->assertInstanceOf('Doctrine\\Search\\Http\\ResponseInterface', $response);
         $this->assertContains('<html>', $response->getContent());
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->isSuccessfull());
     }
 
 

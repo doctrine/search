@@ -3,11 +3,11 @@ namespace Doctrine\Search\Http\Client;
 
 use Doctrine\Search\Http\Response\BuzzResponse;
 use Doctrine\Search\Http\Request\BuzzRequest;
-
-use Doctrine\Search\Http\Client;
+use Doctrine\Search\Http\ClientInterface;
+use Doctrine\Search\Http\RequestInterface;
 use Buzz\Browser;
 
-class BuzzClient implements Client
+class BuzzClient implements ClientInterface
 {
     private $browser;
     
@@ -64,15 +64,24 @@ class BuzzClient implements Client
     /* (non-PHPdoc)
      * @see Doctrine\Search\Http.Client::sendRequest()
      */
-    public function sendRequest($method = 'GET', $headers = array(), $body = '')
+    public function sendRequest($method = RequestInterface::METHOD_GET, $headers = array(), $body = '')
     {
         $method = strtolower($method);
-        
-        if($method == 'post' || $method == 'put' || $method == 'delete') {
-           $this->response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url, $body);
+
+        if ( false === in_array($method, array(RequestInterface::METHOD_GET, RequestInterface::METHOD_POST, RequestInterface::METHOD_HEAD, RequestInterface::METHOD_DELETE, RequestInterface::METHOD_PUT)) ) {
+            throw new Exception(sprintf('The request method %s is invalid', $method));
         }
-        else {
-            $this->response = new BuzzResponse($this->browser->$method($this->host . ':' . $this->port . '/' . $this->url));
+
+        if ( in_array($method, array(RequestInterface::METHOD_DELETE, RequestInterface::METHOD_POST, RequestInterface::METHOD_PUT)) ) {
+           $response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url, $body);
+        } else {
+            $response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url);
+        }
+
+        if ( $response->getStatusCode() >= 400 ) {
+            $this->response = new BuzzErrorResponse($response);
+        } else {
+            $this->response = new BuzzResponse($response);
         }
         
         $this->request = new BuzzRequest($this->browser->getJournal()->getLastRequest());
