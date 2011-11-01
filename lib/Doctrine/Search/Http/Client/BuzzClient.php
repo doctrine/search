@@ -64,7 +64,7 @@ class BuzzClient implements ClientInterface
     /* (non-PHPdoc)
      * @see Doctrine\Search\Http.Client::sendRequest()
      */
-    public function sendRequest($method = RequestInterface::METHOD_GET, $headers = array(), $body = '')
+    public function sendRequest($method = RequestInterface::METHOD_GET, array $headers = array(), $body = '')
     {
         $method = strtolower($method);
 
