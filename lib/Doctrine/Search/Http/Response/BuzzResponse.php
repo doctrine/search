@@ -1,18 +1,17 @@
 <?php
 namespace Doctrine\Search\Http\Response;
 
-use Buzz\Message\Response as BuzzResponse;
+use Buzz\Message\Response;
+use Doctrine\Search\Http\ResponseInterface;
 
-use Doctrine\Search\Http\Response;
-
-class Buzz implements Response
+class BuzzResponse implements ResponseInterface
 {
     private $buzzResponse;
 
     /**
      * @param \Buzz\Message\Response $response
      */
-    public function __construct(BuzzResponse $response)
+    public function __construct(Response $response)
     {
         $this->buzzResponse = $response;
     }

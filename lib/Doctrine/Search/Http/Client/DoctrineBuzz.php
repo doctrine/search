@@ -1,10 +1,10 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-use Doctrine\Search\Http\Client;
+use Doctrine\Search\Http\ClientInterface;
 use Buzz\Browser;
 
-class DoctrineBuzz implements Client
+class DoctrineBuzz implements ClientInterface
 {
     private $browser;
     

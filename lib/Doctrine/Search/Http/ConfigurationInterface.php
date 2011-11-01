@@ -1,7 +1,7 @@
 <?php
 namespace Doctrine\Search\Http;
 
-interface Configuration
+interface ConfigurationInterface
 {
     public function setConfig(array $config);
     

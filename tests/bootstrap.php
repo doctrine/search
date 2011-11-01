@@ -4,8 +4,7 @@ require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/Class
 
 // use statements
 use Doctrine\Common\ClassLoader;
-
-$loader = new ClassLoader('Doctrine\\Common', __DIR__ . '/../lib/vendor/doctrine-common');
+$loader = new ClassLoader('Doctrine\\Common', __DIR__ . '/../lib/vendor/doctrine-common/lib');
 $loader->register();
 $loader = new ClassLoader('Doctrine\\Search', __DIR__ . '/../lib');
 $loader->register();

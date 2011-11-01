@@ -1,10 +1,10 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-use Doctrine\Search\Http\Client;
-use Doctrine\Search\Http\Adapter as ConnectionAdapter;
+use Doctrine\Search\Http\ClientInterface;
+use Doctrine\Search\Http\AdapterInterface;
 
-class DoctrineDefault implements Client
+class DoctrineDefault implements ClientInterface
 {
     private $adapter;
     
@@ -14,7 +14,7 @@ class DoctrineDefault implements Client
     
     private $port;
     
-    public function __construct(ConnectionAdapter $adapter, $host, $url, $port = 80)
+    public function __construct(AdapterInterface $adapter, $host, $url, $port = 80)
     {
         $this->setHost($host);
         $this->setPort($port);
