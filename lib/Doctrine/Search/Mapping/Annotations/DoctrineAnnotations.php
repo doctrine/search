@@ -27,7 +27,12 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Field {}
+final class Field {
+    /**
+     * @var string
+     */
+    public $type;
+}
 
 /**
  * @Annotation
