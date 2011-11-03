@@ -9,9 +9,8 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
     public function testCallExistingHost()
     {
         $browser = new \Buzz\Browser();
-        $client = new \Doctrine\Search\Http\Client\BuzzClient($browser, 'www.google.de', '/', 80);
-        $client->sendRequest('GET');
-        $response = $client->getResponse();
+        $client = new \Doctrine\Search\Http\Client\BuzzClient($browser, 'www.google.de', 80);
+        $response = $client->sendRequest();
         $this->assertInstanceOf('Doctrine\\Search\\Http\\ResponseInterface', $response);
         $this->assertContains('<html>', $response->getContent());
         $this->assertTrue($response->isSuccessfull());
