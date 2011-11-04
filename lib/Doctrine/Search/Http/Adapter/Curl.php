@@ -2,7 +2,6 @@
 namespace Doctrine\Search\Http\Adapter;
 
 use Doctrine\Search\Http\AdapterInterface;
-use Doctrine\Search\Http\Adapter\AdapterInvalidArgumentException;
 
 class Curl implements AdapterInterface
 {
@@ -32,7 +31,7 @@ class Curl implements AdapterInterface
     
     public function openConnection($host, $port = 80)
     {
-        $this->curlConnection = curl_init();
+        $this->curlConnection = curl_init($host);
         if ($port != 80) {
             curl_setopt($this->curlConnection, CURLOPT_PORT, intval($port));
         }
@@ -51,7 +50,7 @@ class Curl implements AdapterInterface
     {
         $this->headers = array_merge($this->headers, $headers);
         
-        curl_setopt($this->curlConnection, CURLOPT_URL, $url);
+        // curl_setopt($this->curlConnection, CURLOPT_URL, $url);
         curl_setopt($this->curlConnection, CURL_HTTP_VERSION_1_1, true);
         
         $curlMethod = $this->getCurlMethod($method);

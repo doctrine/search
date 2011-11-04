@@ -1,90 +1,50 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-use Doctrine\Search\Http\Response\BuzzResponse;
-use Doctrine\Search\Http\Request\BuzzRequest;
-use Doctrine\Search\Http\ClientInterface;
 use Doctrine\Search\Http\RequestInterface;
+use Doctrine\Search\Http\Response\BuzzResponse as Response;
 use Buzz\Browser;
 
-class BuzzClient implements ClientInterface
+class BuzzClient extends AbstractClient
 {
-    private $browser;
-    
-    private $host;
-    
-    private $url;
-    
-    private $port;
-    
-    private $request;
-    
-    private $response;
-    
-    public function __construct(Browser $browser, $host, $url, $port = 80)
+    protected $browser;
+
+    public function __construct(Browser $browser, $host = 'localhost', $port = 80, $username = '', $password = '')
     {
-        $this->setHost($host);
-        $this->setPort($port);
-        $this->setUrl($url);
         $this->browser = $browser;
-    }
-    
-    public function setHost($host)
-    {
-        $this->host = $host;
-    }
-    
-    public function setPort($port)
-    {
-        $this->port = $port;
-    }
-    
-    public function setUrl($url)
-    {
-        $this->url = $url;
-    }
-    
-    
-    /* (non-PHPdoc)
-     * @see Doctrine\Search\Http.Client::getRequest()
-     */
-    public function getRequest() 
-    {
-        return $this->request;
+        parent::__construct($host, $port, $username, $password);
     }
 
-    /* (non-PHPdoc)
-     * @see Doctrine\Search\Http.Client::getResponse()
+    /**
+     * Send a request
+     *
+     * @param  string            $method   The request method
+     * @param  array             $headers  Some http headers
+     * @param  string            $body     POST variables
+     * @return ResponseInterface
      */
-    public function getResponse() 
+    public function sendRequest($method = RequestInterface::METHOD_GET, $path = '/', $data = '')
     {
-        return $this->response;
-    }
+        $url = $this->getOption('host').':'.$this->getOption('port');
+        $header = array();
 
-    /* (non-PHPdoc)
-     * @see Doctrine\Search\Http.Client::sendRequest()
-     */
-    public function sendRequest($method = RequestInterface::METHOD_GET, array $headers = array(), $body = '')
-    {
-        $method = strtolower($method);
+        $username = $this->getOption('username');
+        $password = $this->getOption('password');
 
-        if ( false === in_array($method, array(RequestInterface::METHOD_GET, RequestInterface::METHOD_POST, RequestInterface::METHOD_HEAD, RequestInterface::METHOD_DELETE, RequestInterface::METHOD_PUT)) ) {
-            throw new Exception(sprintf('The request method %s is invalid', $method));
+        if ( null !== $username && null !== $password ) {
+            $header['Authorization'] = sprintf('Basic: %s', base64_encode($username.':'.$password));
         }
 
-        if ( in_array($method, array(RequestInterface::METHOD_DELETE, RequestInterface::METHOD_POST, RequestInterface::METHOD_PUT)) ) {
-           $response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url, $body);
+        $header['Connection'] = (true === $this->getOption('keep-alive') ? 'Keep-Alive' : 'Close');
+
+        if ( $method === RequestInterface::METHOD_POST ) {
+            $response = $this->browser->call($url, $method, $header, $data);
         } else {
-            $response = $this->browser->$method($this->host . ':' . $this->port . '/' . $this->url);
+            $response = $this->browser->call($url, $method, $header);
         }
 
-        if ( $response->getStatusCode() >= 400 ) {
-            $this->response = new BuzzErrorResponse($response);
-        } else {
-            $this->response = new BuzzResponse($response);
-        }
-        
-        $this->request = new BuzzRequest($this->browser->getJournal()->getLastRequest());
+        return new Response($response);
     }
+
 
 }
