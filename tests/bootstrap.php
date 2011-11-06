@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../lib/vendor/Buzz/lib/Buzz/ClassLoader.php';
 require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
 
