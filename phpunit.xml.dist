@@ -9,13 +9,18 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="./tests/bootstrap.php"
 >
   <testsuites>
     <testsuite name="Doctrine Search Test Suite">
       <directory>./tests/Doctrine/Search</directory>
     </testsuite>
   </testsuites>
+
+  <php>
+        <!-- <server name="CLOSURE_JAR" value="/path/to/google-closure/compiler.jar" /> -->
+        <!-- <server name="COFFEE_BIN" value="/path/to/coffee" /> -->
+  </php>
 
   <filter>
     <whitelist>
