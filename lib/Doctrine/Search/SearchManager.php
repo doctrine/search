@@ -44,14 +44,14 @@ class SearchManager
     /**
      * @var EventManager
      */
-    private $eventmanager;
+    private $eventManager;
     
     
-    public function __construct(SearchClientInterface $sc, ObjectManager $om, EventManager $eventmanager)
+    public function __construct(SearchClientInterface $sc, ObjectManager $om, EventManager $eventManager)
     {
         $this->searchClient = $sc;
         $this->objectManager = $om;
-        $this->eventmanager = $eventmanager;
+        $this->eventManager = $eventManager;
     }
 
     /**
