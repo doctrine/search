@@ -17,64 +17,20 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Search\Solr;
-
-use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+namespace Doctrine\Search\ZendLucene;
 
 /**
- * SearchManager for Solr-Backend
+ * Configuration handler for ZendLucene-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class Client implements SearchClientInterface
+class Configuration
 {
     
-    private $config;
     
-    private $connection;
-    
-    /*
-     * @param Connection $conn
-     * @param Configuration $config
-     */
-    public function __construct(Connection $conn = null, Configuration $config = null)
-    {
-        $this->connection = $conn;
-        $this->config = $config;
-    }
-
-    public function find(array $query)
+    public function __construct()
     {
         
     }
-    
-    public function createIndex($index, array $data)
-    {
-        
-    }
-    
-    public function updateIndex(array $data)
-    {
-        
-    }
-
-    /**
-     *
-     * @param array $data
-     */
-    public function deleteIndex($index)
-    {
-        // TODO: Implement deleteIndex() method.
-    }
-
-    /**
-     * @param array $data
-     */
-    public function bulkAction(array $data)
-    {
-        // TODO: Implement bulkAction() method.
-    }
-
 }

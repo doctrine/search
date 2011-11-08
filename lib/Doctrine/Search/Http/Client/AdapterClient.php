@@ -61,11 +61,11 @@ class AdapterClient extends AbstractClient {
             $headers['Authorization'] = sprintf('Basic: %s', base64_encode($username.':'.$password));
         }
 
-        $this->adapter->openConnection($host, $port);
-        $this->adapter->sendData($method, $headers, $path, $data);
+        $this->adapter->connect($host, $port);
+        $this->adapter->request($method, $headers, $path, $data);
 
         $body = $this->adapter->readData();
 
-        return new Response(200, $body);
+        return new Response(200, array(), $body);
     }
 }

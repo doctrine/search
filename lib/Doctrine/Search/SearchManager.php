@@ -20,7 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Search\SearchClient;
+use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\EventManager;
 
 /**
@@ -32,30 +32,69 @@ use Doctrine\Common\EventManager;
 class SearchManager
 {
     /**
-     * @var \Doctrine\Search\SearchClient
+     * @var SearchClient
      */
     private $searchClient;
     
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var ObjectManager
      */
     private $objectManager;
 
     /**
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
-    private $eventmanager;
+    private $eventManager;
     
     
-    public function __construct(SearchClient $sc, ObjectManager $om, EventManager $eventmanager)
+    public function __construct(SearchClientInterface $sc, ObjectManager $om, EventManager $eventManager)
     {
         $this->searchClient = $sc;
         $this->objectManager = $om;
-        $this->eventmanager = $eventmanager;
+        $this->eventManager = $eventManager;
     }
 
+    /**
+     * Start searching
+     *
+     * @param $query
+     */
     public function find($query)
     {
         $this->searchClient->find($query);
     }
+
+    /**
+     * Adds the object to the index
+     *
+     * @param object $object
+     *
+     * @throws UnexpectedTypeException
+     */
+    public function persist($object) {}
+
+    /**
+     * Remove the object from the index
+     *
+     * @param object $object
+     *
+     * @throws UnexpectedTypeException
+     */
+    public function remove($object) {}
+
+    /**
+     * Bulk action
+     *
+     * @param object $object
+     *
+     * @throws UnexpectedTypeException
+     */
+    public function bulk($object) {}
+
+    /**
+     * Commit all changes
+     *
+     * @return boolean
+     */
+    public function commit() {}
 }

@@ -5,9 +5,13 @@ require_once __DIR__ . '/../lib/vendor/doctrine-common/lib/Doctrine/Common/Class
 
 // use statements
 use Doctrine\Common\ClassLoader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Buzz\ClassLoader as BuzzAutoloader;
+
 $loader = new ClassLoader('Doctrine\\Common', __DIR__ . '/../lib/vendor/doctrine-common/lib');
 $loader->register();
 $loader = new ClassLoader('Doctrine\\Search', __DIR__ . '/../lib');
 $loader->register();
+AnnotationRegistry::registerFile(__DIR__ . '/../lib/Doctrine/Search/Mapping/Annotations/DoctrineAnnotations.php');
 
-Buzz\ClassLoader::register();
+BuzzAutoloader::register();
