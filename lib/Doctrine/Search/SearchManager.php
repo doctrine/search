@@ -20,7 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Search\SearchClient;
+use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\EventManager;
 
 /**
@@ -32,22 +32,22 @@ use Doctrine\Common\EventManager;
 class SearchManager
 {
     /**
-     * @var \Doctrine\Search\SearchClient
+     * @var SearchClient
      */
     private $searchClient;
     
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var ObjectManager
      */
     private $objectManager;
 
     /**
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $eventmanager;
     
     
-    public function __construct(SearchClient $sc, ObjectManager $om, EventManager $eventmanager)
+    public function __construct(SearchClientInterface $sc, ObjectManager $om, EventManager $eventmanager)
     {
         $this->searchClient = $sc;
         $this->objectManager = $om;
