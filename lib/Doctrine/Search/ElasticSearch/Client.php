@@ -36,8 +36,8 @@ class Client implements SearchClientInterface
     private $connection;
     
     /*
-     * @param Doctrine\Search\ElasticSearch\Connection $conn
-     * @param Doctrine\Search\ElasticSearch\Configuration $config
+     * @param Connection $conn
+     * @param Configuration $config
      */
     public function __construct(Connection $conn = null, Configuration $config = null)
     {

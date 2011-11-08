@@ -16,13 +16,24 @@ class Response implements ResponseInterface {
     private $body;
 
     /**
+     * @var array
+     */
+    private $headers;
+
+    /**
      * @param integer $statusCode
      * @param string  $body
      */
-    public function __construct($statusCode, $body)
+    public function __construct($statusCode, array $headers, $body)
     {
         $this->statusCode = $statusCode;
         $this->body = $body;
+        $this->headers = $headers;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 
     /**

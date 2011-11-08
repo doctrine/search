@@ -17,64 +17,36 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Search\Solr;
+namespace Doctrine\Search\ZendLucene;
 
-use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
 /**
- * SearchManager for Solr-Backend
+ * Connections handler for ZendLucene-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class Client implements SearchClientInterface
+class Connection
 {
+    private $host;
     
-    private $config;
+    private $port;
     
-    private $connection;
+    private $path;
     
-    /*
-     * @param Connection $conn
-     * @param Configuration $config
-     */
-    public function __construct(Connection $conn = null, Configuration $config = null)
+    private $httpClient;
+    
+    public function __construct($host = null, $port = null, $path = null, HttpClientInterface $httpClient)
     {
-        $this->connection = $conn;
-        $this->config = $config;
+        $this->host = $host;
+        $this->port = $port;
+        $this->path = $path;
+        $this->httpClient = $httpClient;
     }
-
-    public function find(array $query)
+    
+    public function initialize()
     {
         
     }
-    
-    public function createIndex($index, array $data)
-    {
-        
-    }
-    
-    public function updateIndex(array $data)
-    {
-        
-    }
-
-    /**
-     *
-     * @param array $data
-     */
-    public function deleteIndex($index)
-    {
-        // TODO: Implement deleteIndex() method.
-    }
-
-    /**
-     * @param array $data
-     */
-    public function bulkAction(array $data)
-    {
-        // TODO: Implement bulkAction() method.
-    }
-
 }

@@ -36,6 +36,20 @@ final class Field {
 
 /**
  * @Annotation
+ * @Target("PROPERTY")
+ */
+final class SolrField {
+    /* configuration */
+}
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+final class ElasticField {}
+
+/**
+ * @Annotation
  * @Target("CLASS")
  */
 final class Searchable {}

@@ -19,18 +19,20 @@ class CurlTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider getTestData
      */
-    public function testSendData($host, $port, $method, $url, $body)
+    public function testSendData($host, $port, $method, $url, $body, $contains)
     {
-        $this->adapter->openConnection($host, $port);
-        $this->adapter->sendData($method, $url, array(), $body);
+        $this->adapter->connect($host, $port);
+        $this->adapter->request($method, $url, array(), $body);
 
-        $this->assertContains(200, $this->adapter->readData());
+        $this->assertContains($contains, $this->adapter->readData(), true);
     }
 
     static public function getTestData()
     {
         return array(
-            array('http://www.php.net', 80, 'GET', '/', '')
+            array('http://www.google.de', 80, 'GET', '/', '', '<html'),
+            array('http://google.de', 80, 'GET', '/', '', '301'),
+            array('http://www.php.net', 80, 'GET', '/', '', 'php'),
         );
     }
 	

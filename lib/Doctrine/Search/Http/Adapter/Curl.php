@@ -11,7 +11,9 @@ class Curl implements AdapterInterface
     private $curlConnection;
     
     private $headers = array('Accept' => '');
-    
+
+    private $host;
+
     private $response;
     
     private $request;
@@ -29,30 +31,37 @@ class Curl implements AdapterInterface
         $this->config = array_merge($this->config, $config);
     }
     
-    public function openConnection($host, $port = 80)
+    public function connect($host, $port = 80)
     {
-        $this->curlConnection = curl_init($host);
+        $this->curlConnection = curl_init();
         if ($port != 80) {
             curl_setopt($this->curlConnection, CURLOPT_PORT, intval($port));
         }
+
+        $this->host = sprintf('%s:%d', $host, $port);
         
         curl_setopt($this->curlConnection, CURLOPT_CONNECTTIMEOUT, $this->config['timeout']);
         curl_setopt($this->curlConnection, CURLOPT_MAXREDIRS, $this->config['maxredirects']);
 
         if (!$this->curlConnection) {
-            $this->closeConnection();
-
+            $this->disconnect();
             throw new AdapterExecutionException('Connection to ' .  $host . ':' . $port . 'is impossible.');
         }
     }
-    
-    public function sendData($method, $url, $headers = array(), $body = '')
+
+    public function isConnected()
+    {
+        return is_resource($this->curlConnection);
+    }
+
+    public function request($method, $url, $headers = array(), $body = '')
     {
         $this->headers = array_merge($this->headers, $headers);
+        $url = ltrim($url, '/');
         
-        // curl_setopt($this->curlConnection, CURLOPT_URL, $url);
+        curl_setopt($this->curlConnection, CURLOPT_URL, $this->host.'/'.$url);
         curl_setopt($this->curlConnection, CURL_HTTP_VERSION_1_1, true);
-        
+
         $curlMethod = $this->getCurlMethod($method);
         curl_setopt($this->curlConnection, $curlMethod['method'], $curlMethod['methodValue']);
         
@@ -139,7 +148,7 @@ class Curl implements AdapterInterface
         return $this->response;
     }
     
-    public function closeConnection()
+    public function disconnect()
     {
         if(is_resource($this->curlConnection)) {
             curl_close($this->curlConnection);
