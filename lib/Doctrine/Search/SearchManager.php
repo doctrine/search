@@ -58,4 +58,38 @@ class SearchManager
     {
         $this->searchClient->find($query);
     }
+
+    /**
+     * Adds the object to the index
+     *
+     * @param object $object
+     *
+     * @throws UnexpectedTypeException
+     */
+    public function persist($object) {}
+
+    /**
+     * Remove the object from the index
+     *
+     * @param object $object
+     *
+     * @throws UnexpectedTypeException
+     */
+    public function remove($object) {}
+
+    /**
+     * Bulk action
+     *
+     * @param object $object
+     *
+     * @throws UnexpectedTypeException
+     */
+    public function bulk($object) {}
+
+    /**
+     * Commit all changes
+     *
+     * @return boolean
+     */
+    public function commit() {}
 }
