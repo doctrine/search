@@ -17,7 +17,7 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Search\ZendLucence;
+namespace Doctrine\Search\ZendLucene;
 
 use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 

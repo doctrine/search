@@ -17,20 +17,64 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Search\ZendLucence;
+namespace Doctrine\Search\ZendLucene;
+
+use Doctrine\Search\SearchClientInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
- * Configuration handler for ZendLucene-Backend
+ * SearchManager for ZendLucene-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class Configuration
+class Client implements SearchClientInterface
 {
     
+    private $config;
     
-    public function __construct()
+    private $connection;
+    
+    /*
+     * @param Connection $conn
+     * @param Configuration $config
+     */
+    public function __construct(Connection $conn = null, Configuration $config = null)
+    {
+        $this->connection = $conn;
+        $this->config = $config;
+    }
+
+    public function find(array $query)
     {
         
     }
+    
+    public function createIndex($index, array $data)
+    {
+        
+    }
+    
+    public function updateIndex(array $data)
+    {
+        
+    }
+
+    /**
+     *
+     * @param array $data
+     */
+    public function deleteIndex($index)
+    {
+        // TODO: Implement deleteIndex() method.
+    }
+
+    /**
+     * @param array $data
+     */
+    public function bulkAction(array $data)
+    {
+        // TODO: Implement bulkAction() method.
+    }
+
 }
