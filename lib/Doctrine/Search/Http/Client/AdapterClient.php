@@ -66,6 +66,6 @@ class AdapterClient extends AbstractClient {
 
         $body = $this->adapter->readData();
 
-        return new Response(200, $body);
+        return new Response(200, array(), $body);
     }
 }
