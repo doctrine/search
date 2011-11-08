@@ -20,7 +20,7 @@
 namespace Doctrine\Search\ZendLucence;
 
 /**
- * Configuration handler for ElasticSearch-Backend
+ * Configuration handler for ZendLucene-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>

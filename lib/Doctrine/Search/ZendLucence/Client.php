@@ -23,7 +23,7 @@ use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
- * SearchManager for ElasticSearch-Backend
+ * SearchManager for ZendLucene-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>

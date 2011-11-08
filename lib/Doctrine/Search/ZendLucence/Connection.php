@@ -22,7 +22,7 @@ namespace Doctrine\Search\ZendLucence;
 use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
 /**
- * Connections handler for ElasticSearch-Backend
+ * Connections handler for ZendLucene-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
