@@ -54,6 +54,11 @@ class SearchManager
         $this->eventmanager = $eventmanager;
     }
 
+    /**
+     * Start searching
+     *
+     * @param $query
+     */
     public function find($query)
     {
         $this->searchClient->find($query);
