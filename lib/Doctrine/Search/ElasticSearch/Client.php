@@ -21,6 +21,7 @@ namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -31,27 +32,57 @@ use Doctrine\Common\Persistence\ObjectManager;
 class Client implements SearchClientInterface
 {
     
-    private $config;
-    
-    private $connection;
+    private $client;
     
     /*
      * @param Connection $conn
      * @param Configuration $config
      */
-    public function __construct(Connection $conn = null, Configuration $config = null)
+    public function __construct(HttpClientInterface $client = null)
     {
-        $this->connection = $conn;
-        $this->config = $config;
+        $this->client = $client;
     }
 
-    public function find(array $query)
+    /**
+     * (non-PHPdoc)
+     * @see Doctrine\Search.SearchClientInterface::find()
+     */
+    public function find($query)
     {
+       assert(is_string($query));
         
+       $response = $this->client->sendRequest('GET', $query);
+       $content = $response->getContent();
+       $decodedJson = json_decode($content);
+       
+       /**
+         * @todo replace ErrorException with JsonDecodeException
+         */
+       if($decodedJson == NULL) {
+           throw new \ErrorException('Json could not be decoded from content: '.$content); 
+       }
+       
+       return $decodedJson;
     }
-    
+
+    /**
+     * (non-PHPdoc)
+     * @see Doctrine\Search.SearchClientInterface::createIndex()
+     * 
+     * @return Doctrine\Search\Http\ResponseInterface
+     */
     public function createIndex($index, array $data)
     {
+        $encodedJson = json_encode($data);
+        
+        /**
+         * @todo replace ErrorException with JsonEncodeException
+         */
+        if($encodedJson == NULL) {
+           throw new \ErrorException('Json could not be encoded from data: '.$data); 
+        }
+        
+        return $this->client->sendRequest('PUT', $index, $encodedJson);
         
     }
     
