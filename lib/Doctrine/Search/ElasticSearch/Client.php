@@ -55,11 +55,8 @@ class Client implements SearchClientInterface
        $content = $response->getContent();
        $decodedJson = json_decode($content);
        
-       /**
-         * @todo replace ErrorException with JsonDecodeException
-         */
        if($decodedJson == NULL) {
-           throw new \ErrorException('Json could not be decoded from content: '.$content); 
+           throw new Exception\JsonDecodeException();
        }
        
        return $decodedJson;
@@ -75,11 +72,8 @@ class Client implements SearchClientInterface
     {
         $encodedJson = json_encode($data);
         
-        /**
-         * @todo replace ErrorException with JsonEncodeException
-         */
         if($encodedJson == NULL) {
-           throw new \ErrorException('Json could not be encoded from data: '.$data); 
+           throw new Exception\JsonEncodeException($data);
         }
         
         return $this->client->sendRequest('PUT', $index, $encodedJson);
