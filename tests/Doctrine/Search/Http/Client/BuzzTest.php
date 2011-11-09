@@ -31,14 +31,12 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
         $this->client->setBrowser(array());
     }
     
-    
-    /*
-     * expectedException \RuntimeException
-     */
+
     public function testCallNotExistingHost()
     {
-        //$client = new \Doctrine\Search\Http\Client\BuzzClient('not-existing-host.xyz', '/', 80);
-        //$client->sendRequest('get');
+        $this->setExpectedException('\RuntimeException');
+        $client = new \Doctrine\Search\Http\Client\BuzzClient('www.not-existing-host.de', 80);
+        $client->sendRequest('get');
     }
 
 }
