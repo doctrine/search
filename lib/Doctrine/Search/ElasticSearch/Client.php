@@ -20,7 +20,6 @@
 namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
 /**
@@ -49,8 +48,6 @@ class Client implements SearchClientInterface
      */
     public function find($query)
     {
-       assert(is_string($query));
-        
        $response = $this->client->sendRequest('GET', $query);
        $content = $response->getContent();
        $decodedJson = json_decode($content);
