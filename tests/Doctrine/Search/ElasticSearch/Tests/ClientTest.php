@@ -75,6 +75,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     
     static public function getQuery()
     {
-        return 'http://localhost:9200';
+        return array(
+            array('http://localhost:9200')
+        );
     }
 }
