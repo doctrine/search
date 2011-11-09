@@ -14,7 +14,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     
     protected function setUp() 
     {
-        $this->httpClient = $this->getMock('Doctrine\\Search\\Http\\Client\\BuzzClient');
+        $this->httpClient = $this->getMock('Doctrine\\Search\\Http\\Client\\BuzzClient', array(), array(), '', false);
         $this->json = '{ 
                             "user": "kimchy", 
                             "postDate": "2009-11-15T14:12:12", 
