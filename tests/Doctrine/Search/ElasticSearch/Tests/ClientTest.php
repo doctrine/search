@@ -7,7 +7,9 @@ use Doctrine\Search\Http\Response\BuzzResponse;
 class ClientTest extends \PHPUnit_Framework_TestCase 
 {
     private $client;
-    
+
+    private $httpClient;
+
     private $json;
     
     private $connection;
@@ -49,15 +51,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testFind($query)
     {
-         $this->httpClient->expects($this->once())
-            ->method('getOption')
-            ->with('host')
-            ->will($this->returnValue('localhost'));
-        $this->httpClient->expects($this->once())
-            ->method('getOption')
-            ->with('port')
-            ->will($this->returnValue('9200'));
-        
         $buzzResponse = $this->getMock('Buzz\Message\Response'); 
         $buzzResponse->expects($this->once())
             ->method('getContent')
@@ -70,7 +63,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($mockedResponse));
         
         $result = $this->client->find($query);
-        $this->assertEquals(json_decode($this->json,true), $result->getContent());
+        $this->assertEquals(json_decode($this->json), $result);
     }
     
     static public function getQuery()
