@@ -9,10 +9,20 @@ class BuzzClient extends AbstractClient
 {
     protected $browser;
 
-    public function __construct(Browser $browser, $host = 'localhost', $port = 80, $username = '', $password = '')
+    public function __construct($host = 'localhost', $port = 80, $username = '', $password = '')
+    {
+        $this->setBrowser(new Browser());
+        parent::__construct($host, $port, $username, $password);
+    }
+    
+    /**
+     * You can overwrite the default browser if needed
+     * 
+     * @param Buzz\Browser $browser
+     */
+    public function setBrowser(Browser $browser)
     {
         $this->browser = $browser;
-        parent::__construct($host, $port, $username, $password);
     }
 
     /**
@@ -26,21 +36,21 @@ class BuzzClient extends AbstractClient
     public function sendRequest($method = RequestInterface::METHOD_GET, $path = '/', $data = '')
     {
         $url = $this->getOption('host').':'.$this->getOption('port');
-        $header = array();
+        $headers = array();
 
         $username = $this->getOption('username');
         $password = $this->getOption('password');
 
         if ( null !== $username && null !== $password ) {
-            $header['Authorization'] = sprintf('Basic: %s', base64_encode($username.':'.$password));
+            $headers['Authorization'] = sprintf('Basic: %s', base64_encode($username.':'.$password));
         }
 
-        $header['Connection'] = (true === $this->getOption('keep-alive') ? 'Keep-Alive' : 'Close');
+        $headers['Connection'] = (true === $this->getOption('keep-alive') ? 'Keep-Alive' : 'Close');
 
         if ( $method === RequestInterface::METHOD_POST ) {
-            $response = $this->browser->call($url, $method, $header, $data);
+            $response = $this->browser->call($url, $method, $headers, $data);
         } else {
-            $response = $this->browser->call($url, $method, $header);
+            $response = $this->browser->call($url, $method, $headers);
         }
 
         return new Response($response);

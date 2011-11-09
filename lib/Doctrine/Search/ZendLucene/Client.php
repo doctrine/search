@@ -45,7 +45,7 @@ class Client implements SearchClientInterface
         $this->config = $config;
     }
 
-    public function find(array $query)
+    public function find($query)
     {
         
     }

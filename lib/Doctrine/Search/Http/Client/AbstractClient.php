@@ -17,9 +17,9 @@ abstract class AbstractClient implements ClientInterface {
     public function __construct($host = 'localhost', $port = 80, $username = '', $password = '')
     {
         $this->setOption('host', $host);
-        $this->getOption('port', $port);
-        $this->getOption('username', $username);
-        $this->getOption('password', $password);
+        $this->setOption('port', $port);
+        $this->setOption('username', $username);
+        $this->setOption('password', $password);
     }
 
     public function getOption($key)
