@@ -33,10 +33,11 @@ interface SearchClientInterface
      * Finds ids of indexed objects by a search string.
      *
      *
+     * @param String $index
+     * @param String $type
      * @param String $query
-     * @return array $id
      */
-    public function find($query);
+    public function find($index, $type, $query);
 
     /**
      * Allows to search by the search api of a backend like Solr directly
@@ -44,16 +45,16 @@ interface SearchClientInterface
      * @param array $data The data to be indexed.
      */
     public function createIndex($index, array $data);
-    
+
     /**
-     * 
+     *
      * @param array $data
      */
     public function deleteIndex($index);
-    
+
     /**
-     * @param array $data
+     * @param array $query
      */
-    public function bulkAction(array $data);
+    public function bulkSearch(array $query);
 
 }
