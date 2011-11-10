@@ -12,6 +12,8 @@ $loader = new ClassLoader('Doctrine\\Common', __DIR__ . '/../lib/vendor/doctrine
 $loader->register();
 $loader = new ClassLoader('Doctrine\\Search', __DIR__ . '/../lib');
 $loader->register();
+$loader = new ClassLoader('Unit\\Doctrine\\Search', __DIR__ . '/');
+$loader->register();
 AnnotationRegistry::registerFile(__DIR__ . '/../lib/Doctrine/Search/Mapping/Annotations/DoctrineAnnotations.php');
 
 BuzzAutoloader::register();
