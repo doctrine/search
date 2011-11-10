@@ -9,20 +9,11 @@ class BuzzClient extends AbstractClient
 {
     protected $browser;
 
-    public function __construct($host = 'localhost', $port = 80, $username = '', $password = '')
-    {
-        $this->setBrowser(new Browser());
-        parent::__construct($host, $port, $username, $password);
-    }
-    
-    /**
-     * You can overwrite the default browser if needed
-     * 
-     * @param Buzz\Browser $browser
-     */
-    public function setBrowser(Browser $browser)
+    public function __construct(Browser $browser, $host = 'localhost', $port = 80, $username = '', $password = '')
     {
         $this->browser = $browser;
+        
+        parent::__construct($host, $port, $username, $password);
     }
 
     /**
