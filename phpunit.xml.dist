@@ -13,7 +13,7 @@
 >
   <testsuites>
     <testsuite name="Doctrine Search Test Suite">
-      <directory>./tests/Doctrine/Search</directory>
+      <directory>./tests/Unit/Doctrine/Search</directory>
     </testsuite>
   </testsuites>
 
