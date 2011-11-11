@@ -69,7 +69,7 @@ class Client implements SearchClientInterface
        $decodedJson = json_decode($content);
 
        if($decodedJson == NULL) {
-           throw new JsonDecodeException('Json could not be decoded from content: '.$content);
+           throw new JsonDecodeException();
        }
 
        return $decodedJson;
@@ -92,7 +92,7 @@ class Client implements SearchClientInterface
          * @todo replace ErrorException with JsonEncodeException
          */
         if($encodedJson == NULL) {
-           throw new JsonEncodeException('Json could not be encoded from data: '.$data);
+           throw new JsonEncodeException($data);
         }
 
         $indexUrl = $this->host . ':' . $this->port . '/' . $index;
