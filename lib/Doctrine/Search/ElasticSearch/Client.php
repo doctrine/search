@@ -20,7 +20,11 @@
 namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\SearchClientInterface;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
+
+use Doctrine\Search\Exception\JsonEncodeException;
+use Doctrine\Search\Exception\JsonDecodeException;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -30,56 +34,76 @@ use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
  */
 class Client implements SearchClientInterface
 {
-    
+
     private $client;
-    
+
+    private $host;
+
+    private $port;
+
     /*
      * @param Connection $conn
      * @param Configuration $config
      */
-    public function __construct(HttpClientInterface $client = null)
+    public function __construct(HttpClientInterface $client = null, $host = 'localhost', $port = '9200')
     {
+        $this->host = $host;
+        $this->port = $port;
         $this->client = $client;
     }
 
     /**
-     * (non-PHPdoc)
+     *
      * @see Doctrine\Search.SearchClientInterface::find()
      */
-    public function find($query)
+    public function find($index, $type, $query)
     {
-       $response = $this->client->sendRequest('GET', $query);
+       assert(is_string($index));
+       assert(is_string($type));
+       assert(is_string($query));
+
+       $searchUrl = $this->host . ':' . $this->port . '/' . $index . '/'. $type . '/_search?' . $query;
+
+       $response = $this->client->sendRequest('GET', $searchUrl);
        $content = $response->getContent();
        $decodedJson = json_decode($content);
-       
+
        if($decodedJson == NULL) {
-           throw new Exception\JsonDecodeException();
+           throw new JsonDecodeException();
        }
-       
+
        return $decodedJson;
+
     }
 
     /**
      * (non-PHPdoc)
      * @see Doctrine\Search.SearchClientInterface::createIndex()
-     * 
+     *
      * @return Doctrine\Search\Http\ResponseInterface
      */
     public function createIndex($index, array $data)
     {
+        assert(is_string($index));
+
         $encodedJson = json_encode($data);
-        
+
+        /**
+         * @todo replace ErrorException with JsonEncodeException
+         */
         if($encodedJson == NULL) {
-           throw new Exception\JsonEncodeException($data);
+           throw new JsonEncodeException($data);
         }
-        
-        return $this->client->sendRequest('PUT', $index, $encodedJson);
-        
+
+        $indexUrl = $this->host . ':' . $this->port . '/' . $index;
+
+        return $this->client->sendRequest('PUT', $indexUrl, $encodedJson);
+
     }
-    
+
     public function updateIndex(array $data)
     {
-        
+
     }
 
     /**
@@ -94,7 +118,7 @@ class Client implements SearchClientInterface
     /**
      * @param array $data
      */
-    public function bulkAction(array $data)
+    public function bulkSearch(array $data)
     {
         // TODO: Implement bulkAction() method.
     }
