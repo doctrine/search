@@ -20,7 +20,6 @@
 namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
 /**
@@ -49,17 +48,12 @@ class Client implements SearchClientInterface
      */
     public function find($query)
     {
-       assert(is_string($query));
-        
        $response = $this->client->sendRequest('GET', $query);
        $content = $response->getContent();
        $decodedJson = json_decode($content);
        
-       /**
-         * @todo replace ErrorException with JsonDecodeException
-         */
        if($decodedJson == NULL) {
-           throw new \ErrorException('Json could not be decoded from content: '.$content); 
+           throw new Exception\JsonDecodeException();
        }
        
        return $decodedJson;
@@ -75,11 +69,8 @@ class Client implements SearchClientInterface
     {
         $encodedJson = json_encode($data);
         
-        /**
-         * @todo replace ErrorException with JsonEncodeException
-         */
         if($encodedJson == NULL) {
-           throw new \ErrorException('Json could not be encoded from data: '.$data); 
+           throw new Exception\JsonEncodeException($data);
         }
         
         return $this->client->sendRequest('PUT', $index, $encodedJson);
