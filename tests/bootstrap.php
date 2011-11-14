@@ -17,3 +17,6 @@ $loader->register();
 AnnotationRegistry::registerFile(__DIR__ . '/../lib/Doctrine/Search/Mapping/Annotations/DoctrineAnnotations.php');
 
 BuzzAutoloader::register();
+
+$loader = new ClassLoader('Guzzle', __DIR__ . '/../lib/vendor/Guzzle/src');
+$loader->register();

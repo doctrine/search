@@ -4,3 +4,6 @@
 [submodule "lib/vendor/doctrine-common"]
 	path = lib/vendor/doctrine-common
 	url = https://github.com/doctrine/common.git
+[submodule "lib/vendor/Guzzle"]
+	path = lib/vendor/Guzzle
+	url = https://github.com/guzzle/guzzle.git
