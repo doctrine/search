@@ -22,6 +22,7 @@ namespace Doctrine\Search\Mapping\Driver;
 use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\Reader,
+    Doctrine\Search\Mapping\Driver\Driver,
     Doctrine\Search\Mapping\Annotations as Search;
 
 /**
@@ -32,7 +33,7 @@ use Doctrine\Common\Annotations\AnnotationReader,
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class AnnotationDriver
+class AnnotationDriver implements Driver
 {
     /**
      * The annotation reader.
@@ -41,30 +42,43 @@ class AnnotationDriver
      */
     private $reader;
 
-    
+    /**
+     * Registers annotation classes to the common registry.
+     *
+     * This method should be called when bootstrapping your application.
+     */
+    public static function registerAnnotationClasses()
+    {
+        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
+    }
+
     /**
      * Initializes a new AnnotationDriver that uses the given Reader for reading
      * docblock annotations.
-     * 
+     *
      * @param $reader Reader The annotation reader to use.
-     * @param $paths 
+     * @param $paths
      */
     public function __construct(Reader $reader, array $paths)
     {
         $this->reader = $reader;
-        
         $this->reader->setAutoloadAnnotations(true);
 
         foreach ($paths as $prefix => $path) {
             $this->reader->setAnnotationNamespaceAlias($path, $prefix);
         }
     }
-    
+
     /*
      * Loads the metadata of the given class
      */
-    public function loadClassMetadata()
+    public function loadClassMetadata($className, ClassMetadata $class)
     {
-        
+        $reflClass = $class->getReflectionClass();
+
+        $documentsAnnotations = array();
+        foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
+
+        }
     }
 }

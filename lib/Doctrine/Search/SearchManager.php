@@ -22,6 +22,8 @@ namespace Doctrine\Search;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\EventManager;
+use Doctrine\Search\ElasticSearch\Client;
+use Doctrine\Search\Configuration;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -35,7 +37,7 @@ class SearchManager
      * @var SearchClient
      */
     private $searchClient;
-    
+
     /**
      * @var ObjectManager
      */
@@ -45,13 +47,14 @@ class SearchManager
      * @var EventManager
      */
     private $eventManager;
-    
-    
-    public function __construct(SearchClientInterface $sc, ObjectManager $om, EventManager $eventManager)
+
+
+    public function __construct(ObjectManager $om, Configuration $conf = null, EventManager $em = null, SearchClientInterface $sc = null)
     {
-        $this->searchClient = $sc;
         $this->objectManager = $om;
-        $this->eventManager = $eventManager;
+        $this->eventManager = $conf ?: new Configuration();
+        $this->eventManager = $em ?: new EventManager();
+        $this->searchClient = $sc ?: new Client();
     }
 
     /**
