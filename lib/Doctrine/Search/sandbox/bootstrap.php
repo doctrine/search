@@ -16,6 +16,7 @@ $loader = new ClassLoader('Doctrine\\ODM\\MongoDB', __DIR__ . '/vendor/doctrine-
 $loader->register();
 $loader = new ClassLoader('Doctrine\\MongoDB', __DIR__ . '/vendor/doctrine-mongodb/lib');
 $loader->register();
-
+$loader = new ClassLoader('Documents', __DIR__ );
+$loader->register();
 AnnotationRegistry::registerFile(__DIR__ . '/../lib/Doctrine/Search/Mapping/Annotations/DoctrineAnnotations.php');
 BuzzAutoloader::register();
