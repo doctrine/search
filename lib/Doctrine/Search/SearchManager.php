@@ -44,16 +44,15 @@ class SearchManager
     private $objectManager;
 
     /**
-     * @var EventManager
+     * @var Configuration $configuration
      */
-    private $eventManager;
+    private $configuration;
 
 
-    public function __construct(ObjectManager $om, Configuration $conf = null, EventManager $em = null, SearchClientInterface $sc = null)
+    public function __construct(ObjectManager $om, Configuration $conf = null, SearchClientInterface $sc = null)
     {
         $this->objectManager = $om;
-        $this->eventManager = $conf ?: new Configuration();
-        $this->eventManager = $em ?: new EventManager();
+        $this->$configuration = $conf ?: new Configuration();
         $this->searchClient = $sc ?: new Client();
     }
 

@@ -4,3 +4,9 @@
 [submodule "lib/vendor/doctrine-common"]
 	path = lib/vendor/doctrine-common
 	url = https://github.com/doctrine/common.git
+[submodule "lib/Doctrine/Search/sandbox/vendor/doctrine-mongodb"]
+	path = lib/Doctrine/Search/sandbox/vendor/doctrine-mongodb
+	url = https://github.com/doctrine/mongodb.git
+[submodule "lib/Doctrine/Search/sandbox/vendor/doctrine-mongodb-odm"]
+	path = lib/Doctrine/Search/sandbox/vendor/doctrine-mongodb-odm
+	url = https://github.com/doctrine/mongodb-odm.git
