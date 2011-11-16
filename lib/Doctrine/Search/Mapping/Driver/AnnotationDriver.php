@@ -36,6 +36,13 @@ use Doctrine\Common\Annotations\AnnotationReader,
 class AnnotationDriver implements Driver
 {
     /**
+     * Document annotation classes, ordered by precedence.
+     */
+    static private $documentAnnotationClasses = array(
+            'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
+    );
+
+    /**
      * The annotation reader.
      *
      * @var Reader
@@ -78,7 +85,14 @@ class AnnotationDriver implements Driver
 
         $documentsAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
-
+            foreach (self::$documentAnnotationClasses as $i => $annotationClass) {
+                if ($annotation instanceof $annotationClass) {
+                    $documentsAnnotations[$i] = $annotation;
+                    continue 2;
+                }
+            }
         }
+
+        var_dump($documentsAnnotations);
     }
 }

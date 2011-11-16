@@ -23,19 +23,21 @@ namespace Doctrine\Search\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
-abstract class AbstractDocument extends Annotation {}
-
 /**
  * @Annotation
  * @Target("CLASS")
  */
-final class Searchable extends Annotation {}
+final class Searchable extends Annotation
+{
+    public $name;
+}
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Field extends Annotation {
+final class Field extends Annotation
+{
     /**
      * @var string
      */
@@ -46,7 +48,8 @@ final class Field extends Annotation {
  * @Annotation
  * @Target("PROPERTY")
  */
-final class SolrField extends Annotation {
+final class SolrField extends Annotation
+{
     /* configuration */
 }
 
@@ -54,4 +57,7 @@ final class SolrField extends Annotation {
  * @Annotation
  * @Target("PROPERTY")
  */
-final class ElasticField extends Annotation {}
+final class ElasticField extends Annotation
+{
+
+}
