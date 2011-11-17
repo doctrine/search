@@ -10,7 +10,7 @@ use Buzz\ClassLoader as BuzzAutoloader;
 
 $loader = new ClassLoader('Doctrine\\Common', __DIR__ . '/../../../vendor/doctrine-common/lib');
 $loader->register();
-$loader = new ClassLoader('Doctrine\\Search', __DIR__ . '/..');
+$loader = new ClassLoader('Doctrine\\Search', __DIR__ . '/../../../');
 $loader->register();
 $loader = new ClassLoader('Doctrine\\ODM\\MongoDB', __DIR__ . '/vendor/doctrine-mongodb-odm/lib');
 $loader->register();

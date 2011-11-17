@@ -23,7 +23,8 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\Common\Annotations\Reader,
     Doctrine\Search\Mapping\Driver\Driver,
-    Doctrine\Search\Mapping\Annotations as Search;
+    Doctrine\Search\Mapping\Annotations as Search,
+    Doctrine\Search\Mapping\ClassMetadata;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -41,6 +42,13 @@ class AnnotationDriver implements Driver
     static private $documentAnnotationClasses = array(
             'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
     );
+
+    /**
+     * Contains the paths to the to be readed directories
+     *
+     * @var array $paths
+     */
+    private $paths;
 
     /**
      * The annotation reader.
@@ -69,19 +77,21 @@ class AnnotationDriver implements Driver
     public function __construct(Reader $reader, array $paths)
     {
         $this->reader = $reader;
-        $this->reader->setAutoloadAnnotations(true);
 
-        foreach ($paths as $prefix => $path) {
-            $this->reader->setAnnotationNamespaceAlias($path, $prefix);
+        if ($paths) {
+            $this->addPaths((array) $paths);
         }
     }
 
     /*
      * Loads the metadata of the given class
      */
-    public function loadClassMetadata($className, ClassMetadata $class)
+    public function loadClassMetadata($class)
     {
-        $reflClass = $class->getReflectionClass();
+
+        var_dump(get_class($class));
+        var_dump($class->getClassMetadata()->getReflectionClass());
+        $reflClass = $class->getClassMetadata()->getReflectionClass();
 
         $documentsAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
@@ -94,5 +104,14 @@ class AnnotationDriver implements Driver
         }
 
         var_dump($documentsAnnotations);
+    }
+
+    /**
+     *
+     * @param array $paths
+     */
+    public function addPaths(array $paths)
+    {
+        $this->paths = $paths;
     }
 }

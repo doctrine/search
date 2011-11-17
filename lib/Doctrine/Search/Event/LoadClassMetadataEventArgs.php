@@ -16,24 +16,31 @@
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
  */
-namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Search\Mapping\ClassMetadata;
+namespace Doctrine\Search\Event;
+
+use Doctrine\Common\EventArgs;
 
 /**
- * Interface for metadata drivers.
+ * Class that holds event arguments for a loadMetadata event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
+ * @link        www.doctrine-project.com
+ * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-interface Driver
+class LoadClassMetadataEventArgs extends EventArgs
 {
-    /**
-     * Loads the metadata for the specified class into the provided container.
-     *
-     * @param string $class
-     * @param ClassMetadata $metadata
-     */
-    function loadClassMetadata($class);
+    private $classMetadata;
+
+    public function __construct(ClassMetadata $classMetadata)
+    {
+        $this->classMetadata = $classMetadata;
+    }
+
+    public function getClassMetadata()
+    {
+        return $this->classMetadata;
+    }
+
 }
