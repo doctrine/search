@@ -37,6 +37,21 @@ class Configuration
     private $attributes;
 
     /**
+     * Gets the cache driver implementation that is used for the mapping metadata.
+     * (Annotation is the default)
+     *
+     * @return Mapping\Driver\Driver
+     */
+    public function getMetadataDriverImpl()
+    {
+        if ( ! isset($this->attributes['concreteMetadataDriver'])) {
+            $this->attributes['concreteMetadataDriver'] = 'Doctrine\Search\Mapping\Driver\AnnotationDriver';
+        }
+
+        return $this->attributes['concreteMetadataDriver'];
+    }
+
+    /**
      * Sets the driver that is used to store the class metadata .
      *
      * @param Driver $concreteDriver
@@ -44,6 +59,29 @@ class Configuration
     public function setMetadataDriverImpl(Driver $concreteDriver)
     {
         $this->attributes['concreteMetadataDriver'] = $concreteDriver;
+    }
+
+    /**
+     * Set the class metadata factory class name.
+     *
+     * @param string $cmf
+     */
+    public function setClassMetadataFactoryName($cmfName)
+    {
+        $this->attributes['classMetadataFactoryName'] = $cmfName;
+    }
+
+    /**
+     * Gets the class metadata factory class name.
+     *
+     * @return string
+     */
+    public function getClassMetadataFactoryName()
+    {
+        if ( ! isset($this->attributes['classMetadataFactoryName'])) {
+            $this->attributes['classMetadataFactoryName'] = 'Doctrine\Search\Mapping\ClassMetadataFactory';
+        }
+        return $this->attributes['classMetadataFactoryName'];
     }
 
 }

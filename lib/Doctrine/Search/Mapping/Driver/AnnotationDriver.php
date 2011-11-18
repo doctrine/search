@@ -25,9 +25,11 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Search\Mapping\Driver\Driver,
     Doctrine\Search\Mapping\Annotations as Search,
     Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
+ * Ideas copied from the mongodb-odm-project
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
@@ -86,12 +88,12 @@ class AnnotationDriver implements Driver
     /*
      * Loads the metadata of the given class
      */
-    public function loadClassMetadata($class)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
     {
 
-        var_dump(get_class($class));
-        var_dump($class->getClassMetadata()->getReflectionClass());
-        $reflClass = $class->getClassMetadata()->getReflectionClass();
+        var_dump(get_class($eventargs));
+        var_dump($eventargs->getClassMetadata()->getReflectionClass());
+        $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
 
         $documentsAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {

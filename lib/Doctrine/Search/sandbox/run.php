@@ -38,10 +38,8 @@ $paths = $driver->getPaths();
 $metaDataFactory = $dm->getMetadataFactory();
 
 
-
-$searchDriver = new SearchAnnotationDriver($reader, $paths);
-$evm->addEventListener('loadClassMetadata', $searchDriver);
-
+$searchManager = new SearchManager($dm);
+$evm->addEventListener('loadClassMetadata', $searchManager);
 
 $metaDataFactory->getAllMetadata();
 var_dump($evm->hasListeners('loadClassMetadata'));
