@@ -24,6 +24,8 @@ use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -48,22 +50,62 @@ class SearchManager
      */
     private $configuration;
 
+    /**
+     *
+     * @var object
+     */
+    private $metadataFactory;
 
-    public function __construct(ObjectManager $om, Configuration $conf = null, SearchClientInterface $sc = null)
+    /**
+     *
+     * @var object
+     */
+    private $annotationReader;
+
+    /**
+     *
+     * @param ObjectManager $om
+     * @param Configuration $conf
+     * @param SearchClientInterface $sc
+     */
+    public function __construct(ObjectManager $om,
+                                Configuration $conf = null,
+                                SearchClientInterface $sc = null,
+                                Reader $reader = null)
     {
         $this->objectManager = $om;
-        $this->$configuration = $conf ?: new Configuration();
+        $this->configuration = $conf ?: new Configuration();
         $this->searchClient = $sc ?: new Client();
+        $this->annotationReader = $reader ?: new AnnotationReader();
+
+        $metadataFactoryClassName = $this->configuration->getClassMetadataFactoryName();
+        $this->metadataFactory = new $metadataFactoryClassName();
+        $this->metadataFactory->setSearchManager($this);
+        $this->metadataFactory->setConfiguration($this->configuration);
+    }
+
+
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
+    {
+        $config = $eventargs->getDocumentManager()->getConfiguration();
+        $driver = $config->getMetadataDriverImpl();
+        $paths = $driver->getPaths();
+
+        $reader = $this->annotationReader;
+        $annotationDriverName = $this->configuration->getMetadataDriverImpl();
+        $annotationDriver = new $annotationDriverName($reader, $paths);
+        $annotationDriver->loadClassMetaData($eventargs);
     }
 
     /**
-     * Start searching
      *
-     * @param $query
+     * @param String $index
+     * @param String $type
+     * @param String $query
      */
-    public function find($query)
+    public function find($index = null, $type = null, $query = null)
     {
-        $this->searchClient->find($query);
+        $this->searchClient->find($index, $type, $query);
     }
 
     /**
