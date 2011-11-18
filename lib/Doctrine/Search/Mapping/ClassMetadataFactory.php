@@ -186,6 +186,11 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
         return new ClassMetadata($className);
     }
 
+    public function isTransient($className)
+    {
+
+    }
+
     /**
      * Get array of parent classes for the given document class
      *
