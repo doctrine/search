@@ -91,9 +91,7 @@ class AnnotationDriver implements Driver
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
     {
 
-        var_dump(get_class($eventargs));
-        var_dump($eventargs->getClassMetadata()->getReflectionClass());
-        $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
+       $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
 
         $documentsAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
