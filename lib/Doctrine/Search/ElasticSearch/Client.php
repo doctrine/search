@@ -26,6 +26,7 @@ use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 use Doctrine\Search\Exception\JsonEncodeException;
 use Doctrine\Search\Exception\JsonDecodeException;
 
+
 /**
  * SearchManager for ElasticSearch-Backend
  *
@@ -49,7 +50,7 @@ class Client implements SearchClientInterface
     {
         $this->host = $host;
         $this->port = $port;
-        $this->client = $client;
+        $this->client = $client ?: new \Doctrine\Search\Http\Client\BuzzClient();
     }
 
     /**
