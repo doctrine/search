@@ -115,7 +115,9 @@ class SearchManager
      *
      * @throws UnexpectedTypeException
      */
-    public function persist($object) {}
+    public function persist($object) {
+        $this->searchClient->createIndex($index, $type, $query);
+    }
 
     /**
      * Remove the object from the index
@@ -133,7 +135,9 @@ class SearchManager
      *
      * @throws UnexpectedTypeException
      */
-    public function bulk($object) {}
+    public function bulk($object) {
+
+    }
 
     /**
      * Commit all changes
