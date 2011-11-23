@@ -9,10 +9,10 @@ class BuzzClient extends AbstractClient
 {
     protected $browser;
 
-    public function __construct(Browser $browser, $host = 'localhost', $port = 80, $username = '', $password = '')
+    public function __construct(Browser $browser = null, $host = 'localhost', $port = 80, $username = '', $password = '')
     {
-        $this->browser = $browser;
-        
+        $this->browser = $browser ?: new Browser();
+
         parent::__construct($host, $port, $username, $password);
     }
 

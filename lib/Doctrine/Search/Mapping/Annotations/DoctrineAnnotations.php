@@ -29,7 +29,10 @@ use Doctrine\Common\Annotations\Annotation;
  */
 final class Searchable extends Annotation
 {
-    public $name;
+    public $index;
+    public $type;
+    public $numberOfShards;
+    public $numberOfReplicas;
 }
 
 /**
