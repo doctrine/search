@@ -31,8 +31,16 @@ final class Searchable extends Annotation
 {
     public $index;
     public $type;
-    public $numberOfShards;
-    public $numberOfReplicas;
+}
+
+/**
+ * @Annotation
+ * @Target("CLASS")
+ */
+final class ElasticSearchable extends Annotation
+{
+	public $numberOfShards;
+	public $numberOfReplicas;
 }
 
 /**

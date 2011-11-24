@@ -24,8 +24,8 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\Reader,
     Doctrine\Search\Mapping\Driver\Driver,
     Doctrine\Search\Mapping\Annotations as Search,
-    Doctrine\Search\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+    Doctrine\Search\Mapping\ClassMetadata,
+    Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -43,6 +43,16 @@ class AnnotationDriver implements Driver
      */
     static private $documentAnnotationClasses = array(
             'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
+    		'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable',
+    );
+
+    /**
+     * Document fields annotation classes, ordered by precedence.
+     */
+    static private $documentFieldAnnotationClasses = array(
+    		'Doctrine\\Search\\Mapping\\Annotations\\Field',
+    		'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
+    		'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
 
     /**
@@ -90,20 +100,46 @@ class AnnotationDriver implements Driver
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
     {
-
+       $documentsAnnotations = array();
        $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
+       $reflClass = $eventargs->getClassMetadata()->getReflectionMethod();
 
-        $documentsAnnotations = array();
-        foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
-            foreach (self::$documentAnnotationClasses as $i => $annotationClass) {
-                if ($annotation instanceof $annotationClass) {
-                    $documentsAnnotations[$i] = $annotation;
-                    continue 2;
-                }
-            }
-        }
+       $classAnnotations = $this->extractClassAnnotations($reflClass);
+       $methodAnnotations = $this->extractMethodAnnotations($reflClass);
 
-        var_dump($documentsAnnotations);
+       $documentsAnnotations = array_merge($classAnnotations, $methodAnnotations);
+
+       var_dump($documentsAnnotations);
+    }
+
+    private function extractClassAnnotations(\ReflectionClass $reflClass)
+    {
+    	$documentsClassAnnotations = array();
+    	foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
+    		foreach (self::$documentAnnotationClasses as $i => $annotationClass) {
+    			if ($annotation instanceof $annotationClass) {
+    				$documentsClassAnnotations[$i] = $annotation;
+    				continue 2;
+    			}
+    		}
+    	}
+
+    	return $documentsClassAnnotations;
+    }
+
+    private function extractMethodAnnotations(\ReflectionClass $reflClass)
+    {
+    	$documentsMethodAnnotations = array();
+    	foreach ($this->reader->getMethodAnnotations($reflClass) as $annotation) {
+    		foreach (self::$documentMethodAnnotationClasses as $i => $methodAnnotationClass) {
+    			if ($annotation instanceof $methodAnnotationClass) {
+    				$documentsMethodAnnotations[$i] = $annotation;
+    				continue 2;
+    			}
+    		}
+    	}
+
+    	return $documentsMethodAnnotations;
     }
 
     /**
