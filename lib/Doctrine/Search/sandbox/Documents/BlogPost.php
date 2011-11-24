@@ -7,7 +7,9 @@ use Doctrine\Search\Mapping\Annotations as SEARCH;
 
 /**
  * @ODM\Document
- * @SEARCH\Searchable(index="blog", type="post", numberOfShards=1, numberOfReplicas=1)
+ * @SEARCH\ElasticSearchable(numberOfShards=1, numberOfReplicas=1)
+ * @SEARCH\Searchable(index="blog", type="post")
+ *
  */
 class BlogPost
 {
