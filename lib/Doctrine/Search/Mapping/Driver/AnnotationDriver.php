@@ -43,6 +43,7 @@ class AnnotationDriver implements Driver
      */
     static private $documentAnnotationClasses = array(
             'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
+    		'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable',
     );
 
     /**
