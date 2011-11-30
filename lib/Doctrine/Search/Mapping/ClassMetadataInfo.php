@@ -254,4 +254,119 @@ class ClassMetadataInfo implements \Doctrine\Common\Persistence\Mapping\ClassMet
         return $mapping;
     }
 
+    /**
+     * Gets the mapped identifier field name.
+     *
+     * The returned structure is an array of the identifier field names.
+     *
+     * @return array
+     */
+    function getIdentifier()
+    {
+        // TODO: Implement getIdentifier() method.
+    }
+
+    /**
+     * Checks if the given field name is a mapped identifier for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function isIdentifier($fieldName)
+    {
+        // TODO: Implement isIdentifier() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped property for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function hasField($fieldName)
+    {
+        // TODO: Implement hasField() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped association for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function hasAssociation($fieldName)
+    {
+        // TODO: Implement hasAssociation() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped single valued association for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function isSingleValuedAssociation($fieldName)
+    {
+        // TODO: Implement isSingleValuedAssociation() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped collection valued association for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function isCollectionValuedAssociation($fieldName)
+    {
+        // TODO: Implement isCollectionValuedAssociation() method.
+    }
+
+    /**
+     * A numerically indexed list of field names of this persistent class.
+     *
+     * This array includes identifier fields if present on this class.
+     *
+     * @return array
+     */
+    function getFieldNames()
+    {
+        // TODO: Implement getFieldNames() method.
+    }
+
+    /**
+     * A numerically indexed list of association names of this persistent class.
+     *
+     * This array includes identifier associations if present on this class.
+     *
+     * @return array
+     */
+    function getAssociationNames()
+    {
+        // TODO: Implement getAssociationNames() method.
+    }
+
+    /**
+     * Returns a type name of this field.
+     *
+     * This type names can be implementation specific but should at least include the php types:
+     * integer, string, boolean, float/double, datetime.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    function getTypeOfField($fieldName)
+    {
+        // TODO: Implement getTypeOfField() method.
+    }
+
+    /**
+     * Returns the target class name of the given association.
+     *
+     * @param string $assocName
+     * @return string
+     */
+    function getAssociationTargetClass($assocName)
+    {
+        // TODO: Implement getAssociationTargetClass() method.
+    }
 }

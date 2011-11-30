@@ -40,7 +40,7 @@ use Doctrine\Search\Mapping\ClassMetadataInfo;
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class ClassMetadata extends ClassMetadataInfo
+class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadata
 {
     /**
      * The ReflectionProperty instances of the mapped class.
@@ -57,19 +57,13 @@ class ClassMetadata extends ClassMetadataInfo
     private $prototype;
 
     /**
-     * Initializes a new ClassMetadata instance that will hold the object-document mapping
-     * metadata of the class with the given name.
+     * The ReflectionClass instance of the mapped class.
      *
-     * @param string $documentName The name of the document class the new instance is used for.
+     * @var ReflectionClass
      */
-    public function __construct($documentName)
-    {
-        parent::__construct($documentName);
-        $this->reflClass = new \ReflectionClass($documentName);
-        $this->namespace = $this->reflClass->getNamespaceName();
-        $this->setCollection($this->reflClass->getShortName());
-    }
+    public $reflClass;
 
+   
     /**
      * Map a field.
      *
@@ -86,4 +80,139 @@ class ClassMetadata extends ClassMetadataInfo
         }
     }
 
+    /**
+     * Get fully-qualified class name of this persistent class.
+     *
+     * @return string
+     */
+    function getName()
+    {
+        // TODO: Implement getName() method.
+    }
+
+    /**
+     * Gets the mapped identifier field name.
+     *
+     * The returned structure is an array of the identifier field names.
+     *
+     * @return array
+     */
+    function getIdentifier()
+    {
+        // TODO: Implement getIdentifier() method.
+    }
+
+    /**
+     * Gets the ReflectionClass instance for this mapped class.
+     *
+     * @return ReflectionClass
+     */
+    function getReflectionClass()
+    {
+        // TODO: Implement getReflectionClass() method.
+    }
+
+    /**
+     * Checks if the given field name is a mapped identifier for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function isIdentifier($fieldName)
+    {
+        // TODO: Implement isIdentifier() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped property for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function hasField($fieldName)
+    {
+        // TODO: Implement hasField() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped association for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function hasAssociation($fieldName)
+    {
+        // TODO: Implement hasAssociation() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped single valued association for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function isSingleValuedAssociation($fieldName)
+    {
+        // TODO: Implement isSingleValuedAssociation() method.
+    }
+
+    /**
+     * Checks if the given field is a mapped collection valued association for this class.
+     *
+     * @param string $fieldName
+     * @return boolean
+     */
+    function isCollectionValuedAssociation($fieldName)
+    {
+        // TODO: Implement isCollectionValuedAssociation() method.
+    }
+
+    /**
+     * A numerically indexed list of field names of this persistent class.
+     *
+     * This array includes identifier fields if present on this class.
+     *
+     * @return array
+     */
+    function getFieldNames()
+    {
+        // TODO: Implement getFieldNames() method.
+    }
+
+    /**
+     * A numerically indexed list of association names of this persistent class.
+     *
+     * This array includes identifier associations if present on this class.
+     *
+     * @return array
+     */
+    function getAssociationNames()
+    {
+        // TODO: Implement getAssociationNames() method.
+    }
+
+    /**
+     * Returns a type name of this field.
+     *
+     * This type names can be implementation specific but should at least include the php types:
+     * integer, string, boolean, float/double, datetime.
+     *
+     * @param string $fieldName
+     * @return string
+     */
+    function getTypeOfField($fieldName)
+    {
+        // TODO: Implement getTypeOfField() method.
+    }
+
+    /**
+     * Returns the target class name of the given association.
+     *
+     * @param string $assocName
+     * @return string
+     */
+    function getAssociationTargetClass($assocName)
+    {
+        // TODO: Implement getAssociationTargetClass() method.
+    }
 }

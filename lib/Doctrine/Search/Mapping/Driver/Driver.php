@@ -36,5 +36,5 @@ interface Driver
      * @param string $class
      * @param LoadClassMetadataEventArgs $metadata
      */
-    function loadClassMetadata(LoadClassMetadataEventArgs $eventargs);
+    function loadClassMetadata(LoadClassMetadataEventArgs $eventargs, ClassMetaData $classMetaData);
 }

@@ -1,7 +1,9 @@
 <?php
 namespace Doctrine\Search\Exception;
 
-class UnexpectedTypeException extends \UnexpectedValueException {
+use \Doctrine\Search\Exception\DoctrineSearchException;
+
+class UnexpectedTypeException extends DoctrineSearchException {
 
     public function __construct($value, $expected)
     {

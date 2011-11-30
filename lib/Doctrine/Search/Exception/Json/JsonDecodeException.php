@@ -1,7 +1,9 @@
 <?php
-namespace Doctrine\Search\Exception;
- 
-class JsonEncodeException extends \Exception {
+namespace Doctrine\Search\Exception\Json;
+
+use \Doctrine\Search\Exception\DoctrineSearchException;
+
+class JsonDecodeException extends DoctrineSearchException {
 
     static private $errors = array(
         JSON_ERROR_NONE           => 'unknown error',
@@ -12,10 +14,9 @@ class JsonEncodeException extends \Exception {
         JSON_ERROR_UTF8           => 'Malformed UTF-8 characters',
     );
 
-    public function __construct($value) {
+    public function __construct() {
         $message = sprintf(
-            'Failure by encode %s to json [%s]',
-            (is_object($value) ? get_class($value) : gettype($value)),
+            'Failure by decode from json [%s]',
             static::$errors[json_last_error()]
         );
 
