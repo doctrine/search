@@ -25,7 +25,8 @@ use Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Search\Mapping\Driver\Driver,
     Doctrine\Search\Mapping\Annotations as Search,
     Doctrine\Search\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+    Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs,
+    Doctrine\Search\Exception\Driver as DriverException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -98,16 +99,15 @@ class AnnotationDriver implements Driver
     /*
      * Loads the metadata of the given class
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs, ClassMetadata $classMetaData)
     {
        $documentsAnnotations = array();
        $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
-       $reflClass = $eventargs->getClassMetadata()->getReflectionMethod();
+       $reflProperties = $reflClass->getProperties();
 
        $classAnnotations = $this->extractClassAnnotations($reflClass);
-       $methodAnnotations = $this->extractMethodAnnotations($reflClass);
-
-       $documentsAnnotations = array_merge($classAnnotations, $methodAnnotations);
+       $propertiesAnnotations = $this->extractPropertiesAnnotations($reflProperties);
+       $documentsAnnotations = array_merge($classAnnotations, $propertiesAnnotations);
 
        var_dump($documentsAnnotations);
     }
@@ -124,22 +124,30 @@ class AnnotationDriver implements Driver
     		}
     	}
 
+        if (!$documentsClassAnnotations) {
+            throw new DriverException\ClassIsNotAValidDocumentException($reflClass->getName());
+        }
+
     	return $documentsClassAnnotations;
+
     }
 
-    private function extractMethodAnnotations(\ReflectionClass $reflClass)
+    private function extractPropertiesAnnotations(array $reflProperties)
     {
-    	$documentsMethodAnnotations = array();
-    	foreach ($this->reader->getMethodAnnotations($reflClass) as $annotation) {
-    		foreach (self::$documentMethodAnnotationClasses as $i => $methodAnnotationClass) {
-    			if ($annotation instanceof $methodAnnotationClass) {
-    				$documentsMethodAnnotations[$i] = $annotation;
-    				continue 2;
-    			}
-    		}
-    	}
+    	$documentsFieldAnnotations = array();
+        foreach($reflProperties as $reflProperty) {
+            foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
+                foreach (self::$documentFieldAnnotationClasses as $i => $fieldAnnotationClass) {
+                    if ($annotation instanceof $fieldAnnotationClass) {
+                        $documentsFieldAnnotations[$i] = $annotation;
+                        continue 2;
+                    }
+                }
+            }
+        }
 
-    	return $documentsMethodAnnotations;
+    	return $documentsFieldAnnotations;
+
     }
 
     /**

@@ -16,8 +16,17 @@ class BlogPost
     /** @ODM\Id */
     public $id;
 
-    /** @ODM\String */
+    /**
+     * @ODM\String
+     * @SEARCH\Field(boost=2.0)
+     */
     public $name;
+
+    /**
+     * @ODM\String
+     * @SEARCH\Field(boost=2.0)
+     */
+    public $title;
 
     public function __construct($name = null)
     {

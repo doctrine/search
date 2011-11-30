@@ -50,9 +50,9 @@ final class ElasticSearchable extends Annotation
 final class Field extends Annotation
 {
     /**
-     * @var string
+     * @var float
      */
-    public $type;
+    public $boost;
 }
 
 /**

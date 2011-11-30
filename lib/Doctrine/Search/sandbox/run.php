@@ -38,8 +38,8 @@ $paths = $driver->getPaths();
 $metaDataFactory = $dm->getMetadataFactory();
 
 
-$searchManager = new SearchManager($dm);
-$evm->addEventListener('loadClassMetadata', $searchManager);
+$listener = new Doctrine\Search\Listener\MongoDBSearchListener();
+$evm->addEventListener('loadClassMetadata', $listener);
 
 $metaDataFactory->getAllMetadata();
 var_dump($evm->hasListeners('loadClassMetadata'));
