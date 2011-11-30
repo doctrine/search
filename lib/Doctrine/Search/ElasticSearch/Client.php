@@ -23,8 +23,8 @@ use Doctrine\Search\SearchClientInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 
-use Doctrine\Search\Exception\JsonEncodeException;
-use Doctrine\Search\Exception\JsonDecodeException;
+use Doctrine\Search\Exception\Json\JsonEncodeException;
+use Doctrine\Search\Exception\Json\JsonDecodeException;
 
 
 /**

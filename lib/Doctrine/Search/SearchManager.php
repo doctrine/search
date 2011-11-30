@@ -25,7 +25,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
+
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -68,15 +68,13 @@ class SearchManager
      * @param Configuration $conf
      * @param SearchClientInterface $sc
      */
-    public function __construct(ObjectManager $om,
-                                Configuration $conf = null,
-                                SearchClientInterface $sc = null,
-                                Reader $reader = null)
+    public function __construct(Configuration $conf = null,
+        SearchClientInterface $sc = null,
+        Reader $reader = null)
     {
-        $this->objectManager = $om;
-        $this->configuration = $conf ?: new Configuration();
-        $this->searchClient = $sc ?: new Client();
-        $this->annotationReader = $reader ?: new AnnotationReader();
+        $this->configuration = $conf ? : new Configuration();
+        $this->searchClient = $sc ? : new Client();
+        $this->annotationReader = $reader ? : new AnnotationReader();
 
         $metadataFactoryClassName = $this->configuration->getClassMetadataFactoryName();
         $this->metadataFactory = new $metadataFactoryClassName();
@@ -84,19 +82,31 @@ class SearchManager
         $this->metadataFactory->setConfiguration($this->configuration);
     }
 
-
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
+    /**
+     * @return Configuration
+     */
+    public function getConfiguration()
     {
-        $config = $eventargs->getDocumentManager()->getConfiguration();
-        $driver = $config->getMetadataDriverImpl();
-        $paths = $driver->getPaths();
-
-        $reader = $this->annotationReader;
-        $annotationDriverName = $this->configuration->getMetadataDriverImpl();
-        $annotationDriver = new $annotationDriverName($reader, $paths);
-        $annotationDriver->loadClassMetaData($eventargs);
+        return $this->configuration;
     }
 
+    /**
+     * @return AnnotationReader
+     */
+    public function getAnnotationReader()
+    {
+        return $this->annotationReader;
+    }
+
+    /**
+     * @param \Doctrine\Common\Persistence\ObjectManager $om
+     * @return void
+     */
+    public function setObjectManager(ObjectManager $om)
+    {
+         $this->objectManager = $om;
+    }
+   
     /**
      *
      * @param String $index
@@ -115,7 +125,8 @@ class SearchManager
      *
      * @throws UnexpectedTypeException
      */
-    public function persist($object) {
+    public function persist($object)
+    {
         $this->searchClient->createIndex($index, $type, $query);
     }
 
@@ -126,7 +137,9 @@ class SearchManager
      *
      * @throws UnexpectedTypeException
      */
-    public function remove($object) {}
+    public function remove($object)
+    {
+    }
 
     /**
      * Bulk action
@@ -135,7 +148,8 @@ class SearchManager
      *
      * @throws UnexpectedTypeException
      */
-    public function bulk($object) {
+    public function bulk($object)
+    {
 
     }
 
@@ -144,5 +158,7 @@ class SearchManager
      *
      * @return boolean
      */
-    public function commit() {}
+    public function commit()
+    {
+    }
 }
