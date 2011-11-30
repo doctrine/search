@@ -88,7 +88,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
    /**
      *
-     * @expectedException \Doctrine\Search\Exception\JsonDecodeException
+     * @expectedException \Doctrine\Search\Exception\Json\JsonDecodeException
      */
     public function testThrowDecodeException()
     {

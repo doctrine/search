@@ -3,7 +3,7 @@ namespace Doctrine\Search\Exception\Json;
 
 use \Doctrine\Search\Exception\DoctrineSearchException;
 
-class JsonDecodeException extends \DoctrineSearchException {
+class JsonDecodeException extends DoctrineSearchException {
 
     static private $errors = array(
         JSON_ERROR_NONE           => 'unknown error',
