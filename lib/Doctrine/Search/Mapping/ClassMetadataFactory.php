@@ -54,6 +54,12 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
     /** Whether factory has been lazily initialized yet */
     private $initialized = false;
 
+    private function initialize()
+    {
+        $this->driver = $this->config->getMetadataDriverImpl();
+        $this->initialized = true;
+    }
+
     /**
      * Sets the SearchManager instance for this class.
      *
@@ -105,49 +111,20 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
     }
 
     /**
-     * Gets the class metadata descriptor for a class.
-     *
-     * @param string $className The name of the class.
-     * @return Doctrine\Search\ClassMetadata
-     */
-    public function getMetadataFor($className)
-    {
-        if ( ! isset($this->loadedMetadata[$className])) {
-            $realClassName = $className;
-
-            // Check for namespace alias
-            if (strpos($className, ':') !== false) {
-                list($namespaceAlias, $simpleClassName) = explode(':', $className);
-                $realClassName = $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
-
-                if (isset($this->loadedMetadata[$realClassName])) {
-                    // We do not have the alias name in the map, include it
-                    $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
-
-                    return $this->loadedMetadata[$realClassName];
-                }
-            }
-
-
-            $this->loadMetadata($realClassName);
-
-            if ($className != $realClassName) {
-                // We do not have the alias name in the map, include it
-                $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
-            }
-        }
-
-        return $this->loadedMetadata[$className];
-    }
-
-    /**
      * Loads the metadata of the class in question
      *
-     * @param string $name The name of the class for which the metadata should get loaded.
-     * @param array  $tables The metadata collection to which the loaded metadata is added.
-     */
-    private function loadMetadata($className)
+     * @param ReflectionClass $reflClass The reflected Class to load Searchmetadata for.
+    */
+    public function loadClassMetadata(\ReflectionClass $reflClass)
     {
+        if (false == $this->initialized) {
+            $this->initialize();
+        }
+
+        $classMetadata = $this->newClassMetadataInstance($reflClass->getName());
+
+        // Invoke driver
+        $this->driver->loadMetadataForClass($reflClass, $classMetadata);
 
     }
 
@@ -186,6 +163,10 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
         return new ClassMetadata($className);
     }
 
+    /**
+     * @param $className
+     * @return void
+     */
     public function isTransient($className)
     {
 
@@ -210,4 +191,14 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
     }
 
 
+    /**
+     * Gets the class metadata descriptor for a class.
+     *
+     * @param string $className The name of the class.
+     * @return Doctrine\Search\Mapping\ClassMetadata
+     */
+    function getMetadataFor($className)
+    {
+        // TODO: Implement getMetadataFor() method.
+    }
 }

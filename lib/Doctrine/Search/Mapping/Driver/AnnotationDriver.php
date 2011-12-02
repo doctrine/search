@@ -99,10 +99,10 @@ class AnnotationDriver implements Driver
     /*
      * Loads the metadata of the given class
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs, ClassMetadata $classMetaData)
+    //public function loadMetadataForClass($className, ClassMetadata $classMetaData)
+    public function loadMetadataForClass(\ReflectionClass $reflClass, ClassMetadata $classMetaData)
     {
        $documentsAnnotations = array();
-       $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
        $reflProperties = $reflClass->getProperties();
 
        $classAnnotations = $this->extractClassAnnotations($reflClass);

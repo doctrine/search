@@ -19,7 +19,6 @@
 namespace Doctrine\Search\Mapping\Driver;
 
 use Doctrine\Search\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 
 /**
  * Interface for metadata drivers.
@@ -31,10 +30,9 @@ use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 interface Driver
 {
     /**
-     * Loads the metadata for the specified class into the provided container.
+     * Loads the metadata for the specified reflected Class into the provided container.
      *
-     * @param string $class
-     * @param LoadClassMetadataEventArgs $metadata
+     * @param \ReflectionClass $reflClass
      */
-    function loadClassMetadata(LoadClassMetadataEventArgs $eventargs, ClassMetaData $classMetaData);
+    function loadMetadataForClass(\ReflectionClass $reflClass, ClassMetadata $classMetaData);
 }
