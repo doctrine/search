@@ -45,7 +45,7 @@ class Configuration
     public function getMetadataDriverImpl()
     {
         if ( ! isset($this->attributes['concreteMetadataDriver'])) {
-            $this->attributes['concreteMetadataDriver'] = 'Doctrine\Search\Mapping\Driver\AnnotationDriver';
+            $this->attributes['concreteMetadataDriver'] = $this->newDefaultAnnotationDriver();
         }
 
         return $this->attributes['concreteMetadataDriver'];
@@ -59,6 +59,19 @@ class Configuration
     public function setMetadataDriverImpl(Driver $concreteDriver)
     {
         $this->attributes['concreteMetadataDriver'] = $concreteDriver;
+    }
+
+     /**
+     * Add a new default annotation driver with a correctly configured annotation reader.
+     *
+     * @param array $paths
+     * @return Mapping\Driver\AnnotationDriver
+     */
+    public function newDefaultAnnotationDriver(array $paths = array())
+    {
+        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+
+        return new \Doctrine\Search\Mapping\Driver\AnnotationDriver($reader, $paths);
     }
 
     /**

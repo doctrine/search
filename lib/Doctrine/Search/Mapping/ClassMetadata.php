@@ -49,35 +49,18 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      */
     public $reflFields = array();
 
-    /**
-     * The prototype from which new instances of the mapped class are created.
-     *
-     * @var object
-     */
-    private $prototype;
-
+   
     /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
      */
-    public $reflClass;
+    private $reflClass;
 
-   
-    /**
-     * Map a field.
-     *
-     * @param array $mapping The mapping information.
-     */
-    public function mapField(array $mapping)
+
+    public function initialize(\ReflectionClass $reflClass)
     {
-        $mapping = parent::mapField($mapping);
-
-        if ($this->reflClass->hasProperty($mapping['fieldName'])) {
-            $reflProp = $this->reflClass->getProperty($mapping['fieldName']);
-            $reflProp->setAccessible(true);
-            $this->reflFields[$mapping['fieldName']] = $reflProp;
-        }
+        $this->reflClass = $reflClass;
     }
 
     /**
@@ -109,7 +92,7 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      */
     function getReflectionClass()
     {
-        // TODO: Implement getReflectionClass() method.
+        return $this->reflClass;
     }
 
     /**

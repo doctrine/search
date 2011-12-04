@@ -18,12 +18,9 @@ class MongoDBSearchListener
 {
     private $searchManager;
 
-    private $classMetaData;
-
-    public function __construct(SearchManager $sm = null, ClassMetadata $classMetaData = null)
+    public function __construct(SearchManager $sm = null)
     {
         $this->searchManager = $sm ? : new SearchManager();
-        $this->classMetaData = $classMetaData ? : new ClassMetadata();
     }
 
      /**
@@ -33,13 +30,16 @@ class MongoDBSearchListener
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventargs)
     {
-        $omConfiguration = $eventargs->getDocumentManager()->getConfiguration();
-        $driver = $omConfiguration->getMetadataDriverImpl();
-        $paths = $driver->getPaths();
+        $this->searchManager->setObjectManager($eventargs->getDocumentManager());
+        $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
+        $this->searchManager->loadClassMetadata($reflClass);
+    }
 
-        $reader = $this->searchManager->getAnnotationReader();
-        $annotationDriverName = $this->searchManager->getConfiguration()->getMetadataDriverImpl();
-        $annotationDriver = new $annotationDriverName($reader, $paths);
-        $annotationDriver->loadClassMetaData($eventargs, $this->classMetaData);
+    /**
+     * @return \Doctrine\Search\SearchManager
+     */
+    public function getSearchManager()
+    {
+        return $this->searchManager;
     }
 }
