@@ -34,4 +34,12 @@ class MongoDBSearchListener
         $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
         $this->searchManager->loadClassMetadata($reflClass);
     }
+
+    /**
+     * @return \Doctrine\Search\SearchManager
+     */
+    public function getSearchManager()
+    {
+        return $this->searchManager;
+    }
 }

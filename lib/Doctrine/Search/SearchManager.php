@@ -116,6 +116,14 @@ class SearchManager
         $this->metadataFactory->loadClassMetadata($reflectedClass);
     }
 
+     /**
+     * @return ClassMetadataFactory
+     */
+    public function getClassMetadataFactory()
+    {
+        return $this->metadataFactory;
+    }
+
 
     /**
      *

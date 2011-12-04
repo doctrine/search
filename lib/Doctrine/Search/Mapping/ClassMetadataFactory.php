@@ -125,7 +125,8 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
 
         // Invoke driver
         $this->driver->loadMetadataForClass($reflClass, $classMetadata);
-
+        var_dump($reflClass->getName());
+        $this->setMetadataFor($reflClass->getName(), $classMetadata);
     }
 
     /**
@@ -199,6 +200,6 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
      */
     function getMetadataFor($className)
     {
-        // TODO: Implement getMetadataFor() method.
+        return $this->loadedMetadata[$className];
     }
 }

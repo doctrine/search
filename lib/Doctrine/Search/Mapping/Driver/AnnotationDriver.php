@@ -109,7 +109,7 @@ class AnnotationDriver implements Driver
        $propertiesAnnotations = $this->extractPropertiesAnnotations($reflProperties);
        $documentsAnnotations = array_merge($classAnnotations, $propertiesAnnotations);
 
-       var_dump($documentsAnnotations);
+       //var_dump($documentsAnnotations);
     }
 
     private function extractClassAnnotations(\ReflectionClass $reflClass)
