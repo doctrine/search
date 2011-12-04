@@ -106,7 +106,25 @@ class SearchManager
     {
          $this->objectManager = $om;
     }
-   
+
+    /**
+     * @param ReflectionClass $reflectedClass
+     * @return void
+     */
+    public function loadClassMetadata(\ReflectionClass $reflectedClass)
+    {
+        $this->metadataFactory->loadClassMetadata($reflectedClass);
+    }
+
+     /**
+     * @return ClassMetadataFactory
+     */
+    public function getClassMetadataFactory()
+    {
+        return $this->metadataFactory;
+    }
+
+
     /**
      *
      * @param String $index
