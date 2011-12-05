@@ -65,51 +65,45 @@ class CurlClient extends AbstractClient
     }
 
     private function getCurlMethod($method)
-       {
+    {
+        $curlMethodValue = true;
+        switch (strtoupper($method)) {
+            case 'GET':
+                $curlMethod = CURLOPT_HTTPGET;
+                break;
 
-           $curlMethodValue = true;
+            case 'POST':
+                $curlMethod = CURLOPT_POST;
+                break;
 
-           switch(strtoupper($method))
-           {
-               case 'GET':
-                   $curlMethod = CURLOPT_HTTPGET;
-                   break;
+            case 'PUT':
+                $curlMethod = CURLOPT_CUSTOMREQUEST;
+                $curlMethodValue = "PUT";
+                break;
 
-               case 'POST':
-                   $curlMethod = CURLOPT_POST;
-                   break;
+            case 'DELETE' :
+                $curlMethod = CURLOPT_CUSTOMREQUEST;
+                $curlMethodValue = "DELETE";
+                break;
 
-               case 'PUT':
-                    $curlMethod = CURLOPT_CUSTOMREQUEST;
-                    $curlMethodValue = "PUT";
-                    break;
+            case 'OPTIONS' :
+                $curlMethod = CURLOPT_CUSTOMREQUEST;
+                $curlMethodValue = "OPTIONS";
+                break;
 
-               case 'DELETE' :
-                   $curlMethod = CURLOPT_CUSTOMREQUEST;
-                   $curlMethodValue = "DELETE";
-                   break;
+            case 'TRACE' :
+                $curlMethod = CURLOPT_CUSTOMREQUEST;
+                $curlMethodValue = "TRACE";
+                break;
 
-               case 'OPTIONS' :
-                   $curlMethod = CURLOPT_CUSTOMREQUEST;
-                   $curlMethodValue = "OPTIONS";
-                   break;
+            case 'HEAD' :
+                $curlMethod = CURLOPT_CUSTOMREQUEST;
+                $curlMethodValue = "HEAD";
+                break;
+            default:
+                throw new \RuntimeException('Method '. strtoupper($method) .' is not supported');
+        }
 
-               case 'TRACE' :
-                   $curlMethod = CURLOPT_CUSTOMREQUEST;
-                   $curlMethodValue = "TRACE";
-                   break;
-
-               case 'HEAD' :
-                   $curlMethod = CURLOPT_CUSTOMREQUEST;
-                   $curlMethodValue = "HEAD";
-                   break;
-
-               default:
-                   throw new AdapterInvalidArgumentException('Method '. strtoupper($method) .' is not supported');
-
-           }
-
-           return array($curlMethod, $curlMethodValue);
-       }
-
+        return array($curlMethod, $curlMethodValue);
+    }
 }
