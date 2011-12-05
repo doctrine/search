@@ -24,6 +24,7 @@ namespace Entities;
 
 use Doctrine\Search\Mapping\Annotation as Search;
 use Doctrine\ORM\Mapping as ORM;
+
 /**
  * @ORM\Entity
  * @Search\Searchable
