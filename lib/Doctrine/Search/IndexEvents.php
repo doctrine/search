@@ -1,7 +1,7 @@
 <?php
 namespace Doctrine\Search;
  
-class IndexEvents {
+final class IndexEvents {
 
     private function __construct() {}
 

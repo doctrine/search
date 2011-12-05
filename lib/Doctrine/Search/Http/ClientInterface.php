@@ -12,6 +12,6 @@ interface ClientInterface
      * @param  string            $body     POST variables
      * @return ResponseInterface
      */
-    public function sendRequest($method, $path, $data);
+    function sendRequest($method, $path, $data);
 
 }
