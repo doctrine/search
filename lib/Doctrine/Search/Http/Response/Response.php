@@ -37,6 +37,17 @@ class Response implements ResponseInterface {
     }
 
     /**
+     * Get a header
+     *
+     * @return string
+     */
+    public function getHeader($key)
+    {
+        return isset($this->headers[$key]) ? $this->headers[$key] : null;
+    }
+
+
+    /**
      * Get the statuscode
      *
      * @return int

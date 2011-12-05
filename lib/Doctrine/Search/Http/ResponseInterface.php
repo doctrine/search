@@ -8,20 +8,34 @@ interface ResponseInterface
      *
      * @return int
      */
-    public function getStatusCode();
+    function getStatusCode();
+
+    /**
+     * Get a header
+     *
+     * @return string
+     */
+    function getHeader($key);
+
+    /**
+     * Get all headers
+     *
+     * @return array
+     */
+    function getHeaders();
 
     /**
      * @return bool
      */
-    public function isSuccessfull();
+    function isSuccessfull();
 
     /**
      * @return string
      */
-    public function __toString();
+    function __toString();
 
     /**
      * @return string
      */
-    public function getContent();
+    function getContent();
 }

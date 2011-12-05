@@ -1,7 +1,6 @@
 <?php
 namespace Doctrine\Search\Http\Client;
 
-use Doctrine\Search\Http\RequestInterface;
 use Doctrine\Search\Http\Response\BuzzResponse as Response;
 use Buzz\Browser;
 
@@ -24,7 +23,7 @@ class BuzzClient extends AbstractClient
      * @param  string            $body     POST variables
      * @return ResponseInterface
      */
-    public function sendRequest($method = RequestInterface::METHOD_GET, $path = '/', $data = '')
+    public function sendRequest($method = 'get', $path = '/', $data = '')
     {
         $url = $this->getOption('host').':'.$this->getOption('port');
         $headers = array();
@@ -38,7 +37,7 @@ class BuzzClient extends AbstractClient
 
         $headers['Connection'] = (true === $this->getOption('keep-alive') ? 'Keep-Alive' : 'Close');
 
-        if ( $method === RequestInterface::METHOD_POST ) {
+        if ( $method === 'post' ) {
             $response = $this->browser->call($url, $method, $headers, $data);
         } else {
             $response = $this->browser->call($url, $method, $headers);

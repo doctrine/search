@@ -37,24 +37,24 @@ interface SearchClientInterface
      * @param String $type
      * @param String $query
      */
-    public function find($index, $type, $query);
+    function find($index, $type, $query);
 
     /**
      * Allows to search by the search api of a backend like Solr directly
      *
      * @param array $data The data to be indexed.
      */
-    public function createIndex($index, array $data);
+    function createIndex($index, array $data);
 
     /**
      *
      * @param array $data
      */
-    public function deleteIndex($index);
+    function deleteIndex($index);
 
     /**
      * @param array $query
      */
-    public function bulkSearch(array $query);
+    function bulkSearch(array $query);
 
 }
