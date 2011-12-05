@@ -2,7 +2,7 @@
 
 __Supported search engines__
 
-* [ElasticSearch}(http://www.elasticsearch.org/)
+* [ElasticSearch](http://www.elasticsearch.org/)
 * [Solr](http://lucene.apache.org/solr/)
 * [ZendLucene](http://framework.zend.com/manual/en/zend.search.lucene.html)
 
@@ -18,7 +18,6 @@ __Supported search engines__
 
 ## Usage ##
 
-on the class:
 ```php
 <?php
 namespace Entities;
