@@ -11,6 +11,20 @@ interface ResponseInterface
     public function getStatusCode();
 
     /**
+     * Get a header
+     *
+     * @return string
+     */
+    public function getHeader($key);
+
+    /**
+     * Get all headers
+     *
+     * @return array
+     */
+    public function getHeaders();
+
+    /**
      * @return bool
      */
     public function isSuccessfull();

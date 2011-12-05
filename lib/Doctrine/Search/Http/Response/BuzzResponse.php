@@ -41,6 +41,26 @@ class BuzzResponse implements ResponseInterface
     }
 
     /**
+     * Get a header
+     *
+     * @return string
+     */
+    public function getHeader($key)
+    {
+        return $this->buzzResponse->getHeader($key);
+    }
+
+    /**
+     * Get all headers
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->buzzResponse->getHeaders();
+    }
+
+    /**
      * @return string
      */
     public function __toString()
