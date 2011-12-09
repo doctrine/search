@@ -108,12 +108,12 @@ class SearchManager
     }
 
     /**
-     * @param ReflectionClass $reflectedClass
+     * @param String $className
      * @return void
      */
-    public function loadClassMetadata(\ReflectionClass $reflectedClass)
+    public function loadClassMetadata($className)
     {
-        $this->metadataFactory->loadClassMetadata($reflectedClass);
+        $this->metadataFactory->loadClassMetadata($className);
     }
 
      /**
