@@ -19,7 +19,6 @@
 
 namespace Doctrine\Search\Mapping;
 
-use Doctrine\Search\Mapping\ClassMetadataInfo;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 
 /**
@@ -147,6 +146,7 @@ class ClassMetadata implements ClassMetadataInterface
            'timeToLive',
            'type',
            'value',
+           'reflFields',
         );
 
         return $serialized;
@@ -162,12 +162,13 @@ class ClassMetadata implements ClassMetadataInterface
         // Restore ReflectionClass and properties
         $this->reflClass = new \ReflectionClass($this->className);
 
-        foreach ($this->fieldMappings as $fieldName => $value) {
+        /*I am not sure if that is needed
+         * foreach ($this->fieldMappings as $field => $mapping) {
 
-            $reflField = $this->reflClass->getProperty($fieldName);
+            $reflField = $this->reflClass->getProperty($field);
             $reflField->setAccessible(true);
-            $this->reflFields[$fieldName] = $reflField;
-        }
+            $this->reflFields[$field] = $reflField;
+        }*/
 
     }
 
@@ -231,14 +232,25 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * This is used for _wakup the class after _sleep
+     * This mapping is used in the _wakeup-method to set the reflFields after _sleep.
+     *
+     * @param \ReflectionProperty $field
+     * @param array $mapping
+     */
+    /*public function addFieldMapping(\ReflectionProperty $field, $mapping = array())
+    {
+        $fieldName = $field->getName();
+        $this->fieldMappings[$fieldName] = $mapping;
+    }*/
+
+    /**
      * @param \ReflectionProperty $field
      */
-    public function addFieldMapping(\ReflectionProperty $field)
+    /*public function addField(\ReflectionProperty $field)
     {
-        $this->fieldMappings[$field->getName()];
-        $this->reflFields[$field->getName()] = $field;
-    }
+        $fieldName = $field->getName();
+        $this->reflFields[$fieldName] = $field;
+    }*/
 
 
     /**

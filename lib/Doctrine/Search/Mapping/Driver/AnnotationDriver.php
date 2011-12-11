@@ -163,7 +163,9 @@ class AnnotationDriver extends BaseAnnotationDriver
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
             } else {
                 $metadata->$propertyName = $class->$propertyName;
-                $metadata->addFieldMapping($reflectedProperty);
+                /*I am not sure if that is needed
+                 * $metadata->addField($reflectedProperty);
+                $metadata->addFieldMapping($reflectedProperty);*/
             }
         }
 

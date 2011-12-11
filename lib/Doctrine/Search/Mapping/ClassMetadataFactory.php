@@ -40,15 +40,8 @@ class ClassMetadataFactory extends \Doctrine\Common\Persistence\Mapping\Abstract
     /** The Configuration instance */
     private $config;
 
-    /** The array of loaded ClassMetadata instances */
-    private $loadedMetadata;
-
     /** The used metadata driver. */
     private $driver;
-
-    /** Whether factory has been lazily initialized yet */
-    protected $initialized = false;
-
 
     protected function initialize()
     {
@@ -74,31 +67,6 @@ class ClassMetadataFactory extends \Doctrine\Common\Persistence\Mapping\Abstract
     public function setConfiguration(Configuration $config)
     {
         $this->config = $config;
-    }
-
-
-    /**
-     * Loads the metadata of the class in question
-     *
-     * @param String $className.
-     */
-    public function loadClassMetadata($className)
-    {
-        if (false == $this->initialized) {
-            $this->initialize();
-        }
-
-        $classMetadata = $this->newClassMetadataInstance($className);
-
-        //Manipulates $classMetadata;
-        $this->driver->loadMetadataForClass($className, $classMetadata);
-        $this->setMetadataFor($className, $classMetadata);
-        var_dump($classMetadata);
-        $s = serialize($classMetadata);
-
-        var_dump($s);
-        var_dump(unserialize($s));
-        die();
     }
 
 
@@ -135,7 +103,9 @@ class ClassMetadataFactory extends \Doctrine\Common\Persistence\Mapping\Abstract
      */
     protected function doLoadMetadata($class, $parent, $rootEntityFound)
     {
-        // TODO: Implement doLoadMetadata() method.
+        //Manipulates $classMetadata;
+        $this->driver->loadMetadataForClass($class->getName(), $class);
+
     }
 
     /**
