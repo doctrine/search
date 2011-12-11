@@ -80,6 +80,8 @@ class SearchManager
         $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setConfiguration($this->configuration);
+        $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
+
     }
 
     /**
@@ -108,12 +110,12 @@ class SearchManager
     }
 
     /**
-     * @param ReflectionClass $reflectedClass
+     * @param String $className
      * @return void
      */
-    public function loadClassMetadata(\ReflectionClass $reflectedClass)
+    public function loadClassMetadata($className)
     {
-        $this->metadataFactory->loadClassMetadata($reflectedClass);
+        $this->metadataFactory->getMetadataFor($className);
     }
 
      /**

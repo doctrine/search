@@ -20,21 +20,19 @@
 namespace Doctrine\Search\Mapping;
 
 use Doctrine\Search\SearchManager,
-    Doctrine\Search\Configuration,
-    Doctrine\Search\Mapping\ClassMetadata;
+Doctrine\Search\Configuration,
+Doctrine\Search\Mapping\ClassMetadata;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a search backend should be configured.
- *
- * Ideas copied from the mongodb-odm-project
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\ClassMetadataFactory
+class ClassMetadataFactory extends \Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory
 {
     /** The SearchManager instance */
     private $sm;
@@ -42,19 +40,10 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
     /** The Configuration instance */
     private $config;
 
-    /** The array of loaded ClassMetadata instances */
-    private $loadedMetadata;
-
     /** The used metadata driver. */
     private $driver;
 
-    /** The event manager instance */
-    private $evm;
-
-    /** Whether factory has been lazily initialized yet */
-    private $initialized = false;
-
-    private function initialize()
+    protected function initialize()
     {
         $this->driver = $this->config->getMetadataDriverImpl();
         $this->initialized = true;
@@ -80,126 +69,54 @@ class ClassMetadataFactory implements \Doctrine\Common\Persistence\Mapping\Class
         $this->config = $config;
     }
 
+
     /**
-     * Gets the array of loaded ClassMetadata instances.
+     * Get the fully qualified class-name from the namespace alias.
      *
-     * @return array $loadedMetadata The loaded metadata.
+     * @param string $namespaceAlias
+     * @param string $simpleClassName
+     * @return string
      */
-    public function getLoadedMetadata()
+    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
-        return $this->loadedMetadata;
+        // TODO: Implement getFqcnFromAlias() method.
     }
 
     /**
-     * Forces the factory to load the metadata of all classes known to the underlying
-     * mapping driver.
+     * Return the mapping driver implementation.
      *
-     * @return array The ClassMetadata instances of all mapped classes.
+     * @return MappingDriver
      */
-    public function getAllMetadata()
+    protected function getDriver()
     {
-        if ( ! $this->initialized) {
-            $this->initialize();
-        }
+        return $this->driver;
 
-        $metadata = array();
-        foreach ($this->driver->getAllClassNames() as $className) {
-            $metadata[] = $this->getMetadataFor($className);
-        }
-
-        return $metadata;
     }
 
     /**
-     * Loads the metadata of the class in question
+     * Actually load the metadata from the underlying metadata
      *
-     * @param ReflectionClass $reflClass The reflected Class to load Searchmetadata for.
-    */
-    public function loadClassMetadata(\ReflectionClass $reflClass)
-    {
-        if (false == $this->initialized) {
-            $this->initialize();
-        }
-
-        $classMetadata = $this->newClassMetadataInstance($reflClass->getName());
-
-        // Invoke driver
-        $this->driver->loadMetadataForClass($reflClass, $classMetadata);
-        var_dump($reflClass->getName());
-        $this->setMetadataFor($reflClass->getName(), $classMetadata);
-    }
-
-    /**
-     * Checks whether the factory has the metadata for a class loaded already.
-     *
-     * @param string $className
-     * @return boolean TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
-     */
-    public function hasMetadataFor($className)
-    {
-        return isset($this->loadedMetadata[$className]);
-    }
-
-    /**
-     * Sets the metadata descriptor for a specific class.
-     *
-     * NOTE: This is only useful in very special cases, like when generating proxy classes.
-     *
-     * @param string $className
      * @param ClassMetadata $class
+     * @param ClassMetadata $parent
+     * @param bool $rootEntityFound
+     * @return void
      */
-    public function setMetadataFor($className, $class)
+    protected function doLoadMetadata($class, $parent, $rootEntityFound)
     {
-        $this->loadedMetadata[$className] = $class;
+        //Manipulates $classMetadata;
+        $this->driver->loadMetadataForClass($class->getName(), $class);
+
     }
 
     /**
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
-     * @return Doctrine\Search\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);
-    }
 
-    /**
-     * @param $className
-     * @return void
-     */
-    public function isTransient($className)
-    {
-
-    }
-
-    /**
-     * Get array of parent classes for the given document class
-     *
-     * @param string $name
-     * @return array $parentClasses
-     */
-    protected function getParentClasses($name)
-    {
-        // Collect parent classes, ignoring transient (not-mapped) classes.
-        $parentClasses = array();
-        foreach (array_reverse(class_parents($name)) as $parentClass) {
-            if ( ! $this->driver->isTransient($parentClass)) {
-                $parentClasses[] = $parentClass;
-            }
-        }
-        return $parentClasses;
-    }
-
-
-    /**
-     * Gets the class metadata descriptor for a class.
-     *
-     * @param string $className The name of the class.
-     * @return Doctrine\Search\Mapping\ClassMetadata
-     */
-    function getMetadataFor($className)
-    {
-        return $this->loadedMetadata[$className];
     }
 }

@@ -21,7 +21,31 @@ class MongoDBSearchListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
      */
     private function getDocumentManager()
     {
-        //$dm = $this->getMock('Doctrine\ODM\MongoDB\DocumentManager');
+        /*$dm = $this->getMock('Doctrine\ODM\MongoDB\DocumentManager');
+        $config = $this->getMock('Doctrine\ODM\MongoDB\Configuration');
+        $reader = $this->getMock('Doctrine\Common\Annotations\AnnotationReader');
+        $driver = $this->getMock('DDoctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver');
+
+        $config->expects($this->once())
+               ->method('getProxyDir')
+               ->will($this->returnValue(__DIR__ . '/../../../../Proxies'));
+
+        $config->expects($this->once())
+               ->method('getHydratorDir')
+               ->will($this->returnValue(__DIR__ . '/../../../../Hydrators'));
+
+        $config->expects($this->once())
+               ->method('getHydratorNamespace')
+               ->will($this->returnValue('Hydrators'));
+
+        $config->expects($this->once())
+               ->method('getProxyNamespace')
+               ->will($this->returnValue('Proxies'));
+
+        $config->expects($this->once())
+               ->method('getDefaultDB')
+               ->will($this->returnValue('doctrine_odm_tests'));*/
+
 
 
         $this->listener = new MongoDBSearchListener();

@@ -19,56 +19,39 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\Common\Annotations\AnnotationRegistry,
-    Doctrine\Common\Annotations\Reader,
-    Doctrine\Search\Mapping\Driver\Driver,
-    Doctrine\Search\Mapping\Annotations as Search,
-    Doctrine\Search\Mapping\ClassMetadata,
-    Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs,
-    Doctrine\Search\Exception\Driver as DriverException;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as BaseAnnotationDriver,
+Doctrine\Search\Mapping\Annotations as Search,
+Doctrine\Search\Mapping\ClassMetadata as SearchMetadata,
+Doctrine\Common\Persistence\Mapping\ClassMetadata,
+Doctrine\Search\Exception\Driver as DriverException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
- * Ideas copied from the mongodb-odm-project
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class AnnotationDriver implements Driver
+class AnnotationDriver extends BaseAnnotationDriver
 {
     /**
      * Document annotation classes, ordered by precedence.
      */
     static private $documentAnnotationClasses = array(
-            'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
-    		'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable',
+        'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
+        'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable',
     );
 
     /**
      * Document fields annotation classes, ordered by precedence.
      */
     static private $documentFieldAnnotationClasses = array(
-    		'Doctrine\\Search\\Mapping\\Annotations\\Field',
-    		'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
-    		'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
+        'Doctrine\\Search\\Mapping\\Annotations\\Field',
+        'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
+        'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
 
-    /**
-     * Contains the paths to the to be readed directories
-     *
-     * @var array $paths
-     */
-    private $paths;
-
-    /**
-     * The annotation reader.
-     *
-     * @var Reader
-     */
-    private $reader;
 
     /**
      * Registers annotation classes to the common registry.
@@ -81,61 +64,67 @@ class AnnotationDriver implements Driver
     }
 
     /**
-     * Initializes a new AnnotationDriver that uses the given Reader for reading
-     * docblock annotations.
-     *
-     * @param $reader Reader The annotation reader to use.
-     * @param $paths
+     * {@inheritDoc}
      */
-    public function __construct(Reader $reader, array $paths)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        $this->reader = $reader;
+        $reflClass = $metadata->getReflectionClass();
 
-        if ($paths) {
-            $this->addPaths((array) $paths);
+        if(!$reflClass) {
+            $reflClass = new \ReflectionClass($className);
         }
+
+        $reflProperties = $reflClass->getProperties();
+
+        $metadata = $this->extractClassAnnotations($reflClass, $metadata);
+        $metadata = $this->extractPropertiesAnnotations($reflProperties, $metadata);
     }
 
-    /*
-     * Loads the metadata of the given class
+
+    /**
+     * This function extracts the class annotations for search from the given reflected class and writes
+     * them into metadata.
+     *
+     * @param \ReflectionClass $reflClass
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @throws \Doctrine\Search\Exception\Driver\ClassIsNotAValidDocumentException|\Doctrine\Search\Exception\Driver\PropertyDoesNotExistsInMetadataException
      */
-    //public function loadMetadataForClass($className, ClassMetadata $classMetaData)
-    public function loadMetadataForClass(\ReflectionClass $reflClass, ClassMetadata $classMetaData)
+    private function extractClassAnnotations(\ReflectionClass $reflClass, ClassMetadata $metadata)
     {
-       $documentsAnnotations = array();
-       $reflProperties = $reflClass->getProperties();
-
-       $classAnnotations = $this->extractClassAnnotations($reflClass);
-       $propertiesAnnotations = $this->extractPropertiesAnnotations($reflProperties);
-       $documentsAnnotations = array_merge($classAnnotations, $propertiesAnnotations);
-
-       //var_dump($documentsAnnotations);
-    }
-
-    private function extractClassAnnotations(\ReflectionClass $reflClass)
-    {
-    	$documentsClassAnnotations = array();
-    	foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
-    		foreach (self::$documentAnnotationClasses as $i => $annotationClass) {
-    			if ($annotation instanceof $annotationClass) {
-    				$documentsClassAnnotations[$i] = $annotation;
-    				continue 2;
-    			}
-    		}
-    	}
+        $documentsClassAnnotations = array();
+        foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
+            foreach (self::$documentAnnotationClasses as $i => $annotationClass) {
+                if ($annotation instanceof $annotationClass) {
+                    $documentsClassAnnotations[$i] = $annotation;
+                    break 2;
+                }
+            }
+        }
 
         if (!$documentsClassAnnotations) {
-            throw new DriverException\ClassIsNotAValidDocumentException($reflClass->getName());
+            throw new DriverException\ClassIsNotAValidDocumentException($metadata->getName());
         }
 
-    	return $documentsClassAnnotations;
+        //choose only one (the first one)
+        $annotationClass = $documentsClassAnnotations[0];
+        $reflClassAnnotations = new \ReflectionClass($annotationClass);
+        $metadata = $this->addValuesToMetdata($reflClassAnnotations->getProperties(),
+                                              $metadata,
+                                              $annotationClass);
 
+        return $metadata;
     }
 
-    private function extractPropertiesAnnotations(array $reflProperties)
+    /**
+     * @param array $reflProperties
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata|mixed
+     */
+    private function extractPropertiesAnnotations(array $reflProperties, ClassMetadata $metadata)
     {
-    	$documentsFieldAnnotations = array();
-        foreach($reflProperties as $reflProperty) {
+        $documentsFieldAnnotations = array();
+        foreach ($reflProperties as $reflProperty) {
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
                 foreach (self::$documentFieldAnnotationClasses as $i => $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
@@ -146,16 +135,40 @@ class AnnotationDriver implements Driver
             }
         }
 
-    	return $documentsFieldAnnotations;
+       foreach($documentsFieldAnnotations as $documentsFieldAnnotation) {
 
+            $reflFieldAnnotations = new \ReflectionClass($documentsFieldAnnotation);
+            $metadata = $this->addValuesToMetdata($reflFieldAnnotations->getProperties(),
+                                                  $metadata,
+                                                  $documentsFieldAnnotation);
+
+        }
+
+        return $metadata;
     }
 
     /**
-     *
-     * @param array $paths
+     * @param array $reflectedClassProperties
+     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
+     * @param $class
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @throws \Doctrine\Search\Exception\Driver\PropertyDoesNotExistsInMetadataException
      */
-    public function addPaths(array $paths)
+    private function addValuesToMetdata(array $reflectedClassProperties, ClassMetadata $metadata, $class)
     {
-        $this->paths = $paths;
+        foreach($reflectedClassProperties as $reflectedProperty) {
+            $propertyName = $reflectedProperty->getName();
+
+            if (false === property_exists($metadata, $propertyName)) {
+                throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
+            } else {
+                $metadata->$propertyName = $class->$propertyName;
+                /*I am not sure if that is needed
+                 * $metadata->addField($reflectedProperty);
+                $metadata->addFieldMapping($reflectedProperty);*/
+            }
+        }
+
+        return $metadata;
     }
 }
