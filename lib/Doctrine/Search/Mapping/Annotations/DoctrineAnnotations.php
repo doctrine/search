@@ -27,9 +27,15 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-final class Searchable extends Annotation
+class Searchable extends Annotation
 {
+    /**
+     * @var string $index;
+     */
     public $index;
+    /**
+     * @var string $type;
+     */
     public $type;
 }
 
@@ -37,17 +43,36 @@ final class Searchable extends Annotation
  * @Annotation
  * @Target("CLASS")
  */
-final class ElasticSearchable extends Annotation
+final class ElasticSearchable extends Searchable
 {
-	public $numberOfShards;
-	public $numberOfReplicas;
+    /**
+     * @var int $numberOfShards;
+     */
+    public $numberOfShards;
+    /**
+     * @var int $numnberOfReplicas
+     */
+    public $numberOfReplicas;
+    /**
+     * @var string $op_type;
+     */
+    public $opType;
+    /**
+     * @var float $parent;
+     */
+    public $parent;
+    /**
+     * TTL in milliseconds
+     * @var int $timeToLive
+     */
+    public $timeToLive;
 }
 
 /**
  * @Annotation
  * @Target("PROPERTY")
  */
-final class Field extends Annotation
+class Field extends Annotation
 {
     /**
      * @var float
@@ -59,7 +84,7 @@ final class Field extends Annotation
  * @Annotation
  * @Target("PROPERTY")
  */
-final class SolrField extends Annotation
+final class SolrField extends Field
 {
     /* configuration */
 }
@@ -68,7 +93,7 @@ final class SolrField extends Annotation
  * @Annotation
  * @Target("PROPERTY")
  */
-final class ElasticField extends Annotation
+final class ElasticField extends Field
 {
-
+   /* configuration */
 }

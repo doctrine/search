@@ -19,7 +19,7 @@
 
 namespace Doctrine\Search\Mapping;
 
-use Doctrine\Search\Mapping\ClassMetadataInfo;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -31,7 +31,7 @@ use Doctrine\Search\Mapping\ClassMetadataInfo;
  *
  * The fields of this class are only public for 2 reasons:
  * 1) To allow fast READ access.
- * 2) To drastically reduce the size of a serialized instance (private/protected members
+ * 2) To drastically reduce the size of a serialized instance (public/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
@@ -40,27 +40,136 @@ use Doctrine\Search\Mapping\ClassMetadataInfo;
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadata
+class ClassMetadata implements ClassMetadataInterface
 {
+    /**
+     * @var string
+     */
+    public $index;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var int
+     */
+    public $numberOfShards = 1;
+
+    /**
+     * @var int
+     */
+    public $numberOfReplicas = 1;
+
+    /**
+     * @var int
+     */
+    public $opType = 1;
+
+    /**
+     * @var int
+     */
+    public $parent = 1;
+
+    /**
+     * @var int
+     */
+    public $timeToLive = 1;
+
+    /**
+     * @var int
+     */
+    public $value = 1;
+
+    /**
+     * @var float
+     */
+    public $boost = 1.0;
+
+    /**
+     * @var string
+     */
+    public $className;
+
     /**
      * The ReflectionProperty instances of the mapped class.
      *
      * @var array
      */
-    public $reflFields = array();
+    public $fieldMappings = array();
 
-   
+
     /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass
      */
-    private $reflClass;
+    public $reflClass;
+
+    /**
+     * The ReflectionClass instance of the mapped class.
+     *
+     * @var ReflectionClass
+     */
+    public $reflFields;
 
 
-    public function initialize(\ReflectionClass $reflClass)
+    public function __construct($documentName)
     {
-        $this->reflClass = $reflClass;
+        $this->className = $documentName;
+        $this->reflClass = new \ReflectionClass($documentName);
+    }
+
+    /** Determines which fields get serialized.
+    *
+    * It is only serialized what is necessary for best unserialization performance.
+    *
+    * Parts that are also NOT serialized because they can not be properly unserialized:
+    *      - reflClass (ReflectionClass)
+    *      - reflFields (ReflectionProperty array)
+    *
+    * @return array The names of all the fields that should be serialized.
+    */
+    public function __sleep()
+    {
+        // This metadata is always serialized/cached.
+        $serialized = array(
+           'boost',
+           'className',
+           'fieldMappings',
+           'index',
+           'numberOfReplicas',
+           'numberOfShards',
+           'opType',
+           'parent',
+           'timeToLive',
+           'type',
+           'value',
+           'reflFields',
+        );
+
+        return $serialized;
+    }
+
+    /**
+    * Restores some state that can not be serialized/unserialized.
+    *
+    * @return void
+    */
+    public function __wakeup()
+    {
+        // Restore ReflectionClass and properties
+        $this->reflClass = new \ReflectionClass($this->className);
+
+        /*I am not sure if that is needed
+         * foreach ($this->fieldMappings as $field => $mapping) {
+
+            $reflField = $this->reflClass->getProperty($field);
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
+        }*/
+
     }
 
     /**
@@ -68,9 +177,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      *
      * @return string
      */
-    function getName()
+    public function getName()
     {
-        // TODO: Implement getName() method.
+        return $this->reflClass->getName();
+
     }
 
     /**
@@ -80,9 +190,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      *
      * @return array
      */
-    function getIdentifier()
+    public function getIdentifier()
     {
-        // TODO: Implement getIdentifier() method.
+        return array();
+
     }
 
     /**
@@ -90,9 +201,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      *
      * @return ReflectionClass
      */
-    function getReflectionClass()
+    public function getReflectionClass()
     {
         return $this->reflClass;
+
     }
 
     /**
@@ -101,9 +213,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      * @param string $fieldName
      * @return boolean
      */
-    function isIdentifier($fieldName)
+    public function isIdentifier($fieldName)
     {
-        // TODO: Implement isIdentifier() method.
+        return false;
+
     }
 
     /**
@@ -112,10 +225,33 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      * @param string $fieldName
      * @return boolean
      */
-    function hasField($fieldName)
+    public function hasField($fieldName)
     {
-        // TODO: Implement hasField() method.
+        return isset($this->reflFields[$fieldName]);
+
     }
+
+    /**
+     * This mapping is used in the _wakeup-method to set the reflFields after _sleep.
+     *
+     * @param \ReflectionProperty $field
+     * @param array $mapping
+     */
+    /*public function addFieldMapping(\ReflectionProperty $field, $mapping = array())
+    {
+        $fieldName = $field->getName();
+        $this->fieldMappings[$fieldName] = $mapping;
+    }*/
+
+    /**
+     * @param \ReflectionProperty $field
+     */
+    /*public function addField(\ReflectionProperty $field)
+    {
+        $fieldName = $field->getName();
+        $this->reflFields[$fieldName] = $field;
+    }*/
+
 
     /**
      * Checks if the given field is a mapped association for this class.
@@ -123,9 +259,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      * @param string $fieldName
      * @return boolean
      */
-    function hasAssociation($fieldName)
+    public function hasAssociation($fieldName)
     {
-        // TODO: Implement hasAssociation() method.
+        return false;
+
     }
 
     /**
@@ -134,9 +271,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      * @param string $fieldName
      * @return boolean
      */
-    function isSingleValuedAssociation($fieldName)
+    public function isSingleValuedAssociation($fieldName)
     {
-        // TODO: Implement isSingleValuedAssociation() method.
+       return false;
+
     }
 
     /**
@@ -145,9 +283,10 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      * @param string $fieldName
      * @return boolean
      */
-    function isCollectionValuedAssociation($fieldName)
+    public function isCollectionValuedAssociation($fieldName)
     {
-        // TODO: Implement isCollectionValuedAssociation() method.
+        return false;
+
     }
 
     /**
@@ -157,21 +296,20 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      *
      * @return array
      */
-    function getFieldNames()
+    public function getFieldNames()
     {
-        // TODO: Implement getFieldNames() method.
+        return array_keys($this->reflFields);
     }
 
     /**
-     * A numerically indexed list of association names of this persistent class.
-     *
-     * This array includes identifier associations if present on this class.
+     * Currently not necessary but needed by Interface
      *
      * @return array
      */
-    function getAssociationNames()
+    public function getAssociationNames()
     {
-        // TODO: Implement getAssociationNames() method.
+        return array();
+
     }
 
     /**
@@ -183,19 +321,31 @@ class ClassMetadata implements \Doctrine\Common\Persistence\Mapping\ClassMetadat
      * @param string $fieldName
      * @return string
      */
-    function getTypeOfField($fieldName)
+    public function getTypeOfField($fieldName)
     {
-        // TODO: Implement getTypeOfField() method.
+        //@todo: check if $field exists
+        return gettype($this->$fieldName);
     }
 
     /**
-     * Returns the target class name of the given association.
+     * Currently not necessary but needed by Interface
+     *
      *
      * @param string $assocName
      * @return string
      */
-    function getAssociationTargetClass($assocName)
+    public function getAssociationTargetClass($assocName)
     {
-        // TODO: Implement getAssociationTargetClass() method.
+        return '';
+    }
+
+    public function isAssociationInverseSide($assocName)
+    {
+        return '';
+    }
+
+    public function getAssociationMappedByTargetField($assocName)
+    {
+        return '';
     }
 }

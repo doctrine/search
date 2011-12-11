@@ -20,6 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Mapping\Driver;
+use Doctrine\Common\Cache\Cache;
 
 /**
  * Configuration SearchManager
@@ -59,6 +60,26 @@ class Configuration
     public function setMetadataDriverImpl(Driver $concreteDriver)
     {
         $this->attributes['concreteMetadataDriver'] = $concreteDriver;
+    }
+
+    /**
+     * Sets the cache driver that is used to cache the metadata.
+     *
+     * @param \Doctrine\Common\Cache\Cache $concreteCache
+     */
+    public function setMetadataCacheImpl(Cache $concreteCache)
+    {
+        $this->attributes['metadataCacheImpl'] = $concreteCache;
+    }
+
+    /**
+     * Returns the cache driver that is used to cache the metadata.
+     *
+     * @return \Doctrine\Common\Cache\Cache
+     */
+    public function getMetadataCacheImpl()
+    {
+        return $this->attributes['metadataCacheImpl'];
     }
 
      /**

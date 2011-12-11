@@ -32,7 +32,7 @@ class MongoDBSearchListener
     {
         $this->searchManager->setObjectManager($eventargs->getDocumentManager());
         $reflClass = $eventargs->getClassMetadata()->getReflectionClass();
-        $this->searchManager->loadClassMetadata($reflClass);
+        $this->searchManager->loadClassMetadata($reflClass->getName());
     }
 
     /**

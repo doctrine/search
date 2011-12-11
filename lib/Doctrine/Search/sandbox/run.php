@@ -37,9 +37,11 @@ $paths = $driver->getPaths();
 
 $metaDataFactory = $dm->getMetadataFactory();
 
-
-$listener = new Doctrine\Search\Listener\MongoDBSearchListener();
+$configuration = new \Doctrine\Search\Configuration();
+$configuration->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache());
+$sm = new \Doctrine\Search\SearchManager($configuration);
+$listener = new Doctrine\Search\Listener\MongoDBSearchListener($sm);
 $evm->addEventListener('loadClassMetadata', $listener);
 
-$metaDataFactory->getAllMetadata();
-var_dump($evm->hasListeners('loadClassMetadata'));
+var_dump($metaDataFactory->getAllMetadata());
+$evm->hasListeners('loadClassMetadata');
