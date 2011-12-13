@@ -25,7 +25,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
-
+use Doctrine\Common\Annotations\Reader;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -76,8 +76,7 @@ class SearchManager
         $this->searchClient = $sc ? : new Client();
         $this->annotationReader = $reader ? : new AnnotationReader();
 
-        $metadataFactoryClassName = $this->configuration->getClassMetadataFactoryName();
-        $this->metadataFactory = new $metadataFactoryClassName();
+        $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setConfiguration($this->configuration);
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
@@ -110,12 +109,20 @@ class SearchManager
     }
 
     /**
+     * @return \Doctrine\Common\Persistence\ObjectManager
+     */
+    public function getObjectManager()
+    {
+         return $this->objectManager;
+    }
+
+    /**
      * @param String $className
-     * @return void
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
     public function loadClassMetadata($className)
     {
-        $this->metadataFactory->getMetadataFor($className);
+        return $this->metadataFactory->getMetadataFor((string) $className);
     }
 
      /**
@@ -147,7 +154,7 @@ class SearchManager
      */
     public function persist($object)
     {
-        $this->searchClient->createIndex($index, $type, $query);
+        //$this->searchClient->createIndex($index, $type, $query);
     }
 
     /**

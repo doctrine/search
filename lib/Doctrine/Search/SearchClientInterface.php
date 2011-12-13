@@ -42,9 +42,11 @@ interface SearchClientInterface
     /**
      * Allows to search by the search api of a backend like Solr directly
      *
+     * @param string $index The name of the index.
+     * @param string $type The type of the index.
      * @param array $data The data to be indexed.
      */
-    function createIndex($index, array $data);
+    function createIndex($index, $type, array $data);
 
     /**
      *
