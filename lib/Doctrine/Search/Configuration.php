@@ -19,7 +19,7 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Search\Mapping\Driver;
+use Doctrine\Search\Mapping\Driver\Driver;
 use Doctrine\Common\Cache\Cache;
 
 /**
@@ -116,6 +116,20 @@ class Configuration
             $this->attributes['classMetadataFactoryName'] = 'Doctrine\Search\Mapping\ClassMetadataFactory';
         }
         return $this->attributes['classMetadataFactoryName'];
+    }
+
+    /**
+     * Gets the class metadata factory.
+     *
+     * @return Doctrine\Common\AbstractClassMetadataFactory
+     */
+    public function getClassMetadataFactory()
+    {
+        if ( ! isset($this->attributes['classMetadataFactory'])) {
+            $classMetaDataFactoryName = $this->getClassMetadataFactoryName();
+            $this->attributes['classMetadataFactory'] = new $classMetaDataFactoryName;
+        }
+        return $this->attributes['classMetadataFactory'];
     }
 
 }

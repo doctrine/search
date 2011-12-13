@@ -20,6 +20,7 @@ $loader = new ClassLoader('Doctrine\\ODM\\MongoDB', __DIR__ . '/../lib/Doctrine/
 $loader->register();
 $loader = new ClassLoader('Doctrine\\MongoDB', __DIR__ . '/../lib/Doctrine/Search/sandbox/vendor/doctrine-mongodb/lib');
 $loader->register();
+
 AnnotationRegistry::registerFile(__DIR__ . '/../lib/Doctrine/Search/Mapping/Annotations/DoctrineAnnotations.php');
 AnnotationRegistry::registerFile(__DIR__ . '/../lib/Doctrine/Search/sandbox/vendor/doctrine-mongodb-odm/lib/Doctrine/ODM/MongoDB/Mapping/Annotations/DoctrineAnnotations.php');
 BuzzAutoloader::register();

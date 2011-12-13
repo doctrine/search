@@ -12,6 +12,9 @@ class CurlClient extends AbstractClient
     /**
      * Send a request
      *
+     * @todo: replace exceptions with specialized ones.
+     * @todo: if host is unreachable a standard \Exception is thrown
+     *
      * @param  string            $method   The request method
      * @param  array             $headers  Some http headers
      * @param  string            $body     POST variables
@@ -52,6 +55,7 @@ class CurlClient extends AbstractClient
         $status  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if ( false === $content ) {
+            //@todo: replace Exception with specialized one
             throw new \Exception(sprintf(
                 'Request to %s failed (%s)',
                 $url,
@@ -101,6 +105,7 @@ class CurlClient extends AbstractClient
                 $curlMethodValue = "HEAD";
                 break;
             default:
+                //@todo: replace Exception with specialized one
                 throw new \RuntimeException('Method '. strtoupper($method) .' is not supported');
         }
 
