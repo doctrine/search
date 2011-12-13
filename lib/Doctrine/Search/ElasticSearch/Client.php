@@ -83,20 +83,16 @@ class Client implements SearchClientInterface
      *
      * @return Doctrine\Search\Http\ResponseInterface
      */
-    public function createIndex($index, array $data)
+    public function createIndex($index, $type, array $data)
     {
         assert(is_string($index));
 
         $encodedJson = json_encode($data);
 
-        /**
-         * @todo replace ErrorException with JsonEncodeException
-         */
         if($encodedJson == NULL) {
            throw new JsonEncodeException($data);
         }
-
-        $indexUrl = $this->host . ':' . $this->port . '/' . $index;
+        $indexUrl = $this->host . ':' . $this->port . '/' . $index . '/'. $type . '/';
 
         return $this->client->sendRequest('PUT', $indexUrl, $encodedJson);
 
