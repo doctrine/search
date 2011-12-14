@@ -1,8 +1,6 @@
 <?php
-namespace Doctrine\Search\Mapping;
+namespace Unit\Doctrine\Search\Mapping;
 
-
-require_once '/Users/mikelohmann/Sites/doctrine-searc.local/search/lib/Doctrine/Search/Mapping/ClassMetadataFactory.php';
 
 /**
  * Test class for ClassMetadataFactory.
@@ -21,7 +19,7 @@ class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new ClassMetadataFactory;
+        //$this->object = new ClassMetadataFactory;
     }
 
     /**

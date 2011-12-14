@@ -1,8 +1,5 @@
 <?php
-namespace Doctrine\Search\Mapping\Driver;
-
-
-require_once '/Users/mikelohmann/Sites/doctrine-searc.local/search/lib/Doctrine/Search/Mapping/Driver/AnnotationDriver.php';
+namespace Unit\Doctrine\Search\Mapping\Driver;
 
 /**
  * Test class for AnnotationDriver.
@@ -21,7 +18,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new AnnotationDriver;
+        //$this->object = new AnnotationDriver;
     }
 
     /**
