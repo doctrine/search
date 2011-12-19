@@ -54,16 +54,6 @@ class AnnotationDriver extends BaseAnnotationDriver
 
 
     /**
-     * Registers annotation classes to the common registry.
-     *
-     * This method should be called when bootstrapping your application.
-     */
-    public static function registerAnnotationClasses()
-    {
-        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @throws ReflectionException
