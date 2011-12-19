@@ -70,7 +70,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Doctrine\Search\Mapping\ClassMetadata', $this->classMetadata);
         $this->assertEquals('Unit\Doctrine\Search\Documents\BlogPost', $classMetadata->getName());
-        
+
     }
 
     /**
