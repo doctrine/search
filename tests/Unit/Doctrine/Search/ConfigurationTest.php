@@ -12,7 +12,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Configuration
      */
-    protected $object;
+    protected $configuration;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -20,92 +20,73 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new Configuration;
+        $this->configuration = new Configuration();
     }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-    }
 
-    /**
-     * @todo Implement testGetMetadataDriverImpl().
-     */
     public function testGetMetadataDriverImpl()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+       $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
+       $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\AnnotationDriver', $metadataDriverImpl);
     }
 
-    /**
-     * @todo Implement testSetMetadataDriverImpl().
-     */
+
     public function testSetMetadataDriverImpl()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $mockedMetadataDriverImpl = $this->getMock('\\Doctrine\\Search\\Mapping\\Driver\\Driver'
+                                                   , array(), array(), '', false);
+        $this->configuration->setMetadataDriverImpl($mockedMetadataDriverImpl);
+
+        $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
+        $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\Driver', $metadataDriverImpl);
+
     }
 
     /**
-     * @todo Implement testSetMetadataCacheImpl().
+     * @expectedException PHPUnit_Framework_Error
      */
+    public function testSetMetadataCacheImplWrongParameter()
+    {
+        $this->configuration->setMetadataCacheImpl(array());
+    }
+
     public function testSetMetadataCacheImpl()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $mockedMetadataCacheImpl = $this->getMock('\Doctrine\Common\Cache\Cache');
+        $this->configuration->setMetadataCacheImpl($mockedMetadataCacheImpl);
+
+        $cacheMetadataImpl = $this->configuration->getMetadataCacheImpl();
+        $this->assertInstanceOf('\Doctrine\Common\Cache\Cache', $cacheMetadataImpl);
     }
 
-    /**
-     * @todo Implement testGetMetadataCacheImpl().
-     */
-    public function testGetMetadataCacheImpl()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
 
-    /**
-     * @todo Implement testNewDefaultAnnotationDriver().
-     */
     public function testNewDefaultAnnotationDriver()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $defaultAnnotationDriver = $this->configuration->newDefaultAnnotationDriver();
+        $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\AnnotationDriver', $defaultAnnotationDriver);
     }
 
     /**
-     * @todo Implement testSetClassMetadataFactoryName().
+     * @expectedException PHPUnit_Framework_Error
      */
+    public function testNewDefaultAnnotationDriverWrongParameter()
+    {
+        $this->configuration->newDefaultAnnotationDriver(new \StdClass());
+    }
+
     public function testSetClassMetadataFactoryName()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->configuration = new Configuration();
+        $this->configuration->setClassMetadataFactoryName('test');
+        $this->assertEquals('test', $this->configuration->getClassMetadataFactoryName());
     }
 
-    /**
-     * @todo Implement testGetClassMetadataFactoryName().
-     */
+
     public function testGetClassMetadataFactoryName()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->configuration = new Configuration();
+        $className = $this->configuration->getClassMetadataFactoryName();
+        $this->assertEquals($className, 'Doctrine\Search\Mapping\ClassMetadataFactory');
     }
 }
 ?>

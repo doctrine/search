@@ -40,17 +40,6 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
         $this->annotationDriver = new AnnotationDriver($this->reader);
     }
 
-    /**
-     * @todo Implement testRegisterAnnotationClasses().
-     */
-    public function testRegisterAnnotationClasses()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
     public function testLoadMetadataForClass()
     {
 
