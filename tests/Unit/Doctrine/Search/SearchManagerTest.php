@@ -105,9 +105,9 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->metadataFactory->expects($this->once())
                                ->method('getMetadataFor')
-                               ->will($this->returnValue(new \Doctrine\Search\Mapping\ClassMetadata('Unit\Doctrine\Search\BlogPostInternal')));
+                               ->will($this->returnValue(new \Doctrine\Search\Mapping\ClassMetadata('Unit\Doctrine\Search\Documents\BlogPost')));
 
-        $metaData = $this->sm->loadClassMetadata('Unit\Doctrine\Search\BlogPostInternal');
+        $metaData = $this->sm->loadClassMetadata('Unit\Doctrine\Search\Documents\BlogPost');
         $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\ClassMetadata', $metaData);
     }
 
@@ -179,36 +179,5 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );
-    }
-}
-
-use Doctrine\Search\Mapping\Annotations as SEARCH;
-
-/**
- * @SEARCH\ElasticSearchable(index="blog", type="post", numberOfShards=1, numberOfReplicas=1)
- *
- */
-class BlogPostInternal
-{
-    public $id;
-
-    /**
-     * @SEARCH\Field(boost=2.0)
-     */
-    public $name;
-
-    /**
-     * @SEARCH\Field(boost=2.0)
-     */
-    public $title;
-
-    public function __construct($name = null)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
     }
 }

@@ -1,8 +1,5 @@
 <?php
-namespace Doctrine\Search\Mapping;
-
-
-require_once '/Users/mikelohmann/Sites/doctrine-searc.local/search/lib/Doctrine/Search/Mapping/ClassMetadata.php';
+namespace Unit\Doctrine\Search\Mapping;
 
 /**
  * Test class for ClassMetadata.
@@ -21,7 +18,7 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new ClassMetadata;
+        //$this->object = new ClassMetadata('BlogPost');
     }
 
     /**

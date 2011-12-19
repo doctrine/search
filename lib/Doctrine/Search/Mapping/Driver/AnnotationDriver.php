@@ -65,19 +65,22 @@ class AnnotationDriver extends BaseAnnotationDriver
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ReflectionException
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $reflClass = $metadata->getReflectionClass();
 
         if(!$reflClass) {
-            $reflClass = new \ReflectionClass($className);
+            $reflClass = new \ReflectionClass((string) $className);
         }
 
         $reflProperties = $reflClass->getProperties();
 
-        $metadata = $this->extractClassAnnotations($reflClass, $metadata);
-        $metadata = $this->extractPropertiesAnnotations($reflProperties, $metadata);
+        $this->extractClassAnnotations($reflClass, $metadata);
+        $this->extractPropertiesAnnotations($reflProperties, $metadata);
+
     }
 
 
