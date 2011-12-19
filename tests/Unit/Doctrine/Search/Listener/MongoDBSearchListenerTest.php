@@ -58,9 +58,6 @@ class MongoDBSearchListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
     }
 
 
-    /**
-     * @todo Implement testLoadClassMetadata().
-     */
     public function testLoadClassMetadata()
     {
         $dm = $this->getDocumentManager();
