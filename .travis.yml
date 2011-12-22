@@ -4,6 +4,6 @@ php:
     - 5.3
     - 5.4
 
-before_script: php vendor/vendors.php
+before_script: php lib/vendor/vendors.php
 
 script: phpunit

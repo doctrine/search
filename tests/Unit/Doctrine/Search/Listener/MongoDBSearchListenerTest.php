@@ -119,4 +119,3 @@ class TestBlogPost
         return $this->name;
     }
 }
-?>
