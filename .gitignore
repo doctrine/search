@@ -5,3 +5,7 @@
 .idea
 phpunit.xml
 run.php
+vendor/doctrine-common
+vendor/Buzz
+vendor/doctrine-mongodb-odm
+vendor/doctrine-mongodb

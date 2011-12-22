@@ -12,9 +12,9 @@ $loader = new ClassLoader('Doctrine\\Common', __DIR__ . '/../../../vendor/doctri
 $loader->register();
 $loader = new ClassLoader('Doctrine\\Search', __DIR__ . '/../../../');
 $loader->register();
-$loader = new ClassLoader('Doctrine\\ODM\\MongoDB', __DIR__ . '/vendor/doctrine-mongodb-odm/lib');
+$loader = new ClassLoader('Doctrine\\ODM\\MongoDB', __DIR__ . '/../../../vendor/doctrine-mongodb-odm/lib');
 $loader->register();
-$loader = new ClassLoader('Doctrine\\MongoDB', __DIR__ . '/vendor/doctrine-mongodb/lib');
+$loader = new ClassLoader('Doctrine\\MongoDB', __DIR__ . '/../../../vendor/doctrine-mongodb/lib');
 $loader->register();
 $loader = new ClassLoader('Documents', __DIR__ );
 $loader->register();
