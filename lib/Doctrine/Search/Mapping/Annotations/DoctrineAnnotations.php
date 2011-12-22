@@ -95,5 +95,5 @@ final class SolrField extends Field
  */
 final class ElasticField extends Field
 {
-   /* configuration */
+    /* configuration */
 }

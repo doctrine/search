@@ -62,8 +62,8 @@ class AnnotationDriver extends BaseAnnotationDriver
     {
         $reflClass = $metadata->getReflectionClass();
 
-        if(!$reflClass) {
-            $reflClass = new \ReflectionClass((string) $className);
+        if (!$reflClass) {
+            $reflClass = new \ReflectionClass((string)$className);
         }
 
         $reflProperties = $reflClass->getProperties();
@@ -103,8 +103,8 @@ class AnnotationDriver extends BaseAnnotationDriver
         $annotationClass = $documentsClassAnnotations[0];
         $reflClassAnnotations = new \ReflectionClass($annotationClass);
         $metadata = $this->addValuesToMetdata($reflClassAnnotations->getProperties(),
-                                              $metadata,
-                                              $annotationClass);
+            $metadata,
+            $annotationClass);
 
         return $metadata;
     }
@@ -128,12 +128,12 @@ class AnnotationDriver extends BaseAnnotationDriver
             }
         }
 
-       foreach($documentsFieldAnnotations as $documentsFieldAnnotation) {
+        foreach ($documentsFieldAnnotations as $documentsFieldAnnotation) {
 
             $reflFieldAnnotations = new \ReflectionClass($documentsFieldAnnotation);
             $metadata = $this->addValuesToMetdata($reflFieldAnnotations->getProperties(),
-                                                  $metadata,
-                                                  $documentsFieldAnnotation);
+                $metadata,
+                $documentsFieldAnnotation);
 
         }
 
@@ -149,7 +149,7 @@ class AnnotationDriver extends BaseAnnotationDriver
      */
     private function addValuesToMetdata(array $reflectedClassProperties, ClassMetadata $metadata, $class)
     {
-        foreach($reflectedClassProperties as $reflectedProperty) {
+        foreach ($reflectedClassProperties as $reflectedProperty) {
             $propertyName = $reflectedProperty->getName();
 
             if (false === property_exists($metadata, $propertyName)) {

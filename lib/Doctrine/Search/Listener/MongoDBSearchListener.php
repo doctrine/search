@@ -23,7 +23,7 @@ class MongoDBSearchListener
         $this->searchManager = $sm ? : new SearchManager();
     }
 
-     /**
+    /**
      *
      * @param \Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventargs
      * @return void
