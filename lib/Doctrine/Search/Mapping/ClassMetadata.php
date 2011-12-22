@@ -227,7 +227,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function hasField($fieldName)
     {
-        return isset($this->reflFields[$fieldName]);
+        return false;
 
     }
 

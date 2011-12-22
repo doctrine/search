@@ -19,9 +19,9 @@
 
 namespace Doctrine\Search\Mapping;
 
-use Doctrine\Search\SearchManager,
-Doctrine\Search\Configuration,
-Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\SearchManager;
+use Doctrine\Search\Configuration;
+use Doctrine\Search\Mapping\ClassMetadata;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
