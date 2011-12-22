@@ -22,16 +22,16 @@ class CurlClient extends AbstractClient
      */
     public function sendRequest($method = 'get', $path = '/', $data = '')
     {
-        $url     = sprintf('%s:%s/%s', $this->getOption('host'), $this->getOption('port'), ltrim($path, '/'));
+        $url = sprintf('%s:%s/%s', $this->getOption('host'), $this->getOption('port'), ltrim($path, '/'));
         $options = array();
         list($curlHttpMethod, $curlHttpMethodValue) = $this->getCurlMethod($method);
 
-        $options[CURL_HTTP_VERSION_1_1]  = true;
-        $options[CURLOPT_HEADER]         = true;
+        $options[CURL_HTTP_VERSION_1_1] = true;
+        $options[CURLOPT_HEADER] = true;
         $options[CURLOPT_RETURNTRANSFER] = true;
-        $options[$curlHttpMethod]        = $curlHttpMethodValue;
+        $options[$curlHttpMethod] = $curlHttpMethodValue;
 
-        if ( 'post' === $method || 'put' === $method ) {
+        if ('post' === $method || 'put' === $method) {
             $options[CURLOPT_POSTFIELDS] = $data;
         }
 
@@ -40,21 +40,21 @@ class CurlClient extends AbstractClient
         $content = curl_exec($ch);
         $rawHeadersString = curl_getinfo($ch, CURLINFO_HEADER_OUT);
         $rawHeaders = explode(PHP_EOL, $rawHeadersString);
-        $headers    = array();
+        $headers = array();
 
-        foreach ( $rawHeaders as $line ) {
+        foreach ($rawHeaders as $line) {
             $line = trim($line);
-            if ( preg_match('@^(\w+)\s*(.*)\sHTTP\s*/\s*\d{1}\.\d{1}$@', $line, $matches) ) {
+            if (preg_match('@^(\w+)\s*(.*)\sHTTP\s*/\s*\d{1}\.\d{1}$@', $line, $matches)) {
                 $headers['method'] = $matches[1];
                 $headers['path'] = $matches[2];
-            } else if ( preg_match('@^(.*)\s*:\s*(.*)\s*$@', $line, $matches) ) {
+            } else if (preg_match('@^(.*)\s*:\s*(.*)\s*$@', $line, $matches)) {
                 $headers[$matches[1]] = $matches[2];
             }
         }
 
-        $status  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ( false === $content ) {
+        if (false === $content) {
             //@todo: replace Exception with specialized one
             throw new \Exception(sprintf(
                 'Request to %s failed (%s)',
@@ -106,7 +106,7 @@ class CurlClient extends AbstractClient
                 break;
             default:
                 //@todo: replace Exception with specialized one
-                throw new \RuntimeException('Method '. strtoupper($method) .' is not supported');
+                throw new \RuntimeException('Method ' . strtoupper($method) . ' is not supported');
         }
 
         return array($curlMethod, $curlMethodValue);

@@ -27,10 +27,10 @@ namespace Doctrine\Search\ElasticSearch;
  */
 class Configuration
 {
-    
-    
+
+
     public function __construct()
     {
-        
+
     }
 }

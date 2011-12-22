@@ -1,7 +1,8 @@
 <?php
 namespace Doctrine\Search;
 
-final class Version {
+final class Version
+{
 
     /**
      * @var string

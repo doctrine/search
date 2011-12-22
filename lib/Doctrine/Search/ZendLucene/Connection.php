@@ -30,13 +30,13 @@ use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
 class Connection
 {
     private $host;
-    
+
     private $port;
-    
+
     private $path;
-    
+
     private $httpClient;
-    
+
     public function __construct($host = null, $port = null, $path = null, HttpClientInterface $httpClient)
     {
         $this->host = $host;
@@ -44,9 +44,9 @@ class Connection
         $this->path = $path;
         $this->httpClient = $httpClient;
     }
-    
+
     public function initialize()
     {
-        
+
     }
 }

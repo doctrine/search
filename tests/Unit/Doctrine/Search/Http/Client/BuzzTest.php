@@ -12,18 +12,18 @@ use Buzz\Browser;
 class BuzzTest extends \PHPUnit_Framework_TestCase
 {
     private $client;
-    
+
     private $browser;
-    
+
     protected function setUp()
     {
         $this->browser = $this->getMock('Buzz\\Browser', array(), array(), '', false);
         $this->client = new BuzzClient($this->browser, 'www.google.de', 80);
     }
-    
+
     public function testCallExistingHost()
     {
-        $buzzResponse = $this->getMock('Buzz\Message\Response', array(), array(), '', false);
+        $buzzResponse = $this->getMock('Buzz\\Message\\Response');
 
         $this->browser->expects($this->once())
             ->method('call')
@@ -31,7 +31,7 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->client->sendRequest();
         $this->assertInstanceOf('Doctrine\\Search\\Http\\ResponseInterface', $response);
-        
+
         //@todo this should be tested in the Response-Test
         /*$this->assertContains('<html>', $response->getContent());
         $this->assertTrue($response->isSuccessfull());*/
@@ -43,9 +43,9 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\RuntimeException');
 
         $clientAdapter = new FileGetContentsMock();
-        
+
         $browser = new Browser($clientAdapter);
-            
+
         $client = new BuzzClient($browser, 'www.not-existing-host.de', 80);
         $client->sendRequest('get');
     }
