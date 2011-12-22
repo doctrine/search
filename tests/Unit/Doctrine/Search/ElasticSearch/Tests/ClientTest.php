@@ -43,7 +43,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->will($this->returnValue($mockedResponse));
 
-        $this->client->find(array('index'), 'tester', 's=user:kimchy');
+        $this->client->find(new \StdClass(), 'tester', 's=user:kimchy');
     }
 
     /**
@@ -63,7 +63,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->will($this->returnValue($mockedResponse));
 
-        $this->client->find('test', array('index'), 's=user:kimchy');
+        $this->client->find('test', new \StdClass(), 's=user:kimchy');
     }
 
    /**
@@ -83,7 +83,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->method('sendRequest')
             ->will($this->returnValue($mockedResponse));
 
-        $this->client->find('test', 'tester', array('index'));
+        $this->client->find('test', 'tester', new \StdClass());
     }
 
    /**

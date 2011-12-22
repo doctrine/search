@@ -23,18 +23,18 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
     {
         //removed className, because it is set by constructor and used on __wakeup
         $fields = array(
-                    'boost',
-                    'fieldMappings',
-                    'index',
-                    'numberOfReplicas',
-                    'numberOfShards',
-                    'opType',
-                    'parent',
-                    'timeToLive',
-                    'type',
-                    'value',
-                    'reflFields',
-                );
+            'boost',
+            'fieldMappings',
+            'index',
+            'numberOfReplicas',
+            'numberOfShards',
+            'opType',
+            'parent',
+            'timeToLive',
+            'type',
+            'value',
+            'reflFields',
+        );
 
         //fill the metadata fields
         foreach ($fields as $field) {
@@ -65,7 +65,7 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
     public function testGetIdentifier()
     {
         $this->assertEquals($this->classMetadata->getIdentifier(),
-                    array());
+            array());
     }
 
     public function testGetReflectionClass()
@@ -106,9 +106,9 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
 
     public function testGetTypeOfField()
     {
-       $this->assertEquals('string', $this->classMetadata->getTypeOfField('className'));
-       $this->assertEquals('integer', $this->classMetadata->getTypeOfField('numberOfShards'));
-       $this->assertEquals('array',$this->classMetadata->getTypeOfField('fieldMappings'));
+        $this->assertEquals('string', $this->classMetadata->getTypeOfField('className'));
+        $this->assertEquals('integer', $this->classMetadata->getTypeOfField('numberOfShards'));
+        $this->assertEquals('array', $this->classMetadata->getTypeOfField('fieldMappings'));
     }
 
     public function testGetAssociationTargetClass()

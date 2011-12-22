@@ -3,7 +3,8 @@ namespace Doctrine\Search\Http\Response;
 
 use \Doctrine\Search\Http\ResponseInterface;
 
-class Response implements ResponseInterface {
+class Response implements ResponseInterface
+{
 
     /**
      * @var integer

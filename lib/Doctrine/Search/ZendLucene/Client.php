@@ -30,15 +30,15 @@ use Doctrine\Common\Persistence\ObjectManager;
  */
 class Client implements SearchClientInterface
 {
-    
+
     private $config;
-    
+
     private $connection;
-    
+
     /*
-     * @param Connection $conn
-     * @param Configuration $config
-     */
+    * @param Connection $conn
+    * @param Configuration $config
+    */
     public function __construct(Connection $conn = null, Configuration $config = null)
     {
         $this->connection = $conn;
@@ -47,17 +47,17 @@ class Client implements SearchClientInterface
 
     public function find($index, $type, $query)
     {
-        
+
     }
-    
+
     public function createIndex($index, array $data)
     {
-        
+
     }
-    
+
     public function updateIndex(array $data)
     {
-        
+
     }
 
     /**

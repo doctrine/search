@@ -48,9 +48,9 @@ class Client implements SearchClientInterface
      */
     public function __construct(HttpClientInterface $client = null, $host = 'localhost', $port = '9200')
     {
-        $this->host = $host;
-        $this->port = $port;
-        $this->client = $client ?: new \Doctrine\Search\Http\Client\BuzzClient();
+        $this->host = (string)$host;
+        $this->port = (string)$port;
+        $this->client = $client ? : new \Doctrine\Search\Http\Client\BuzzClient();
     }
 
     /**
@@ -59,21 +59,18 @@ class Client implements SearchClientInterface
      */
     public function find($index, $type, $query)
     {
-       assert(is_string($index));
-       assert(is_string($type));
-       assert(is_string($query));
+        $searchUrl = $this->host . ':' . $this->port . '/' . (string)$index . '/' . (string)$type . '/_search?' . (string)$query;
 
-       $searchUrl = $this->host . ':' . $this->port . '/' . $index . '/'. $type . '/_search?' . $query;
+        $response = $this->client->sendRequest('GET', $searchUrl);
 
-       $response = $this->client->sendRequest('GET', $searchUrl);
-       $content = $response->getContent();
-       $decodedJson = json_decode($content);
+        $content = $response->getContent();
+        $decodedJson = json_decode($content);
 
-       if($decodedJson == NULL) {
-           throw new JsonDecodeException();
-       }
+        if ($decodedJson == NULL) {
+            throw new JsonDecodeException();
+        }
 
-       return $decodedJson;
+        return $decodedJson;
 
     }
 
@@ -85,14 +82,12 @@ class Client implements SearchClientInterface
      */
     public function createIndex($index, $type, array $data)
     {
-        assert(is_string($index));
-
         $encodedJson = json_encode($data);
 
-        if($encodedJson == NULL) {
-           throw new JsonEncodeException($data);
+        if ($encodedJson == NULL) {
+            throw new JsonEncodeException($data);
         }
-        $indexUrl = $this->host . ':' . $this->port . '/' . $index . '/'. $type . '/';
+        $indexUrl = $this->host . ':' . $this->port . '/' . (string)$index . '/' . (string)$type . '/';
 
         return $this->client->sendRequest('PUT', $indexUrl, $encodedJson);
 

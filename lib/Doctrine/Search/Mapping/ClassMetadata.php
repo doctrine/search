@@ -122,41 +122,41 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /** Determines which fields get serialized.
-    *
-    * It is only serialized what is necessary for best unserialization performance.
-    *
-    * Parts that are also NOT serialized because they can not be properly unserialized:
-    *      - reflClass (ReflectionClass)
-    *      - reflFields (ReflectionProperty array)
-    *
-    * @return array The names of all the fields that should be serialized.
-    */
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     *
+     * Parts that are also NOT serialized because they can not be properly unserialized:
+     *      - reflClass (ReflectionClass)
+     *      - reflFields (ReflectionProperty array)
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
     public function __sleep()
     {
         // This metadata is always serialized/cached.
         $serialized = array(
-           'boost',
-           'className',
-           'fieldMappings',
-           'index',
-           'numberOfReplicas',
-           'numberOfShards',
-           'opType',
-           'parent',
-           'timeToLive',
-           'type',
-           'value',
-           'reflFields',
+            'boost',
+            'className',
+            'fieldMappings',
+            'index',
+            'numberOfReplicas',
+            'numberOfShards',
+            'opType',
+            'parent',
+            'timeToLive',
+            'type',
+            'value',
+            'reflFields',
         );
 
         return $serialized;
     }
 
     /**
-    * Restores some state that can not be serialized/unserialized.
-    *
-    * @return void
-    */
+     * Restores some state that can not be serialized/unserialized.
+     *
+     * @return void
+     */
     public function __wakeup()
     {
         // Restore ReflectionClass and properties
@@ -273,7 +273,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isSingleValuedAssociation($fieldName)
     {
-       return false;
+        return false;
 
     }
 
@@ -347,5 +347,18 @@ class ClassMetadata implements ClassMetadataInterface
     public function getAssociationMappedByTargetField($assocName)
     {
         return '';
+    }
+
+    /**
+     * Return the identifier of this object as an array with field name as key.
+     *
+     * Has to return an empty array if no identifier isset.
+     *
+     * @param object $object
+     * @return array
+     */
+    function getIdentifierValues($object)
+    {
+        // TODO: Implement getIdentifierValues() method.
     }
 }

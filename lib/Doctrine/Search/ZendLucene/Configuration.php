@@ -27,10 +27,10 @@ namespace Doctrine\Search\ZendLucene;
  */
 class Configuration
 {
-    
-    
+
+
     public function __construct()
     {
-        
+
     }
 }

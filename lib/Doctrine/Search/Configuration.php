@@ -45,7 +45,7 @@ class Configuration
      */
     public function getMetadataDriverImpl()
     {
-        if ( ! isset($this->attributes['concreteMetadataDriver'])) {
+        if (!isset($this->attributes['concreteMetadataDriver'])) {
             $this->attributes['concreteMetadataDriver'] = $this->newDefaultAnnotationDriver();
         }
 
@@ -82,7 +82,7 @@ class Configuration
         return $this->attributes['metadataCacheImpl'];
     }
 
-     /**
+    /**
      * Add a new default annotation driver with a correctly configured annotation reader.
      *
      * @param array $paths
@@ -112,7 +112,7 @@ class Configuration
      */
     public function getClassMetadataFactoryName()
     {
-        if ( ! isset($this->attributes['classMetadataFactoryName'])) {
+        if (!isset($this->attributes['classMetadataFactoryName'])) {
             $this->attributes['classMetadataFactoryName'] = 'Doctrine\Search\Mapping\ClassMetadataFactory';
         }
         return $this->attributes['classMetadataFactoryName'];
@@ -125,7 +125,7 @@ class Configuration
      */
     public function getClassMetadataFactory()
     {
-        if ( ! isset($this->attributes['classMetadataFactory'])) {
+        if (!isset($this->attributes['classMetadataFactory'])) {
             $classMetaDataFactoryName = $this->getClassMetadataFactoryName();
             $this->attributes['classMetadataFactory'] = new $classMetaDataFactoryName;
         }

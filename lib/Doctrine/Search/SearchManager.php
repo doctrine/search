@@ -69,8 +69,8 @@ class SearchManager
      * @param SearchClientInterface $sc
      */
     public function __construct(Configuration $conf = null,
-        SearchClientInterface $sc = null,
-        Reader $reader = null)
+                                SearchClientInterface $sc = null,
+                                Reader $reader = null)
     {
         $this->configuration = $conf ? : new Configuration();
         $this->searchClient = $sc ? : new Client();
@@ -105,7 +105,7 @@ class SearchManager
      */
     public function setObjectManager(ObjectManager $om)
     {
-         $this->objectManager = $om;
+        $this->objectManager = $om;
     }
 
     /**
@@ -113,7 +113,7 @@ class SearchManager
      */
     public function getObjectManager()
     {
-         return $this->objectManager;
+        return $this->objectManager;
     }
 
     /**
@@ -122,10 +122,10 @@ class SearchManager
      */
     public function loadClassMetadata($className)
     {
-        return $this->metadataFactory->getMetadataFor((string) $className);
+        return $this->metadataFactory->getMetadataFor((string)$className);
     }
 
-     /**
+    /**
      * @return ClassMetadataFactory
      */
     public function getClassMetadataFactory()
