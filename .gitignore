@@ -5,7 +5,7 @@
 .idea
 phpunit.xml
 run.php
-vendor/doctrine-common
-vendor/Buzz
-vendor/doctrine-mongodb-odm
-vendor/doctrine-mongodb
+lib/vendor/doctrine-common
+lib/vendor/Buzz
+lib/vendor/doctrine-mongodb-odm
+lib/vendor/doctrine-mongodb
