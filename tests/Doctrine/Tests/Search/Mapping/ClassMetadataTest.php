@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\Mapping;
+namespace Doctrine\Tests\Search\Mapping;
 
 use Doctrine\Search\Mapping\ClassMetadata;
 
@@ -16,7 +16,7 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->classMetadata = new ClassMetadata('Unit\Doctrine\Search\Documents\BlogPost');
+        $this->classMetadata = new ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost');
     }
 
     public function test__sleep()
@@ -59,7 +59,7 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
     public function testGetName()
     {
         $this->assertEquals($this->classMetadata->getName(),
-            'Unit\Doctrine\Search\Documents\BlogPost');
+            'Doctrine\Tests\Search\Documents\BlogPost');
     }
 
     public function testGetIdentifier()

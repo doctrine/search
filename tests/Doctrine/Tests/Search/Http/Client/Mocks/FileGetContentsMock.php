@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\Http\Client\Mocks;
+namespace Doctrine\Tests\Search\Http\Client\Mocks;
 
 use Buzz\Client\ClientInterface;
 use Buzz\Message;

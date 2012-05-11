@@ -53,12 +53,12 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
 
 
 
-        $classMetadata = new ClassMetadata('Unit\Doctrine\Search\Documents\BlogPost');
+        $classMetadata = new ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost');
 
-        $this->annotationDriver->loadMetadataForClass('Unit\Doctrine\Search\Documents\BlogPost', $classMetadata);
+        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $classMetadata);
 
         $this->assertInstanceOf('Doctrine\Search\Mapping\ClassMetadata', $this->classMetadata);
-        $this->assertEquals('Unit\Doctrine\Search\Documents\BlogPost', $classMetadata->getName());
+        $this->assertEquals('Doctrine\Tests\Search\Documents\BlogPost', $classMetadata->getName());
 
     }
 
@@ -80,7 +80,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
                             ->method('getReflectionClass')
                             ->will($this->returnValue($this->reflectionClass));
 
-        $this->annotationDriver->loadMetadataForClass('Unit\Doctrine\Search\Documents\BlogPost', $this->classMetadata);
+        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $this->classMetadata);
     }
 
     /**
@@ -112,7 +112,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
                             ->method('getReflectionClass')
                             ->will($this->returnValue($this->reflectionClass));
 
-        $this->annotationDriver->loadMetadataForClass('Unit\Doctrine\Search\Documents\BlogPost', $this->classMetadata);
+        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $this->classMetadata);
     }
 
 
