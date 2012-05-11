@@ -361,4 +361,15 @@ class ClassMetadata implements ClassMetadataInterface
     {
         // TODO: Implement getIdentifierValues() method.
     }
+
+    /**
+     * Returns an array of identifier field names numerically indexed.
+     *
+     * @return array
+     */
+    function getIdentifierFieldNames()
+    {
+        // TODO: Implement getIdentifierFieldNames() method.
+    }
+
 }

@@ -21,6 +21,7 @@ namespace Doctrine\Search;
 
 use Doctrine\Search\Mapping\Driver\Driver;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\ArrayCache;
 
 /**
  * Configuration SearchManager
@@ -79,7 +80,7 @@ class Configuration
      */
     public function getMetadataCacheImpl()
     {
-        return $this->attributes['metadataCacheImpl'];
+        return isset($this->attributes['metadataCacheImpl']) ? $this->attributes['metadataCacheImpl'] : new ArrayCache();
     }
 
     /**
