@@ -1,0 +1,20 @@
+{
+    "name": "doctrine/search",
+    "description": "Search",
+    "keywords": ["search", "lucene"],
+    "homepage": "https://github.com/doctrine/search",
+    "type": "library",
+    "licence": "LGPL",
+
+    "require": {
+        "php": ">=5.3.2",
+        "kriswallsmith/buzz": "dev-master",
+        "doctrine/common": "dev-master",
+        "doctrine/mongodb-odm": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "Doctrine\\Search": "lib/"
+        }
+    }
+}
