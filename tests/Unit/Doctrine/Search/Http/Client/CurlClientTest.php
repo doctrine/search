@@ -18,15 +18,13 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testCallNonExististingHostWithMethodGet()
     {
-        $client = new CurlClient('http://www/');
-        $response = $client->sendRequest();
-        $this->assertTrue($response->isSuccessfull());
-        $this->assertEquals('GET', $response->getHeader('method'));
-        $this->assertEquals(200, $response->getStatusCode());
+        try {
+            $client = new CurlClient('http://www/');
+            $response = $client->sendRequest();
+        } catch (\Exception $e) {
+            $this->assertRegExp('#Request to .+ failed (.+)#', $e->getMessage());
+        }
     }
 }

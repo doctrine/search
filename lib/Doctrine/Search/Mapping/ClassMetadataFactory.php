@@ -22,6 +22,9 @@ namespace Doctrine\Search\Mapping;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Configuration;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -32,7 +35,7 @@ use Doctrine\Search\Mapping\ClassMetadata;
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class ClassMetadataFactory extends \Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory
+class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
     /** The SearchManager instance */
     private $sm;
@@ -118,5 +121,29 @@ class ClassMetadataFactory extends \Doctrine\Common\Persistence\Mapping\Abstract
     {
         return new ClassMetadata($className);
 
+    }
+
+    /**
+     * Wakeup reflection after ClassMetadata gets unserialized from cache.
+     *
+     * @param ClassMetadata $class
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    protected function wakeupReflection(BaseClassMetadata $class, ReflectionService $reflService)
+    {
+        // TODO: Implement wakeupReflection() method.
+    }
+
+    /**
+     * Initialize Reflection after ClassMetadata was constructed.
+     *
+     * @param ClassMetadata $class
+     * @param ReflectionService $reflService
+     * @return void
+     */
+    protected function initializeReflection(BaseClassMetadata $class, ReflectionService $reflService)
+    {
+        // TODO: Implement initializeReflection() method.
     }
 }

@@ -58,7 +58,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
 
         $this->configuration->expects($this->once())
                               ->method('getMetadataCacheImpl')
-                              ->will($this->returnValue('Doctrine\\Common\\Cache\\ArrayCache'));
+                              ->will($this->returnValue($this->getMock('Doctrine\\Common\\Cache\\ArrayCache')));
 
 
         $this->sm = new SearchManager($this->configuration, $this->searchClient, $this->reader);
