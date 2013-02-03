@@ -63,7 +63,8 @@ class SearchManager
     private $annotationReader;
 
     /**
-     *
+     * Constructor
+     * 
      * @param ObjectManager $om
      * @param Configuration $conf
      * @param SearchClientInterface $sc
@@ -84,6 +85,8 @@ class SearchManager
     }
 
     /**
+     * Return the configuration
+     * 
      * @return Configuration
      */
     public function getConfiguration()
@@ -92,6 +95,8 @@ class SearchManager
     }
 
     /**
+     * Return the annotation reader
+     * 
      * @return AnnotationReader
      */
     public function getAnnotationReader()
@@ -100,8 +105,9 @@ class SearchManager
     }
 
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $om
-     * @return void
+     * Sets the objectmanager
+     * 
+     * @param ObjectManager $om
      */
     public function setObjectManager(ObjectManager $om)
     {
@@ -109,7 +115,9 @@ class SearchManager
     }
 
     /**
-     * @return \Doctrine\Common\Persistence\ObjectManager
+     * Return the wrapped objectmanager
+     * 
+     * @return ObjectManager
      */
     public function getObjectManager()
     {
@@ -117,8 +125,11 @@ class SearchManager
     }
 
     /**
-     * @param String $className
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * Loads the metadatafactory for $className
+     * 
+     * @param string $className
+     * 
+     * @return ClassMetadata
      */
     public function loadClassMetadata($className)
     {
@@ -126,6 +137,8 @@ class SearchManager
     }
 
     /**
+     * Return the classmetadata factory
+     * 
      * @return ClassMetadataFactory
      */
     public function getClassMetadataFactory()
@@ -133,12 +146,12 @@ class SearchManager
         return $this->metadataFactory;
     }
 
-
     /**
-     *
-     * @param String $index
-     * @param String $type
-     * @param String $query
+     * Find the document
+     * 
+     * @param string $index
+     * @param string $type
+     * @param string $query
      */
     public function find($index = null, $type = null, $query = null)
     {
@@ -188,4 +201,22 @@ class SearchManager
     public function commit()
     {
     }
+
+    public function flush()
+    {
+
+    }
+
+    public function merge($object)
+    {
+
+    }
+
+    public function detach($object)
+    {
+
+    }
+
+    public function clear($objectName = null)
+    {}
 }
