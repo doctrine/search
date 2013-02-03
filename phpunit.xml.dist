@@ -13,14 +13,9 @@
 >
   <testsuites>
     <testsuite name="Doctrine Search Test Suite">
-      <directory>./tests/Unit/Doctrine/Search</directory>
+      <directory>./tests/Doctrine/Tests/Search</directory>
     </testsuite>
   </testsuites>
-
-  <php>
-        <!-- <server name="CLOSURE_JAR" value="/path/to/google-closure/compiler.jar" /> -->
-        <!-- <server name="COFFEE_BIN" value="/path/to/coffee" /> -->
-  </php>
 
   <filter>
     <whitelist>

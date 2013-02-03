@@ -104,7 +104,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @param bool $rootEntityFound
      * @return void
      */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound)
+    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents)
     {
         //Manipulates $classMetadata;
         $this->driver->loadMetadataForClass($class->getName(), $class);
@@ -145,5 +145,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function initializeReflection(BaseClassMetadata $class, ReflectionService $reflService)
     {
         // TODO: Implement initializeReflection() method.
+    }
+
+    protected function isEntity(BaseClassMetadata $class)
+    {
+
     }
 }

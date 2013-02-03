@@ -44,14 +44,12 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->reader->expects($this->once())
-                         ->method('getClassAnnotations')
-                         ->will($this->returnValue(array(0, new TestSearchable2(array()))));
+            ->method('getClassAnnotations')
+            ->will($this->returnValue(array(0, new TestSearchable2(array()))));
 
         $this->reader->expects($this->any())
-                                 ->method('getPropertyAnnotations')
-                                 ->will($this->returnValue(array(0, new TestField(array()))));
-
-
+            ->method('getPropertyAnnotations')
+            ->will($this->returnValue(array(0, new TestField(array()))));
 
         $classMetadata = new ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost');
 
@@ -69,16 +67,16 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     {
 
         $this->reader->expects($this->once())
-                     ->method('getClassAnnotations')
-                     ->will($this->returnValue(array()));
+            ->method('getClassAnnotations')
+            ->will($this->returnValue(array()));
 
         $this->reflectionClass->expects($this->once())
-                                ->method('getProperties')
-                                ->will($this->returnValue(array()));
+            ->method('getProperties')
+            ->will($this->returnValue(array()));
 
         $this->classMetadata->expects($this->once())
-                            ->method('getReflectionClass')
-                            ->will($this->returnValue($this->reflectionClass));
+            ->method('getReflectionClass')
+            ->will($this->returnValue($this->reflectionClass));
 
         $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $this->classMetadata);
     }
@@ -89,10 +87,10 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     public function testLoadMetadataForReflectionErrorClassNotFound()
     {
         $this->classMetadata->expects($this->once())
-                            ->method('getReflectionClass')
-                            ->will($this->returnValue(false));
+            ->method('getReflectionClass')
+            ->will($this->returnValue(false));
 
-        $this->annotationDriver->loadMetadataForClass(array(), $this->classMetadata);
+        $this->annotationDriver->loadMetadataForClass('NotExistingClass', $this->classMetadata);
     }
 
     /**
@@ -101,16 +99,16 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     public function testLoadMetadataForClassAddValuesToMetadata()
     {
         $this->reflectionClass->expects($this->once())
-                              ->method('getProperties')
-                              ->will($this->returnValue(array()));
+            ->method('getProperties')
+            ->will($this->returnValue(array()));
 
         $this->reader->expects($this->once())
-                     ->method('getClassAnnotations')
-                     ->will($this->returnValue(array(0, new TestSearchable(array()))));
+            ->method('getClassAnnotations')
+            ->will($this->returnValue(array(0, new TestSearchable(array()))));
 
         $this->classMetadata->expects($this->once())
-                            ->method('getReflectionClass')
-                            ->will($this->returnValue($this->reflectionClass));
+            ->method('getReflectionClass')
+            ->will($this->returnValue($this->reflectionClass));
 
         $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $this->classMetadata);
     }

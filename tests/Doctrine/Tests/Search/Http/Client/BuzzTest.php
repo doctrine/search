@@ -23,7 +23,9 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
 
     public function testCallExistingHost()
     {
-        $buzzResponse = $this->getMock('Buzz\\Message\\Response');
+        $buzzResponse = $this->getMockBuilder('Buzz\\Message\\Response')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->browser->expects($this->once())
             ->method('call')
@@ -36,18 +38,4 @@ class BuzzTest extends \PHPUnit_Framework_TestCase
         /*$this->assertContains('<html>', $response->getContent());
         $this->assertTrue($response->isSuccessfull());*/
     }
-
-
-    public function testCallNotExistingHost()
-    {
-        $this->setExpectedException('\RuntimeException');
-
-        $clientAdapter = new FileGetContentsMock();
-
-        $browser = new Browser($clientAdapter);
-
-        $client = new BuzzClient($browser, 'www.not-existing-host.de', 80);
-        $client->sendRequest('get');
-    }
-
 }
