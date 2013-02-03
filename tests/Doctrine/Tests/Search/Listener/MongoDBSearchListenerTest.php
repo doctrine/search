@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\Listener;
+namespace Doctrine\Tests\Search\Listener;
 
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -70,7 +70,7 @@ class MongoDBSearchListenerTest extends \Doctrine\ODM\MongoDB\Tests\BaseTest
         $sm = $this->listener->getSearchManager();
         $mdf = $sm->getClassMetadataFactory();
 
-        $this->assertTrue($mdf->hasMetadataFor('Unit\Doctrine\Search\Listener\TestBlogPost'));
+        $this->assertTrue($mdf->hasMetadataFor('Doctrine\Tests\Search\Listener\TestBlogPost'));
 
     }
 
