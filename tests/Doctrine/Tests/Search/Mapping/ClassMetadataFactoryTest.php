@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\Mapping;
+namespace Doctrine\Tests\Search\Mapping;
 
 use Doctrine\Search\Mapping\ClassMetadataFactory;
 /**

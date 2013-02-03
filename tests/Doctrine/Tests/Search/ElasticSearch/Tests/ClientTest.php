@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\ElasticSearch\Tests;
+namespace Doctrine\Tests\Search\ElasticSearch\Tests;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\ElasticSearch\Connection;
 use Doctrine\Search\Http\Response\BuzzResponse;

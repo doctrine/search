@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search;
+namespace Doctrine\Tests\Search;
 
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Http\Client\BuzzClient;
@@ -105,9 +105,9 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->metadataFactory->expects($this->once())
                                ->method('getMetadataFor')
-                               ->will($this->returnValue(new \Doctrine\Search\Mapping\ClassMetadata('Unit\Doctrine\Search\Documents\BlogPost')));
+                               ->will($this->returnValue(new \Doctrine\Search\Mapping\ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost')));
 
-        $metaData = $this->sm->loadClassMetadata('Unit\Doctrine\Search\Documents\BlogPost');
+        $metaData = $this->sm->loadClassMetadata('Doctrine\Tests\Search\Documents\BlogPost');
         $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\ClassMetadata', $metaData);
     }
 

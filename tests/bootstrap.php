@@ -2,7 +2,7 @@
 
 $loader = require_once __DIR__.'/../vendor/autoload.php';
 
-$loader->add('Unit\\Doctrine\\Search', __DIR__);
+$loader->add('Doctrine\\Tests\\Search', __DIR__);
 $loader->add('Doctrine\\ODM\\MongoDB\\Tests', __DIR__.'/../vendor/doctrine/mongodb-odm/tests');
 
 // use statements

@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\Http\Client;
+namespace Doctrine\Tests\Search\Http\Client;
 
 use Doctrine\Search\Http\Client\CurlClient;
 
