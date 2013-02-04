@@ -12,6 +12,7 @@
     },
     "require-dev": {
         "kriswallsmith/buzz": "0.7.*",
+        "doctrine/orm": "2.3.*",
         "doctrine/mongodb": "1.0.*",
         "doctrine/mongodb-odm": "1.0.*"
     },
