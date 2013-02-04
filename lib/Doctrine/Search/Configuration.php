@@ -132,5 +132,4 @@ class Configuration
         }
         return $this->attributes['classMetadataFactory'];
     }
-
 }

@@ -52,7 +52,6 @@ class AnnotationDriver extends BaseAnnotationDriver
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
 
-
     /**
      * {@inheritDoc}
      *
@@ -70,9 +69,7 @@ class AnnotationDriver extends BaseAnnotationDriver
 
         $this->extractClassAnnotations($reflClass, $metadata);
         $this->extractPropertiesAnnotations($reflProperties, $metadata);
-
     }
-
 
     /**
      * This function extracts the class annotations for search from the given reflected class and writes

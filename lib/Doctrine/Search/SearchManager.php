@@ -51,7 +51,6 @@ class SearchManager
     private $configuration;
 
     /**
-     *
      * @var object
      */
     private $metadataFactory;
@@ -100,8 +99,9 @@ class SearchManager
     }
 
     /**
+     * Sets the objectmanager
+     * 
      * @param \Doctrine\Common\Persistence\ObjectManager $om
-     * @return void
      */
     public function setObjectManager(ObjectManager $om)
     {
@@ -109,6 +109,8 @@ class SearchManager
     }
 
     /**
+     * Get the objectmanager
+     * 
      * @return \Doctrine\Common\Persistence\ObjectManager
      */
     public function getObjectManager()
@@ -117,7 +119,10 @@ class SearchManager
     }
 
     /**
-     * @param String $className
+     * Loads the metadata from the given class.
+     * 
+     * @param string $className
+     * 
      * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
     public function loadClassMetadata($className)
@@ -126,6 +131,8 @@ class SearchManager
     }
 
     /**
+     * Return the ClassMetadataFactory.
+     * 
      * @return ClassMetadataFactory
      */
     public function getClassMetadataFactory()
@@ -133,12 +140,11 @@ class SearchManager
         return $this->metadataFactory;
     }
 
-
     /**
      *
-     * @param String $index
-     * @param String $type
-     * @param String $query
+     * @param string $index
+     * @param string $type
+     * @param string $query
      */
     public function find($index = null, $type = null, $query = null)
     {

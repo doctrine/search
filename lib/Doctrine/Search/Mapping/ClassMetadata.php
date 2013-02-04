@@ -53,32 +53,32 @@ class ClassMetadata implements ClassMetadataInterface
     public $type;
 
     /**
-     * @var int
+     * @var integer
      */
     public $numberOfShards = 1;
 
     /**
-     * @var int
+     * @var integer
      */
     public $numberOfReplicas = 1;
 
     /**
-     * @var int
+     * @var integer
      */
     public $opType = 1;
 
     /**
-     * @var int
+     * @var integer
      */
     public $parent = 1;
 
     /**
-     * @var int
+     * @var integer
      */
     public $timeToLive = 1;
 
     /**
-     * @var int
+     * @var integer
      */
     public $value = 1;
 
@@ -99,21 +99,19 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public $fieldMappings = array();
 
-
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflClass;
 
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflFields;
-
 
     public function __construct($documentName)
     {
@@ -121,7 +119,8 @@ class ClassMetadata implements ClassMetadataInterface
         $this->reflClass = new \ReflectionClass($documentName);
     }
 
-    /** Determines which fields get serialized.
+    /** 
+     * Determines which fields get serialized.
      *
      * It is only serialized what is necessary for best unserialization performance.
      *
@@ -204,7 +203,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function getReflectionClass()
     {
         return $this->reflClass;
-
     }
 
     /**
@@ -216,7 +214,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isIdentifier($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -228,7 +225,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function hasField($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -262,7 +258,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function hasAssociation($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -274,7 +269,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isSingleValuedAssociation($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -286,7 +280,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isCollectionValuedAssociation($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -357,7 +350,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @param object $object
      * @return array
      */
-    function getIdentifierValues($object)
+    public function getIdentifierValues($object)
     {
         // TODO: Implement getIdentifierValues() method.
     }
@@ -367,9 +360,8 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @return array
      */
-    function getIdentifierFieldNames()
+    public function getIdentifierFieldNames()
     {
         // TODO: Implement getIdentifierFieldNames() method.
     }
-
 }
