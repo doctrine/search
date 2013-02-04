@@ -26,6 +26,7 @@ use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Search\Exception\UnexpectedTypeException;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -51,21 +52,20 @@ class SearchManager
     private $configuration;
 
     /**
-     *
      * @var object
      */
     private $metadataFactory;
 
     /**
-     *
      * @var object
      */
     private $annotationReader;
 
     /**
-     *
-     * @param ObjectManager $om
-     * @param Configuration $conf
+     * Constructor
+     * 
+     * @param ObjectManager         $om
+     * @param Configuration         $conf
      * @param SearchClientInterface $sc
      */
     public function __construct(Configuration $conf = null,
@@ -100,8 +100,9 @@ class SearchManager
     }
 
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $om
-     * @return void
+     * Sets the object manager
+     *
+     * @param ObjectManager $om
      */
     public function setObjectManager(ObjectManager $om)
     {
@@ -117,7 +118,10 @@ class SearchManager
     }
 
     /**
-     * @param String $className
+     * Loads class metadata for the given class
+     * 
+     * @param string $className
+     * 
      * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
     public function loadClassMetadata($className)
@@ -133,12 +137,11 @@ class SearchManager
         return $this->metadataFactory;
     }
 
-
     /**
      *
-     * @param String $index
-     * @param String $type
-     * @param String $query
+     * @param string $index
+     * @param string $type
+     * @param string $query
      */
     public function find($index = null, $type = null, $query = null)
     {
@@ -154,6 +157,10 @@ class SearchManager
      */
     public function persist($object)
     {
+        if (!is_object($object)) {
+            throw new UnexpectedTypeException($object, 'object');
+        }
+
         //$this->searchClient->createIndex($index, $type, $query);
     }
 
@@ -166,6 +173,9 @@ class SearchManager
      */
     public function remove($object)
     {
+        if (!is_object($object)) {
+            throw new UnexpectedTypeException($object, 'object');
+        }
     }
 
     /**
@@ -177,7 +187,9 @@ class SearchManager
      */
     public function bulk($object)
     {
-
+        if (!is_object($object)) {
+            throw new UnexpectedTypeException($object, 'object');
+        }
     }
 
     /**
