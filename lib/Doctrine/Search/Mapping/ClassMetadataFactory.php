@@ -37,13 +37,19 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    /** The SearchManager instance */
+    /**
+     * @var \Doctrine\Search\SearchManager
+     */
     private $sm;
 
-    /** The Configuration instance */
+    /**
+     * @var \Doctrine\Search\Configuration
+     */
     private $config;
 
-    /** The used metadata driver. */
+    /**
+     * @var \Doctrine\Search\Mapping\Driver\AnnotationDriver
+     */
     private $driver;
 
     protected function initialize()
@@ -72,12 +78,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->config = $config;
     }
 
-
     /**
      * Get the fully qualified class-name from the namespace alias.
      *
      * @param string $namespaceAlias
      * @param string $simpleClassName
+     * 
      * @return string
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
@@ -93,7 +99,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function getDriver()
     {
         return $this->driver;
-
     }
 
     /**
@@ -108,7 +113,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         //Manipulates $classMetadata;
         $this->driver->loadMetadataForClass($class->getName(), $class);
-
     }
 
     /**
@@ -120,7 +124,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);
-
     }
 
     /**

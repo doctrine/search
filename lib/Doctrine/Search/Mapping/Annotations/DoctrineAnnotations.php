@@ -30,11 +30,12 @@ use Doctrine\Common\Annotations\Annotation;
 class Searchable extends Annotation
 {
     /**
-     * @var string $index;
+     * @var string
      */
     public $index;
+
     /**
-     * @var string $type;
+     * @var string
      */
     public $type;
 }
@@ -46,24 +47,27 @@ class Searchable extends Annotation
 final class ElasticSearchable extends Searchable
 {
     /**
-     * @var int $numberOfShards;
+     * @var integer
      */
     public $numberOfShards;
+
     /**
-     * @var int $numnberOfReplicas
+     * @var integer
      */
     public $numberOfReplicas;
+
     /**
-     * @var string $op_type;
+     * @var string
      */
     public $opType;
+
     /**
-     * @var float $parent;
+     * @var float
      */
     public $parent;
+
     /**
-     * TTL in milliseconds
-     * @var int $timeToLive
+     * @var integer
      */
     public $timeToLive;
 }
