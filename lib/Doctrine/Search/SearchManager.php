@@ -124,13 +124,13 @@ class SearchManager
      * 
      * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
-    public function loadClassMetadata($className)
+    public function getClassMetadata($className)
     {
         return $this->metadataFactory->getMetadataFor((string)$className);
     }
 
     /**
-     * @return ClassMetadataFactory
+     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadataFactory
      */
     public function getClassMetadataFactory()
     {
