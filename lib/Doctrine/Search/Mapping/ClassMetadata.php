@@ -134,7 +134,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function __sleep()
     {
         // This metadata is always serialized/cached.
-        $serialized = array(
+        return array(
             'boost',
             'className',
             'fieldMappings',
@@ -148,8 +148,6 @@ class ClassMetadata implements ClassMetadataInterface
             'value',
             'reflFields',
         );
-
-        return $serialized;
     }
 
     /**

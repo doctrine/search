@@ -19,11 +19,13 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as BaseAnnotationDriver,
-Doctrine\Search\Mapping\Annotations as Search,
-Doctrine\Search\Mapping\ClassMetadata as SearchMetadata,
-Doctrine\Common\Persistence\Mapping\ClassMetadata,
-Doctrine\Search\Exception\Driver as DriverException;
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver,
+    Doctrine\Search\Mapping\Annotations as Search,
+    Doctrine\Search\Mapping\ClassMetadata as SearchMetadata,
+    Doctrine\Common\Persistence\Mapping\ClassMetadata,
+    Doctrine\Search\Exception\Driver as DriverException;
+
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -33,7 +35,7 @@ Doctrine\Search\Exception\Driver as DriverException;
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class AnnotationDriver extends BaseAnnotationDriver
+class AnnotationDriver extends AbstractAnnotationDriver
 {
     /**
      * Document annotation classes, ordered by precedence.
@@ -56,7 +58,7 @@ class AnnotationDriver extends BaseAnnotationDriver
     /**
      * {@inheritDoc}
      *
-     * @throws ReflectionException
+     * @throws \ReflectionException
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
@@ -79,9 +81,11 @@ class AnnotationDriver extends BaseAnnotationDriver
      * them into metadata.
      *
      * @param \ReflectionClass $reflClass
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
-     * @throws \Doctrine\Search\Exception\Driver\ClassIsNotAValidDocumentException|\Doctrine\Search\Exception\Driver\PropertyDoesNotExistsInMetadataException
+     * @param ClassMetadata    $metadata
+     *
+     * @return ClassMetadata
+     *
+     * @throws DriverException\ClassIsNotAValidDocumentException|DriverException\PropertyDoesNotExistsInMetadataException
      */
     private function extractClassAnnotations(\ReflectionClass $reflClass, ClassMetadata $metadata)
     {
@@ -102,7 +106,7 @@ class AnnotationDriver extends BaseAnnotationDriver
         //choose only one (the first one)
         $annotationClass = $documentsClassAnnotations[0];
         $reflClassAnnotations = new \ReflectionClass($annotationClass);
-        $metadata = $this->addValuesToMetdata($reflClassAnnotations->getProperties(),
+        $metadata = $this->addValuesToMetadata($reflClassAnnotations->getProperties(),
             $metadata,
             $annotationClass);
 
@@ -110,9 +114,12 @@ class AnnotationDriver extends BaseAnnotationDriver
     }
 
     /**
-     * @param array $reflProperties
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata|mixed
+     * Extract the property annotations.
+     *
+     * @param \ReflectionProperty[] $reflProperties
+     * @param ClassMetadata         $metadata
+     *
+     * @return ClassMetadata
      */
     private function extractPropertiesAnnotations(array $reflProperties, ClassMetadata $metadata)
     {
@@ -129,9 +136,8 @@ class AnnotationDriver extends BaseAnnotationDriver
         }
 
         foreach ($documentsFieldAnnotations as $documentsFieldAnnotation) {
-
             $reflFieldAnnotations = new \ReflectionClass($documentsFieldAnnotation);
-            $metadata = $this->addValuesToMetdata($reflFieldAnnotations->getProperties(),
+            $metadata = $this->addValuesToMetadata($reflFieldAnnotations->getProperties(),
                 $metadata,
                 $documentsFieldAnnotation);
 
@@ -141,13 +147,15 @@ class AnnotationDriver extends BaseAnnotationDriver
     }
 
     /**
-     * @param array $reflectedClassProperties
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata
-     * @param $class
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
-     * @throws \Doctrine\Search\Exception\Driver\PropertyDoesNotExistsInMetadataException
+     * @param \ReflectionProperty[] $reflectedClassProperties
+     * @param ClassMetadata         $metadata
+     * @param string                $class
+     *
+     * @return ClassMetadata
+     *
+     * @throws DriverException\PropertyDoesNotExistsInMetadataException
      */
-    private function addValuesToMetdata(array $reflectedClassProperties, ClassMetadata $metadata, $class)
+    private function addValuesToMetadata(array $reflectedClassProperties, ClassMetadata $metadata, $class)
     {
         foreach ($reflectedClassProperties as $reflectedProperty) {
             $propertyName = $reflectedProperty->getName();
