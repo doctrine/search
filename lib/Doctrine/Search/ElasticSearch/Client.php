@@ -20,99 +20,62 @@
 namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Search\Http\ClientInterface as HttpClientInterface;
-
-use Doctrine\Search\Exception\Json\JsonEncodeException;
-use Doctrine\Search\Exception\Json\JsonDecodeException;
-
 
 /**
  * SearchManager for ElasticSearch-Backend
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
+ * @author  Markus Bachmann <markus.bachmann@bachi.biz>
  */
 class Client implements SearchClientInterface
 {
-
+    /**
+     * @var \Elastica_Client
+     */
     private $client;
 
-    private $host;
-
-    private $port;
-
-    /*
-     * @param Connection $conn
-     * @param Configuration $config
+    /**
+     * @param \Elastica_Client $client
      */
-    public function __construct(HttpClientInterface $client = null, $host = 'localhost', $port = '9200')
+    public function __construct(\Elastica_Client $client)
     {
-        $this->host = (string)$host;
-        $this->port = (string)$port;
-        $this->client = $client ? : new \Doctrine\Search\Http\Client\BuzzClient();
+        $this->client = $client;
     }
 
     /**
-     *
-     * @see Doctrine\Search.SearchClientInterface::find()
+     * {@inheritDoc}
      */
     public function find($index, $type, $query)
     {
-        $searchUrl = $this->host . ':' . $this->port . '/' . (string)$index . '/' . (string)$type . '/_search?' . (string)$query;
-
-        $response = $this->client->sendRequest('GET', $searchUrl);
-
-        $content = $response->getContent();
-        $decodedJson = json_decode($content);
-
-        if ($decodedJson == NULL) {
-            throw new JsonDecodeException();
-        }
-
-        return $decodedJson;
-
+        $index = $this->client->getIndex($index);
+        return iterator_to_array($index->search($query));
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Doctrine\Search.SearchClientInterface::createIndex()
-     *
-     * @return Doctrine\Search\Http\ResponseInterface
+     * {@inheritDoc}
      */
     public function createIndex($index, $type, array $data)
     {
-        $encodedJson = json_encode($data);
+        $index = $this->client->getIndex($index);
+        $index->create();
 
-        if ($encodedJson == NULL) {
-            throw new JsonEncodeException($data);
-        }
-        $indexUrl = $this->host . ':' . $this->port . '/' . (string)$index . '/' . (string)$type . '/';
-
-        return $this->client->sendRequest('PUT', $indexUrl, $encodedJson);
-
-    }
-
-    public function updateIndex(array $data)
-    {
-
+        $index->addDocuments($data);
     }
 
     /**
-     *
-     * @param array $data
+     * {@inheritDoc}
      */
     public function deleteIndex($index)
     {
-        // TODO: Implement deleteIndex() method.
+        $index = $this->client->getIndex($index);
+        $index->delete();
     }
 
     /**
-     * @param array $data
+     * {@inheritDoc}
      */
     public function bulkSearch(array $data)
     {
-        // TODO: Implement bulkAction() method.
     }
-
 }

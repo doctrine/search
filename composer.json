@@ -11,7 +11,7 @@
         "doctrine/common": "2.3.*"
     },
     "require-dev": {
-        "kriswallsmith/buzz": "0.7.*",
+        "ruflin/Elastica": "0.19.*",
         "doctrine/orm": "2.3.*",
         "doctrine/mongodb": "1.0.*",
         "doctrine/mongodb-odm": "1.0.*"
