@@ -22,11 +22,6 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     private $searchClient;
 
     /**
-     * @var Doctrine\Common\Annotations\Reader
-     */
-    private $reader;
-
-    /**
      * @var Doctrine\Search\Configuration
      */
     private $configuration;
@@ -42,28 +37,21 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        //Prepare the SearchManger's dependencies
         $this->metadataFactory = $this->getMock('Doctrine\\Search\\Mapping\\ClassMetadataFactory');
-
 
         $this->searchClient = $this->getMock('Doctrine\\Search\\ElasticSearch\\Client', array(), array(), '', false);
 
-        $this->reader = $this->getMock('Doctrine\\Common\\Annotations\\Reader');
-
-
         $this->configuration = $this->getMock('Doctrine\\Search\\Configuration');
         $this->configuration->expects($this->once())
-                      ->method('getClassMetadataFactory')
-                      ->will($this->returnValue($this->metadataFactory));
+              ->method('getClassMetadataFactory')
+              ->will($this->returnValue($this->metadataFactory));
 
         $this->configuration->expects($this->once())
-                              ->method('getMetadataCacheImpl')
-                              ->will($this->returnValue($this->getMock('Doctrine\\Common\\Cache\\ArrayCache')));
+              ->method('getMetadataCacheImpl')
+              ->will($this->returnValue($this->getMock('Doctrine\\Common\\Cache\\ArrayCache')));
 
-
-        $this->sm = new SearchManager($this->configuration, $this->searchClient, $this->reader);
+        $this->sm = new SearchManager($this->configuration, $this->searchClient);
     }
-
 
     /**
      * Tests if the returned configuration is a Doctrine\\Search\\Configuration
@@ -71,14 +59,6 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     public function testGetConfiguration()
     {
         $this->assertInstanceOf('Doctrine\\Search\\Configuration', $this->sm->getConfiguration());
-    }
-
-    /**
-     * Tests if the returned configuration is a Doctrine\\Common\\Annotations\\AnnotationReader
-     */
-    public function testGetAnnotationReader()
-    {
-        $this->assertInstanceOf('Doctrine\\Common\\Annotations\\Reader', $this->sm->getAnnotationReader());
     }
 
     /**
@@ -104,8 +84,8 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     public function testLoadClassMetadata()
     {
         $this->metadataFactory->expects($this->once())
-                               ->method('getMetadataFor')
-                               ->will($this->returnValue(new \Doctrine\Search\Mapping\ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost')));
+            ->method('getMetadataFor')
+            ->will($this->returnValue(new \Doctrine\Search\Mapping\ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost')));
 
         $metaData = $this->sm->loadClassMetadata('Doctrine\Tests\Search\Documents\BlogPost');
         $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\ClassMetadata', $metaData);
@@ -117,7 +97,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoadClassMetadataWrongParameter()
     {
-        $metaData = $this->sm->loadClassMetadata(new \StdClass());
+        $this->sm->loadClassMetadata(new \stdClass());
     }
 
     public function testGetClassMetadataFactory()

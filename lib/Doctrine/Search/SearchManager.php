@@ -27,6 +27,8 @@ use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Search\Exception\UnexpectedTypeException;
+use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Mapping\ClassMetadataFactory;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -37,14 +39,9 @@ use Doctrine\Search\Exception\UnexpectedTypeException;
 class SearchManager
 {
     /**
-     * @var SearchClient
+     * @var SearchClientInterface
      */
     private $searchClient;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
 
     /**
      * @var Configuration $configuration
@@ -52,35 +49,25 @@ class SearchManager
     private $configuration;
 
     /**
-     * @var object
+     * @var ClassMetadataFactory
      */
     private $metadataFactory;
 
     /**
-     * @var object
-     */
-    private $annotationReader;
-
-    /**
      * Constructor
-     * 
-     * @param ObjectManager         $om
-     * @param Configuration         $conf
+     *
+     * @param Configuration         $config
      * @param SearchClientInterface $sc
      */
-    public function __construct(Configuration $conf = null,
-                                SearchClientInterface $sc = null,
-                                Reader $reader = null)
+    public function __construct(Configuration $config, SearchClientInterface $sc)
     {
-        $this->configuration = $conf ? : new Configuration();
-        $this->searchClient = $sc ? : new Client();
-        $this->annotationReader = $reader ? : new AnnotationReader();
+        $this->configuration = $config;
+        $this->searchClient = $sc;
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setConfiguration($this->configuration);
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
-
     }
 
     /**
@@ -92,37 +79,11 @@ class SearchManager
     }
 
     /**
-     * @return AnnotationReader
-     */
-    public function getAnnotationReader()
-    {
-        return $this->annotationReader;
-    }
-
-    /**
-     * Sets the object manager
-     *
-     * @param ObjectManager $om
-     */
-    public function setObjectManager(ObjectManager $om)
-    {
-        $this->objectManager = $om;
-    }
-
-    /**
-     * @return \Doctrine\Common\Persistence\ObjectManager
-     */
-    public function getObjectManager()
-    {
-        return $this->objectManager;
-    }
-
-    /**
      * Loads class metadata for the given class
      * 
      * @param string $className
      * 
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function getClassMetadata($className)
     {
@@ -130,7 +91,7 @@ class SearchManager
     }
 
     /**
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadataFactory
+     * @return ClassMetadataFactory
      */
     public function getClassMetadataFactory()
     {

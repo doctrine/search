@@ -23,22 +23,20 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->configuration = new Configuration();
     }
 
-
     public function testGetMetadataDriverImpl()
     {
        $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
        $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\AnnotationDriver', $metadataDriverImpl);
     }
 
-
     public function testSetMetadataDriverImpl()
     {
-        $mockedMetadataDriverImpl = $this->getMock('\\Doctrine\\Search\\Mapping\\Driver\\Driver'
+        $mockedMetadataDriverImpl = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver'
                                                    , array(), array(), '', false);
         $this->configuration->setMetadataDriverImpl($mockedMetadataDriverImpl);
 
         $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
-        $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\Driver', $metadataDriverImpl);
+        $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver', $metadataDriverImpl);
 
     }
 
@@ -58,7 +56,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $cacheMetadataImpl = $this->configuration->getMetadataCacheImpl();
         $this->assertInstanceOf('\Doctrine\Common\Cache\Cache', $cacheMetadataImpl);
     }
-
 
     public function testNewDefaultAnnotationDriver()
     {

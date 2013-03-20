@@ -25,6 +25,7 @@ use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -37,15 +38,24 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    /** The SearchManager instance */
+    /**
+     * @var SearchManager
+     */
     private $sm;
 
-    /** The Configuration instance */
+    /**
+     * @var Configuration
+     */
     private $config;
 
-    /** The used metadata driver. */
+    /**
+     * @var MappingDriver
+     */
     private $driver;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function initialize()
     {
         $this->driver = $this->config->getMetadataDriverImpl();
@@ -72,12 +82,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->config = $config;
     }
 
-
     /**
      * Get the fully qualified class-name from the namespace alias.
      *
      * @param string $namespaceAlias
      * @param string $simpleClassName
+     *
      * @return string
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
@@ -93,7 +103,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function getDriver()
     {
         return $this->driver;
-
     }
 
     /**
@@ -102,13 +111,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @param ClassMetadata $class
      * @param ClassMetadata $parent
      * @param bool $rootEntityFound
+     *
      * @return void
      */
     protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents)
     {
         //Manipulates $classMetadata;
         $this->driver->loadMetadataForClass($class->getName(), $class);
-
     }
 
     /**
@@ -120,14 +129,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function newClassMetadataInstance($className)
     {
         return new ClassMetadata($className);
-
     }
 
     /**
      * Wakeup reflection after ClassMetadata gets unserialized from cache.
      *
-     * @param ClassMetadata $class
+     * @param BaseClassMetadata $class
      * @param ReflectionService $reflService
+     *
      * @return void
      */
     protected function wakeupReflection(BaseClassMetadata $class, ReflectionService $reflService)

@@ -160,14 +160,11 @@ class ClassMetadata implements ClassMetadataInterface
         // Restore ReflectionClass and properties
         $this->reflClass = new \ReflectionClass($this->className);
 
-        /*I am not sure if that is needed
-         * foreach ($this->fieldMappings as $field => $mapping) {
-
+        foreach ($this->fieldMappings as $field => $mapping) {
             $reflField = $this->reflClass->getProperty($field);
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
-        }*/
-
+        }
     }
 
     /**
