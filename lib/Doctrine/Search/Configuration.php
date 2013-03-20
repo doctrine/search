@@ -19,9 +19,10 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Search\Mapping\Driver\Driver;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Search\Mapping\ClassMetadataFactory;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 
 /**
  * Configuration SearchManager
@@ -32,9 +33,7 @@ use Doctrine\Common\Cache\ArrayCache;
 class Configuration
 {
     /**
-     *
-     * Holds the attributes for the search configuration
-     * @var array $attributes
+     * @var array
      */
     private $attributes;
 
@@ -42,7 +41,7 @@ class Configuration
      * Gets the cache driver implementation that is used for the mapping metadata.
      * (Annotation is the default)
      *
-     * @return Mapping\Driver\Driver
+     * @return MappingDriver
      */
     public function getMetadataDriverImpl()
     {
@@ -56,9 +55,9 @@ class Configuration
     /**
      * Sets the driver that is used to store the class metadata .
      *
-     * @param Driver $concreteDriver
+     * @param MappingDriver $concreteDriver
      */
-    public function setMetadataDriverImpl(Driver $concreteDriver)
+    public function setMetadataDriverImpl(MappingDriver $concreteDriver)
     {
         $this->attributes['concreteMetadataDriver'] = $concreteDriver;
     }
@@ -66,7 +65,7 @@ class Configuration
     /**
      * Sets the cache driver that is used to cache the metadata.
      *
-     * @param \Doctrine\Common\Cache\Cache $concreteCache
+     * @param Cache $concreteCache
      */
     public function setMetadataCacheImpl(Cache $concreteCache)
     {
@@ -76,7 +75,7 @@ class Configuration
     /**
      * Returns the cache driver that is used to cache the metadata.
      *
-     * @return \Doctrine\Common\Cache\Cache
+     * @return Cache
      */
     public function getMetadataCacheImpl()
     {
@@ -87,6 +86,7 @@ class Configuration
      * Add a new default annotation driver with a correctly configured annotation reader.
      *
      * @param array $paths
+     *
      * @return Mapping\Driver\AnnotationDriver
      */
     public function newDefaultAnnotationDriver(array $paths = array())
@@ -116,13 +116,14 @@ class Configuration
         if (!isset($this->attributes['classMetadataFactoryName'])) {
             $this->attributes['classMetadataFactoryName'] = 'Doctrine\Search\Mapping\ClassMetadataFactory';
         }
+
         return $this->attributes['classMetadataFactoryName'];
     }
 
     /**
      * Gets the class metadata factory.
      *
-     * @return Doctrine\Common\AbstractClassMetadataFactory
+     * @return ClassMetadataFactory
      */
     public function getClassMetadataFactory()
     {

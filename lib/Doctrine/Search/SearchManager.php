@@ -26,9 +26,10 @@ use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Search\Mapping\ClassMetadataFactory;
 
 /**
- * Interface for a Doctrine SearchManager class to implement.
+ * Doctrine SearchManager-
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
@@ -36,7 +37,7 @@ use Doctrine\Common\Annotations\Reader;
 class SearchManager
 {
     /**
-     * @var SearchClient
+     * @var SearchClientInterface
      */
     private $searchClient;
 
@@ -46,41 +47,28 @@ class SearchManager
     private $objectManager;
 
     /**
-     * @var Configuration $configuration
+     * @var Configuration
      */
     private $configuration;
 
     /**
-     *
-     * @var object
+     * @var ClassMetadataFactory
      */
     private $metadataFactory;
 
     /**
-     *
-     * @var object
+     * @param Configuration          $config
+     * @param SearchClientInterface  $client
      */
-    private $annotationReader;
-
-    /**
-     *
-     * @param ObjectManager $om
-     * @param Configuration $conf
-     * @param SearchClientInterface $sc
-     */
-    public function __construct(Configuration $conf = null,
-                                SearchClientInterface $sc = null,
-                                Reader $reader = null)
+    public function __construct(Configuration $config, SearchClientInterface $client)
     {
-        $this->configuration = $conf ? : new Configuration();
-        $this->searchClient = $sc ? : new Client();
-        $this->annotationReader = $reader ? : new AnnotationReader();
+        $this->configuration = $config;
+        $this->searchClient = $client;
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setConfiguration($this->configuration);
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
-
     }
 
     /**
@@ -89,14 +77,6 @@ class SearchManager
     public function getConfiguration()
     {
         return $this->configuration;
-    }
-
-    /**
-     * @return AnnotationReader
-     */
-    public function getAnnotationReader()
-    {
-        return $this->annotationReader;
     }
 
     /**
@@ -117,7 +97,8 @@ class SearchManager
     }
 
     /**
-     * @param String $className
+     * @param string $className
+     * 
      * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
      */
     public function loadClassMetadata($className)
@@ -133,12 +114,10 @@ class SearchManager
         return $this->metadataFactory;
     }
 
-
     /**
-     *
-     * @param String $index
-     * @param String $type
-     * @param String $query
+     * @param string $index
+     * @param string $type
+     * @param string $query
      */
     public function find($index = null, $type = null, $query = null)
     {
@@ -154,7 +133,6 @@ class SearchManager
      */
     public function persist($object)
     {
-        //$this->searchClient->createIndex($index, $type, $query);
     }
 
     /**
@@ -177,7 +155,6 @@ class SearchManager
      */
     public function bulk($object)
     {
-
     }
 
     /**

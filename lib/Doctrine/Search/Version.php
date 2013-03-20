@@ -1,9 +1,9 @@
 <?php
+
 namespace Doctrine\Search;
 
 final class Version
 {
-
     /**
      * @var string
      */
@@ -21,5 +21,4 @@ final class Version
 
         return version_compare($version, static::$version);
     }
-
 }
