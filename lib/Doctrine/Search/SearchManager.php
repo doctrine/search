@@ -26,10 +26,12 @@ use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Search\Exception\UnexpectedTypeException;
+use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Search\Mapping\ClassMetadataFactory;
 
 /**
- * Doctrine SearchManager-
+ * Interface for a Doctrine SearchManager class to implement.
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
@@ -42,12 +44,7 @@ class SearchManager
     private $searchClient;
 
     /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
-    /**
-     * @var Configuration
+     * @var Configuration $configuration
      */
     private $configuration;
 
@@ -57,13 +54,15 @@ class SearchManager
     private $metadataFactory;
 
     /**
-     * @param Configuration          $config
-     * @param SearchClientInterface  $client
+     * Constructor
+     *
+     * @param Configuration         $config
+     * @param SearchClientInterface $sc
      */
-    public function __construct(Configuration $config, SearchClientInterface $client)
+    public function __construct(Configuration $config, SearchClientInterface $sc)
     {
         $this->configuration = $config;
-        $this->searchClient = $client;
+        $this->searchClient = $sc;
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
@@ -80,28 +79,13 @@ class SearchManager
     }
 
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $om
-     * @return void
-     */
-    public function setObjectManager(ObjectManager $om)
-    {
-        $this->objectManager = $om;
-    }
-
-    /**
-     * @return \Doctrine\Common\Persistence\ObjectManager
-     */
-    public function getObjectManager()
-    {
-        return $this->objectManager;
-    }
-
-    /**
+     * Loads class metadata for the given class
+     * 
      * @param string $className
      * 
-     * @return \Doctrine\Common\Persistence\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
-    public function loadClassMetadata($className)
+    public function getClassMetadata($className)
     {
         return $this->metadataFactory->getMetadataFor((string)$className);
     }
@@ -115,6 +99,7 @@ class SearchManager
     }
 
     /**
+     *
      * @param string $index
      * @param string $type
      * @param string $query
@@ -133,6 +118,11 @@ class SearchManager
      */
     public function persist($object)
     {
+        if (!is_object($object)) {
+            throw new UnexpectedTypeException($object, 'object');
+        }
+
+        //$this->searchClient->createIndex($index, $type, $query);
     }
 
     /**
@@ -144,6 +134,9 @@ class SearchManager
      */
     public function remove($object)
     {
+        if (!is_object($object)) {
+            throw new UnexpectedTypeException($object, 'object');
+        }
     }
 
     /**
@@ -155,6 +148,9 @@ class SearchManager
      */
     public function bulk($object)
     {
+        if (!is_object($object)) {
+            throw new UnexpectedTypeException($object, 'object');
+        }
     }
 
     /**
