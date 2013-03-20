@@ -25,10 +25,6 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
      */
     private $reflectionClass;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
     protected function setUp()
     {
         $this->reader = $this->getMock('Doctrine\\Common\\Annotations\\Reader');
@@ -42,7 +38,6 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadMetadataForClass()
     {
-
         $this->reader->expects($this->once())
             ->method('getClassAnnotations')
             ->will($this->returnValue(array(0, new TestSearchable2(array()))));
