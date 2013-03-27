@@ -24,7 +24,6 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
         //removed className, because it is set by constructor and used on __wakeup
         $fields = array(
             'boost',
-            'fieldMappings',
             'index',
             'numberOfReplicas',
             'numberOfShards',
@@ -40,6 +39,8 @@ class ClassMetadataTest extends \PHPUnit_Framework_TestCase
         foreach ($fields as $field) {
             $this->classMetadata->$field = 1;
         }
+
+        $this->classMetadata->fieldMappings = array();
 
         $serializedClass = serialize($this->classMetadata);
         $unserializedClass = unserialize($serializedClass);

@@ -10,6 +10,8 @@ use Doctrine\Search\Mapping\Annotations as SEARCH;
  */
 class BlogPost
 {
+    const CLASSNAME = __CLASS__;
+
     public $id;
 
     /**

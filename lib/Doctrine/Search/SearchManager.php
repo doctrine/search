@@ -87,7 +87,7 @@ class SearchManager
      */
     public function getClassMetadata($className)
     {
-        return $this->metadataFactory->getMetadataFor((string)$className);
+        return $this->metadataFactory->getMetadataFor($className);
     }
 
     /**

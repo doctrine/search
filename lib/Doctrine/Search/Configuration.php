@@ -99,7 +99,7 @@ class Configuration
     /**
      * Set the class metadata factory class name.
      *
-     * @param string $cmf
+     * @param string $cmfName
      */
     public function setClassMetadataFactoryName($cmfName)
     {
