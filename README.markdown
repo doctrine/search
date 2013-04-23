@@ -1,5 +1,7 @@
 # Doctrine Search #
 
+Note: This project is a prototype at the moment.
+
 __Supported search engines__
 
 * [ElasticSearch](http://www.elasticsearch.org/)
