@@ -38,7 +38,7 @@ class Client implements SearchClientInterface
     /**
      * @param \Elastica_Client $client
      */
-    public function __construct(\Elastica_Client $client)
+    public function __construct(\Elastica\Client $client)
     {
         $this->client = $client;
     }
