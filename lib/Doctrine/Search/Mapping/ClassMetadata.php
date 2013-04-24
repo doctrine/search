@@ -83,11 +83,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $value = 1;
 
     /**
-     * @var float
-     */
-    public $boost = 1.0;
-
-    /**
      * @var string
      */
     public $className;
@@ -135,7 +130,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         // This metadata is always serialized/cached.
         return array(
-            'boost',
             'className',
             'fieldMappings',
             'index',
@@ -232,11 +226,11 @@ class ClassMetadata implements ClassMetadataInterface
      * @param \ReflectionProperty $field
      * @param array $mapping
      */
-    /*public function addFieldMapping(\ReflectionProperty $field, $mapping = array())
+    public function addFieldMapping(\ReflectionProperty $field, $mapping = array())
     {
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
-    }*/
+    }
 
     /**
      * @param \ReflectionProperty $field

@@ -126,26 +126,18 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $documentsFieldAnnotations = array();
         foreach ($reflProperties as $reflProperty) {
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
-                foreach (self::$documentFieldAnnotationClasses as $i => $fieldAnnotationClass) {
+                foreach (self::$documentFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
-                        $documentsFieldAnnotations[$i] = $annotation;
+                        $metadata->addFieldMapping($reflProperty, $annotation);
                         continue 2;
                     }
                 }
             }
         }
 
-        foreach ($documentsFieldAnnotations as $documentsFieldAnnotation) {
-            $reflFieldAnnotations = new \ReflectionClass($documentsFieldAnnotation);
-            $metadata = $this->addValuesToMetadata($reflFieldAnnotations->getProperties(),
-                $metadata,
-                $documentsFieldAnnotation);
-
-        }
-
         return $metadata;
     }
-
+    
     /**
      * @param \ReflectionProperty[] $reflectedClassProperties
      * @param ClassMetadata         $metadata
@@ -164,9 +156,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
             } else {
                 $metadata->$propertyName = $class->$propertyName;
-                /*I am not sure if that is needed
-                 * $metadata->addField($reflectedProperty);
-                $metadata->addFieldMapping($reflectedProperty);*/
             }
         }
 
