@@ -204,7 +204,7 @@ class SearchManager
     
     protected function commitRemoved()
     {
-    	$documents = $this->sortObjects($this->removed);
+    	$documents = $this->sortObjects($this->removed, false);
     
     	foreach($documents as $index => $documentTypes)
     	{
@@ -215,13 +215,13 @@ class SearchManager
     	}
     }
     
-    protected function sortObjects(array $objects)
+    protected function sortObjects(array $objects, $serialize = true)
     {
     	$documents = array();
     	foreach($objects as $object)
     	{
     		$metadata = $this->getClassMetadata(get_class($object));
-    		$document = $this->serializer->serialize($object);
+    		$document = $serialize ? $this->serializer->serialize($object) : $object;
     		$documents[$metadata->index][$metadata->type][$object->getId()] = $document;
     	}
     	return $documents;
