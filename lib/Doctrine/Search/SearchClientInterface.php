@@ -47,17 +47,28 @@ interface SearchClientInterface
      * @param string $config The configuration of the index.
      */
     function createIndex($name, array $config = array());
+    
+    /**
+     * Gets a document index reference
+     *
+     * @param string $name The name of the index.
+     */
+    function getIndex($name);
 
     /**
-     *
-     * @param array $data
+     * Deletes an index and its types and documents
+     * 
+     * @param string $index
      */
     function deleteIndex($index);
-
+    
     /**
-     * @param array $query
+     * Create a document type mapping as defined in the
+     * class annotations
+     *
+     * @param ClassMetadata $metadata
      */
-    function bulkSearch(array $query);
+    function createType(ClassMetadata $metadata);
     
     /**
      * Adds documents of a given type to the specified index
@@ -66,7 +77,7 @@ interface SearchClientInterface
      * @param string $type
      * @param array $documents Indexed by document id
      */
-    public function addDocuments($index, $type, array $documents);
+    function addDocuments($index, $type, array $documents);
     
     /**
      * Remove documents of a given type from the specified index
@@ -75,5 +86,14 @@ interface SearchClientInterface
      * @param string $type
      * @param array $documents Indexed by document id
      */
-    public function removeDocuments($index, $type, array $documents);
+    function removeDocuments($index, $type, array $documents);
+    
+    /**
+     * Remove all documents of a given type from the specified index
+     * without deleting the index itself
+     *
+     * @param string $index
+     * @param string $type
+     */
+    function removeAll($index, $type);
 }

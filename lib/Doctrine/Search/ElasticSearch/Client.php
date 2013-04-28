@@ -56,8 +56,7 @@ class Client implements SearchClientInterface
      */
     public function addDocuments($index, $type, array $documents)
     {
-        $index = $this->client->getIndex($index);
-        $type = $index->getType($type);
+        $type = $this->getIndex($index)->getType($type);
         
         $batch = array();
         foreach($documents as $id => $document)
@@ -73,23 +72,17 @@ class Client implements SearchClientInterface
      */
     public function removeDocuments($index, $type, array $documents)
     {
-        $index = $this->client->getIndex($index);
-        $type = $index->getType($type);
+        $type = $this->getIndex($index)->getType($type);
         $type->deleteIds(array_keys($documents));
     }
     
     /**
-     * Remove all documents of a given type from the specified index
-     * without deleting the index itself
-     *
-     * @param string $index
-     * @param string $type
+     * {@inheritDoc}
      */
     public function removeAll($index, $type)
     {
-    	$index = $this->client->getIndex($index);
-    	$type = $index->getType($type);
-    	$type->deleteByQuery(new MatchAll());
+        $type = $this->getIndex($index)->getType($type);
+        $type->deleteByQuery(new MatchAll());
     }    
     
     /**
@@ -97,8 +90,7 @@ class Client implements SearchClientInterface
      */
     public function find($index, $type, $query)
     {
-        $index = $this->client->getIndex($index);
-        return iterator_to_array($index->search($query));
+    
     }
 
     /**
@@ -106,20 +98,33 @@ class Client implements SearchClientInterface
      */
     public function createIndex($name, array $config = array())
     {
-        $index = $this->client->getIndex($name);
+        $index = $this->getIndex($name);
         $index->create($config, true);
         return $index;
     }
     
     /**
-     * Create a document type mapping in the specified index
-     * 
-     * @param Elastica\Index $index
-     * @param Doctrine\Search\Mapping\ClassMetadata $metadata
+     * {@inheritDoc}
      */
-    public function createType(Index $index, ClassMetadata $metadata)
+    public function getIndex($name)
     {
-        $type = $index->getType($metadata->type);
+        return $this->client->getIndex($name);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteIndex($index)
+    {
+        $this->getIndex($index)->delete();
+    }    
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function createType(ClassMetadata $metadata)
+    {
+        $type = $this->getIndex($metadata->index)->getType($metadata->type);
         $properties = $this->getMapping($metadata->fieldMappings);
 
         $mapping = new Mapping($type, $properties);
@@ -159,21 +164,5 @@ class Client implements SearchClientInterface
         }
     	
         return $properties;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function deleteIndex($index)
-    {
-        $index = $this->client->getIndex($index);
-        $index->delete();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function bulkSearch(array $data)
-    {
     }
 }

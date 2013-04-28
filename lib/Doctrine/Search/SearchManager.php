@@ -21,7 +21,6 @@ namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\EventManager;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -116,6 +115,14 @@ class SearchManager
     }
 
     /**
+     * @return mixed
+     */
+    public function getIndex($name)
+    {
+        return $this->getClient()->getIndex($name);
+    }
+
+    /**
      * @return ClassMetadataFactory
      */
     public function getClassMetadataFactory()
@@ -166,20 +173,6 @@ class SearchManager
         $this->removed[] = $object;
     }
 
-    /**
-     * Bulk action
-     *
-     * @param object $object
-     *
-     * @throws UnexpectedTypeException
-     */
-    public function bulk($object)
-    {
-        if (!is_object($object)) {
-            throw new UnexpectedTypeException($object, 'object');
-        }
-    }
-     
     /**
      * Commit all changes
      */
