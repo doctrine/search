@@ -60,7 +60,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @var int
      */
-    public $numberOfReplicas = 1;
+    public $numberOfReplicas = 0;
 
     /**
      * @var int
@@ -81,7 +81,17 @@ class ClassMetadata implements ClassMetadataInterface
      * @var int
      */
     public $value = 1;
+    
+    /**
+     * @var boolean
+     */
+    public $source = true;
 
+    /**
+     * @var float
+     */
+    public $boost = 1.0;    
+    
     /**
      * @var string
      */
@@ -130,6 +140,7 @@ class ClassMetadata implements ClassMetadataInterface
     {
         // This metadata is always serialized/cached.
         return array(
+        		'boost',
             'className',
             'fieldMappings',
             'index',
@@ -226,7 +237,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @param \ReflectionProperty $field
      * @param array $mapping
      */
-    public function addFieldMapping(\ReflectionProperty $field, $mapping = array())
+    public function addFieldMapping(\Reflector $field, $mapping = array())
     {
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
@@ -238,7 +249,7 @@ class ClassMetadata implements ClassMetadataInterface
     /*public function addField(\ReflectionProperty $field)
     {
         $fieldName = $field->getName();
-        $this->reflFields[$fieldName] = $field;
+        $this->reflFields[] = $field;
     }*/
 
 

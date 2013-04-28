@@ -29,13 +29,10 @@ use Doctrine\Common\Annotations\Annotation;
  */
 class Searchable extends Annotation
 {
-    /**
-     * @var string $index;
-     */
+    /** @var string $index */
     public $index;
-    /**
-     * @var string $type;
-     */
+    
+    /** @var string $type */
     public $type;
 }
 
@@ -45,27 +42,29 @@ class Searchable extends Annotation
  */
 final class ElasticSearchable extends Searchable
 {
-    /**
-     * @var int $numberOfShards;
-     */
+    /** @var int $numberOfShards */
     public $numberOfShards;
-    /**
-     * @var int $numnberOfReplicas
-     */
+    
+    /** @var int $numnberOfReplicas */
     public $numberOfReplicas;
-    /**
-     * @var string $op_type;
-     */
+    
+    /** @var string $op_type */
     public $opType;
-    /**
-     * @var float $parent;
-     */
+    
+    /** @var float $parent */
     public $parent;
+    
     /**
      * TTL in milliseconds
      * @var int $timeToLive
      */
     public $timeToLive;
+    
+    /** @var float */
+    public $boost;
+    
+    /** @var boolean */
+    public $source;
 }
 
 /**
@@ -74,10 +73,14 @@ final class ElasticSearchable extends Searchable
  */
 class Field extends Annotation
 {
-    /**
-     * @var float
-     */
+    /** @var float */
     public $boost;
+    
+    /** @var string */
+    public $type;
+    
+    /** @var string */
+    public $name;
 }
 
 /**
@@ -91,9 +94,19 @@ final class SolrField extends Field
 
 /**
  * @Annotation
- * @Target("PROPERTY")
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  */
 final class ElasticField extends Field
 {
-    /* configuration */
+    /** @var boolean */
+    public $includeInAll;
+    
+    /** @var string */
+    public $index;
+    
+    /** @var array */
+    public $fields;
+    
+    /** @var array */
+    public $properties;
 }

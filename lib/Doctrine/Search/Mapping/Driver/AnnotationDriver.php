@@ -69,10 +69,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         $reflProperties = $reflClass->getProperties();
+        $reflMethods = $reflClass->getMethods();
 
         $this->extractClassAnnotations($reflClass, $metadata);
         $this->extractPropertiesAnnotations($reflProperties, $metadata);
-
+        $this->extractMethodsAnnotations($reflMethods, $metadata);
     }
 
 
@@ -139,6 +140,31 @@ class AnnotationDriver extends AbstractAnnotationDriver
     }
     
     /**
+     * Extract the methods annotations.
+     *
+     * @param \ReflectionMethod[]   $reflMethods
+     * @param ClassMetadata         $metadata
+     *
+     * @return ClassMetadata
+     */
+    private function extractMethodsAnnotations(array $reflMethods, ClassMetadata $metadata)
+    {
+        $documentsFieldAnnotations = array();
+        foreach ($reflMethods as $reflMethod) {
+            foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
+                foreach (self::$documentFieldAnnotationClasses as $fieldAnnotationClass) {
+                    if ($annotation instanceof $fieldAnnotationClass) {
+                        $metadata->addFieldMapping($reflMethod, $annotation);
+                        continue 2;
+                    }
+                }
+            }
+        }
+
+        return $metadata;
+    }
+    
+    /**
      * @param \ReflectionProperty[] $reflectedClassProperties
      * @param ClassMetadata         $metadata
      * @param string                $class
@@ -155,7 +181,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if (false === property_exists($metadata, $propertyName)) {
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
             } else {
-                $metadata->$propertyName = $class->$propertyName;
+                if(!is_null($class->$propertyName)) $metadata->$propertyName = $class->$propertyName;
             }
         }
 

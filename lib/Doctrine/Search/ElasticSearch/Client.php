@@ -19,7 +19,15 @@
 
 namespace Doctrine\Search\ElasticSearch;
 
+
+
 use Doctrine\Search\SearchClientInterface;
+use Doctrine\Search\Mapping\ClassMetadata;
+use Elastica\Client as Elastica_Client;
+use Elastica\Type\Mapping;
+use Elastica\Document;
+use Elastica\Index;
+use Elastica\Query\MatchAll;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -31,18 +39,59 @@ use Doctrine\Search\SearchClientInterface;
 class Client implements SearchClientInterface
 {
     /**
-     * @var \Elastica_Client
+     * @var ElasticaClient
      */
     private $client;
 
     /**
-     * @param \Elastica_Client $client
+     * @param Elastica_Client $client
      */
-    public function __construct(\Elastica\Client $client)
+    public function __construct(Elastica_Client $client)
     {
         $this->client = $client;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function addDocuments($index, $type, array $documents)
+    {
+        $index = $this->client->getIndex($index);
+        $type = $index->getType($type);
+        
+        $batch = array();
+        foreach($documents as $id => $document)
+        {
+            $batch[] = new Document($id, $document);
+        }
+        
+        $type->addDocuments($batch);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function removeDocuments($index, $type, array $documents)
+    {
+        $index = $this->client->getIndex($index);
+        $type = $index->getType($type);
+        $type->deleteIds(array_keys($documents));
+    }
+    
+    /**
+     * Remove all documents of a given type from the specified index
+     * without deleting the index itself
+     *
+     * @param string $index
+     * @param string $type
+     */
+    public function removeAll($index, $type)
+    {
+    	$index = $this->client->getIndex($index);
+    	$type = $index->getType($type);
+    	$type->deleteByQuery(new MatchAll());
+    }    
+    
     /**
      * {@inheritDoc}
      */
@@ -55,12 +104,61 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function createIndex($index, $type, array $data)
+    public function createIndex($name, array $config = array())
     {
-        $index = $this->client->getIndex($index);
-        $index->create();
+        $index = $this->client->getIndex($name);
+        $index->create($config, true);
+        return $index;
+    }
+    
+    /**
+     * Create a document type mapping in the specified index
+     * 
+     * @param Elastica\Index $index
+     * @param Doctrine\Search\Mapping\ClassMetadata $metadata
+     */
+    public function createType(Index $index, ClassMetadata $metadata)
+    {
+        $type = $index->getType($metadata->type);
+        $properties = $this->getMapping($metadata->fieldMappings);
 
-        $index->addDocuments($data);
+        $mapping = new Mapping($type, $properties);
+        $mapping->disableSource($metadata->source);
+        $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        $mapping->send();
+        
+        return $type;
+    }
+    
+    /**
+     * Generates property mapping from entity annotations
+     * 
+     * @param array $fieldMapping
+     */
+    protected function getMapping($fieldMapping)
+    {
+        $properties = array();
+    	
+        foreach($fieldMapping as $propertyName => $fieldMapping)
+        {
+	         if(isset($fieldMapping->name)) $propertyName = $fieldMapping->name;
+	         $properties[$propertyName]['type'] = $fieldMapping->type;
+	         if(isset($fieldMapping->includeInAll)) $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
+	         if(isset($fieldMapping->index)) $properties[$propertyName]['index'] = $fieldMapping->index;
+	         if(isset($fieldMapping->boost)) $properties[$propertyName]['boost'] = $fieldMapping->boost;
+	         
+	         if($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) 
+	         {
+	         	$properties[$propertyName]['fields'] = $this->getMapping($fieldMapping->fields);
+	         }
+	         
+	         if(in_array($fieldMapping->type, array('nested', 'object')) && isset($fieldMapping->properties)) 
+	         {
+	             $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping->properties);
+	         }
+        }
+    	
+        return $properties;
     }
 
     /**

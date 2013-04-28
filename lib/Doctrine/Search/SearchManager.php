@@ -29,6 +29,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Search\Exception\UnexpectedTypeException;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Search\Mapping\ClassMetadataFactory;
+use Doctrine\Search\Serializer\CallbackSerializer;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -52,17 +53,33 @@ class SearchManager
      * @var ClassMetadataFactory
      */
     private $metadataFactory;
-
+    
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+    
+    /**
+     * @var array
+     */
+    private $persisted = array();
+    
+    /**
+     * @var array
+     */
+    private $removed = array();
+    
     /**
      * Constructor
      *
      * @param Configuration         $config
      * @param SearchClientInterface $sc
      */
-    public function __construct(Configuration $config, SearchClientInterface $sc)
+    public function __construct(Configuration $config, SearchClientInterface $sc, SerializerInterface $se = null)
     {
         $this->configuration = $config;
         $this->searchClient = $sc;
+        $this->serializer = $se ?: new CallbackSerializer();
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
@@ -88,6 +105,14 @@ class SearchManager
     public function getClassMetadata($className)
     {
         return $this->metadataFactory->getMetadataFor($className);
+    }
+    
+    /**
+     * @return SearchClientInterface
+     */
+    public function getClient()
+    {
+        return $this->searchClient;
     }
 
     /**
@@ -121,8 +146,8 @@ class SearchManager
         if (!is_object($object)) {
             throw new UnexpectedTypeException($object, 'object');
         }
-
-        //$this->searchClient->createIndex($index, $type, $query);
+        
+        $this->persisted[] = $object;
     }
 
     /**
@@ -137,6 +162,8 @@ class SearchManager
         if (!is_object($object)) {
             throw new UnexpectedTypeException($object, 'object');
         }
+        
+        $this->removed[] = $object;
     }
 
     /**
@@ -152,13 +179,51 @@ class SearchManager
             throw new UnexpectedTypeException($object, 'object');
         }
     }
-
+     
     /**
      * Commit all changes
-     *
-     * @return boolean
      */
     public function commit()
     {
+        $this->commitPersisted();
+        $this->commitRemoved();
     }
+    
+    protected function commitPersisted()
+    {
+    	$documents = $this->sortObjects($this->persisted);
+    
+    	foreach($documents as $index => $documentTypes)
+    	{
+    		foreach($documentTypes as $type => $documents)
+    		{
+    			$this->searchClient->addDocuments($index, $type, $documents);
+    		}
+    	}
+    }
+    
+    protected function commitRemoved()
+    {
+    	$documents = $this->sortObjects($this->removed);
+    
+    	foreach($documents as $index => $documentTypes)
+    	{
+    		foreach($documentTypes as $type => $documents)
+    		{
+    			$this->searchClient->removeDocuments($index, $type, $documents);
+    		}
+    	}
+    }
+    
+    protected function sortObjects(array $objects)
+    {
+    	$documents = array();
+    	foreach($objects as $object)
+    	{
+    		$metadata = $this->getClassMetadata(get_class($object));
+    		$document = $this->serializer->serialize($object);
+    		$documents[$metadata->index][$metadata->type][$object->getId()] = $document;
+    	}
+    	return $documents;
+    }    
 }

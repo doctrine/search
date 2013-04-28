@@ -20,6 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Search\Mapping\ClassMetadata;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -40,13 +41,12 @@ interface SearchClientInterface
     function find($index, $type, $query);
 
     /**
-     * Allows to search by the search api of a backend like Solr directly
+     * Creates a document index
      *
-     * @param string $index The name of the index.
-     * @param string $type The type of the index.
-     * @param array $data The data to be indexed.
+     * @param string $name The name of the index.
+     * @param string $config The configuration of the index.
      */
-    function createIndex($index, $type, array $data);
+    function createIndex($name, array $config = array());
 
     /**
      *
@@ -58,5 +58,22 @@ interface SearchClientInterface
      * @param array $query
      */
     function bulkSearch(array $query);
-
+    
+    /**
+     * Adds documents of a given type to the specified index
+     *
+     * @param string $index
+     * @param string $type
+     * @param array $documents Indexed by document id
+     */
+    public function addDocuments($index, $type, array $documents);
+    
+    /**
+     * Remove documents of a given type from the specified index
+     *
+     * @param string $index
+     * @param string $type
+     * @param array $documents Indexed by document id
+     */
+    public function removeDocuments($index, $type, array $documents);
 }
