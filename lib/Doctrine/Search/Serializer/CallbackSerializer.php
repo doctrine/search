@@ -8,7 +8,7 @@ class CallbackSerializer implements SerializerInterface
 {
     protected $callback;
 	
-    public function __construct($callback = '__toString')
+    public function __construct($callback = 'toArray')
     {
         $this->callback = $callback;
     }
