@@ -23,6 +23,9 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Search\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Search\SerializerInterface;
+use Doctrine\Search\Serializer\CallbackSerializer;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Configuration SearchManager
@@ -134,4 +137,42 @@ class Configuration
         return $this->attributes['classMetadataFactory'];
     }
 
+    /**
+     * Sets an entity serializer
+     * 
+     * @param SerializerInterface $serializer
+     */
+    public function setEntitySerializer(SerializerInterface $serializer)
+    {
+        $this->attributes['serializer'] = $serializer;
+    }
+    
+    /**
+     * Gets the entity serializer or provides a default if not set
+     * 
+     * @return SerializerInterface
+     */
+    public function getEntitySerializer()
+    {
+        if(isset($this->attributes['serializer'])) {
+           return $this->attributes['serializer'];
+        }
+        return new CallbackSerializer();
+    }
+    
+    /**
+     * @param EntityManager $entityManager
+     */
+    public function setEntityManager(EntityManager $entityManager)
+    {
+        $this->attributes['entityManager'] = $serializer;
+    }
+    
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+        if(isset($this->attributes['entityManager'])) return $this->attributes['entityManager'];
+    }
 }

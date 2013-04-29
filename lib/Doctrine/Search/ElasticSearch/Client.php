@@ -23,7 +23,7 @@ namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Search\Mapping\ClassMetadata;
-use Elastica\Client as Elastica_Client;
+use Elastica\Client as ElasticaClient;
 use Elastica\Type\Mapping;
 use Elastica\Document;
 use Elastica\Index;
@@ -44,9 +44,9 @@ class Client implements SearchClientInterface
     private $client;
 
     /**
-     * @param Elastica_Client $client
+     * @param ElasticaClient $client
      */
-    public function __construct(Elastica_Client $client)
+    public function __construct(ElasticaClient $client)
     {
         $this->client = $client;
     }
@@ -90,7 +90,8 @@ class Client implements SearchClientInterface
      */
     public function find($index, $type, $query)
     {
-    
+        $type = $this->getIndex($index)->getType($type);
+        return $type->search($query);
     }
 
     /**
