@@ -11,31 +11,49 @@ class Query
     
     const HYDRATION_PARAMETER = 'ids';
         
-    /** @var SearchManager */
+    /** 
+     * @var SearchManager 
+     */
     protected $_sm;
     
-    /** @var object */
+    /** 
+     * @var object 
+     */
     protected $query;
     
-    /** @var DoctrineQuery */
+    /** 
+     * @var DoctrineQuery
+     */
     protected $doctrineQuery;
     
-    /** @var string */
+    /** 
+     * @var string
+     */
     protected $hydrationParameter = self::HYDRATION_PARAMETER;
 
-    /** @var string */
+    /** 
+     * @var string 
+     */
     protected $entityClass;
     
-    /** @var integer **/
+    /** 
+     * @var integer 
+     */
     protected $hydrationMode = DoctrineQuery::HYDRATE_OBJECT;
     
-    /** @var boolean */
+    /** 
+     * @var boolean 
+     */
     protected $useResultCache;
     
-    /** @var integer */
+    /** 
+     * @var integer 
+     */
     protected $cacheLifetime;
     
-    /** @var integer **/
+    /** 
+     * @var integer 
+     */
     protected $count;
     
     public function __construct(SearchManager $sm)

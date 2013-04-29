@@ -39,22 +39,34 @@ use Doctrine\ORM\EntityManager;
  */
 class SearchManager
 {
-    /** @var SearchClientInterface */
+    /** 
+     * @var SearchClientInterface 
+     */
     private $searchClient;
 
-    /** @var Configuration $configuration */
+    /** 
+     * @var Configuration $configuration 
+     */
     private $configuration;
 
-    /** @var ClassMetadataFactory */
+    /** 
+     * @var ClassMetadataFactory 
+     */
     private $metadataFactory;
     
-    /** @var SerializerInterface */
+    /** 
+     * @var SerializerInterface 
+     */
     private $serializer;
     
-    /** @var array */
+    /** 
+     * @var array 
+     */
     private $scheduledForPersist = array();
     
-    /** @var array */
+    /** 
+     * @var array 
+     */
     private $scheduledForDelete = array();
     
     /** @var EntityManager */
