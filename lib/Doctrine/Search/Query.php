@@ -198,7 +198,7 @@ class Query
         
         $ids = array_map(function($result) { return $result->getId(); }, $results);
         return $this->getHydrationQuery()
-            ->setParameter($this->hydrationParameter, $ids)
+            ->setParameter($this->hydrationParameter, $ids ?: null)
             ->useResultCache($this->useResultCache, $this->cacheLifetime)
             ->getResult($this->hydrationMode);
     }
