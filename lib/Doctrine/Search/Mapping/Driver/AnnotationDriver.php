@@ -181,7 +181,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if (false === property_exists($metadata, $propertyName)) {
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
             } else {
-                if(!is_null($class->$propertyName)) $metadata->$propertyName = $class->$propertyName;
+                if(!is_null($class->$propertyName)) {
+                    $metadata->$propertyName = $class->$propertyName;
+                }
             }
         }
 
