@@ -25,7 +25,7 @@ use Doctrine\Search\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Search\SerializerInterface;
 use Doctrine\Search\Serializer\CallbackSerializer;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * Configuration SearchManager
@@ -161,15 +161,15 @@ class Configuration
     }
     
     /**
-     * @param EntityManager $entityManager
+     * @param ObjectManager $entityManager
      */
-    public function setEntityManager(EntityManager $entityManager)
+    public function setEntityManager(ObjectManager $entityManager)
     {
         $this->attributes['entityManager'] = $serializer;
     }
     
     /**
-     * @return EntityManager
+     * @return ObjectManager
      */
     public function getEntityManager()
     {
