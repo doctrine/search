@@ -2,7 +2,6 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\ORM\Query as DoctrineQuery;
 use Doctrine\Search\Exception\DoctrineSearchException;
 
 class Query
@@ -22,9 +21,9 @@ class Query
     protected $query;
     
     /** 
-     * @var DoctrineQuery
+     * @var object
      */
-    protected $doctrineQuery;
+    protected $hydrationQuery;
     
     /** 
      * @var string
@@ -39,7 +38,7 @@ class Query
     /** 
      * @var integer 
      */
-    protected $hydrationMode = DoctrineQuery::HYDRATE_OBJECT;
+    protected $hydrationMode;
     
     /** 
      * @var boolean 
@@ -102,7 +101,7 @@ class Query
     }
     
     /**
-     * Set the hydration mode from the Doctrine\ORM\Query modes
+     * Set the hydration mode from the underlying query modes
      * or bypass and return search result directly from the client
      * 
      * @param integer $mode
@@ -138,49 +137,48 @@ class Query
     
     /**
      * Set a custom Doctrine Query to execute in order to hydrate the search
-     * engine results into Doctrine entities. The assumption is made the the
-     * search engine result id is correlated to the Doctrine entity id. An 
-     * optional query parameter can be specified.
+     * engine results into required entities. The assumption is made the the
+     * search engine result id is correlated to the entity id. An optional
+     * query parameter override can be specified.
      * 
-     * @param DoctrineQuery $doctrineQuery
+     * @param object $hydrationQuery
      * @param string $parameter
      */
-    public function hydrateWith(DoctrineQuery $doctrineQuery, $parameter = null)
+    public function hydrateWith($hydrationQuery, $parameter = null)
     {
-        $this->doctrineQuery = $doctrineQuery;
-        if($parameter) $this->hydrationParameter = $parameter;
+        $this->hydrationQuery = $hydrationQuery;
+        if($parameter) {
+            $this->hydrationParameter = $parameter;
+        }
         return $this;
     }
     
     /**
-     * Return a provided Doctrine Query or a default.
+     * Return a provided hydration query
      * 
-     * @return DoctrineQuery
+     * @return object
      */
     protected function getHydrationQuery()
     {
-        if($this->doctrineQuery) return $this->doctrineQuery;
+        if(!$this->hydrationQuery) {
+            throw new DoctrineSearchException('A hydration query is required for hydrating results to entities.');
+        }
         
-        $em = $this->getSearchManager()->getEntityManager();
-        if(!$em) throw new DoctrineSearchException('Doctrine EntityManager is required when hydrating results to entities without having provided a custom query.');
-        
-        return $em->createQueryBuilder()
-            ->select('e')
-            ->from($this->entityClass, 'e')
-            ->where('e.id IN (:'.self::HYDRATION_PARAMETER.')')
-            ->getQuery();
+        return $this->hydrationQuery;
     }
-    
+        
     /**
      * Execute search and hydrate results if required.
      * 
      * @param integer $hydrationMode
-     * @throws \Exception
+     * @throws DoctrineSearchException
      * @return mixed
      */
     public function getResult($hydrationMode = null)
     {
-        if($hydrationMode) $this->hydrationMode = $hydrationMode;
+        if($hydrationMode) {
+            $this->hydrationMode = $hydrationMode;
+        }
         
         $classMetadata = $this->getSearchManager()->getClassMetadata($this->entityClass);
         $resultSet = $this->getSearchManager()->find($classMetadata->index, $classMetadata->type, $this->query);
@@ -191,10 +189,12 @@ class Query
                 $results = $resultSet->getResults();
             break;
             default:
-                throw new \Exception('Unknown result set class');
+                throw new DoctrineSearchException('Unknown result set class');
         }
         
-        if($this->hydrationMode == self::HYDRATE_BYPASS) return $resultSet;
+        if($this->hydrationMode == self::HYDRATE_BYPASS) {
+            return $resultSet;
+        }
         
         $ids = array_map(function($result) { return $result->getId(); }, $results);
         return $this->getHydrationQuery()
