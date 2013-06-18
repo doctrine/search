@@ -206,7 +206,7 @@ class SearchManager
         $this->commitRemoved();
     }
     
-    protected function commitPersisted()
+    private function commitPersisted()
     {
         $documents = $this->sortObjects($this->scheduledForPersist);
     
@@ -219,7 +219,7 @@ class SearchManager
         }
     }
     
-    protected function commitRemoved()
+    private function commitRemoved()
     {
         $documents = $this->sortObjects($this->scheduledForDelete, false);
     
@@ -232,7 +232,7 @@ class SearchManager
         }
     }
     
-    protected function sortObjects(array $objects, $serialize = true)
+    private function sortObjects(array $objects, $serialize = true)
     {
         $documents = array();
         foreach($objects as $object)
