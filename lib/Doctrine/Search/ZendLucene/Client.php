@@ -19,7 +19,9 @@
 
 namespace Doctrine\Search\ZendLucene;
 
+
 use Doctrine\Search\SearchClientInterface;
+use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -54,27 +56,34 @@ class Client implements SearchClientInterface
     {
 
     }
+    
+    public function createType(ClassMetadata $metadata)
+    {
 
-    public function updateIndex(array $data)
+    }
+    
+    public function getIndex($index)
     {
 
     }
 
-    /**
-     *
-     * @param array $data
-     */
     public function deleteIndex($index)
     {
-        // TODO: Implement deleteIndex() method.
+    
     }
-
-    /**
-     * @param array $data
-     */
-    public function bulkAction(array $data)
+    
+    public function addDocuments($index, $type, array $documents)
     {
-        // TODO: Implement bulkAction() method.
+    
     }
-
+    
+    public function removeDocuments($index, $type, array $documents)
+    {
+     
+    }
+    
+    public function removeAll($index, $type)
+    {
+    
+    }
 }
