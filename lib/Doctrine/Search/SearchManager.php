@@ -21,7 +21,6 @@ namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchClientInterface;
-use Doctrine\Common\EventManager;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -29,6 +28,8 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Search\Exception\UnexpectedTypeException;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Search\Mapping\ClassMetadataFactory;
+use Doctrine\Search\Serializer\CallbackSerializer;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -38,21 +39,39 @@ use Doctrine\Search\Mapping\ClassMetadataFactory;
  */
 class SearchManager
 {
-    /**
-     * @var SearchClientInterface
+    /** 
+     * @var SearchClientInterface 
      */
     private $searchClient;
 
-    /**
-     * @var Configuration $configuration
+    /** 
+     * @var Configuration $configuration 
      */
     private $configuration;
 
-    /**
-     * @var ClassMetadataFactory
+    /** 
+     * @var ClassMetadataFactory 
      */
     private $metadataFactory;
-
+    
+    /** 
+     * @var SerializerInterface 
+     */
+    private $serializer;
+    
+    /** 
+     * @var array 
+     */
+    private $scheduledForPersist = array();
+    
+    /** 
+     * @var array 
+     */
+    private $scheduledForDelete = array();
+    
+    /** @var EntityManager */
+    private $entityManager;
+        
     /**
      * Constructor
      *
@@ -68,8 +87,29 @@ class SearchManager
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setConfiguration($this->configuration);
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
+        
+        $this->serializer = $this->configuration->getEntitySerializer();
+        $this->entityManager = $this->configuration->getEntityManager(); 
     }
 
+    /**
+     * Inject a Doctrine 2 entity manager
+     * 
+     * @param EntityManager $em
+     */
+    public function setEntityManager(EntityManager $em)
+    {
+       $this->entityManager = $em;
+    }
+    
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager()
+    {
+       return $this->entityManager;
+    }
+    
     /**
      * @return Configuration
      */
@@ -89,6 +129,22 @@ class SearchManager
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
+    
+    /**
+     * @return SearchClientInterface
+     */
+    public function getClient()
+    {
+        return $this->searchClient;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndex($name)
+    {
+        return $this->getClient()->getIndex($name);
+    }
 
     /**
      * @return ClassMetadataFactory
@@ -104,9 +160,9 @@ class SearchManager
      * @param string $type
      * @param string $query
      */
-    public function find($index = null, $type = null, $query = null)
+    public function find($index, $type, $query)
     {
-        $this->searchClient->find($index, $type, $query);
+       return $this->searchClient->find($index, $type, $query);
     }
 
     /**
@@ -121,8 +177,8 @@ class SearchManager
         if (!is_object($object)) {
             throw new UnexpectedTypeException($object, 'object');
         }
-
-        //$this->searchClient->createIndex($index, $type, $query);
+        
+        $this->scheduledForPersist[] = $object;
     }
 
     /**
@@ -137,28 +193,65 @@ class SearchManager
         if (!is_object($object)) {
             throw new UnexpectedTypeException($object, 'object');
         }
-    }
-
-    /**
-     * Bulk action
-     *
-     * @param object $object
-     *
-     * @throws UnexpectedTypeException
-     */
-    public function bulk($object)
-    {
-        if (!is_object($object)) {
-            throw new UnexpectedTypeException($object, 'object');
-        }
+        
+        $this->scheduledForDelete[] = $object;
     }
 
     /**
      * Commit all changes
-     *
-     * @return boolean
      */
     public function commit()
     {
+        $this->commitPersisted();
+        $this->commitRemoved();
+    }
+    
+    private function commitPersisted()
+    {
+        $documents = $this->sortObjects($this->scheduledForPersist);
+    
+        foreach($documents as $index => $documentTypes)
+        {
+            foreach($documentTypes as $type => $documents)
+            {
+                $this->searchClient->addDocuments($index, $type, $documents);
+            }
+        }
+    }
+    
+    private function commitRemoved()
+    {
+        $documents = $this->sortObjects($this->scheduledForDelete, false);
+    
+        foreach($documents as $index => $documentTypes)
+        {
+            foreach($documentTypes as $type => $documents)
+            {
+                $this->searchClient->removeDocuments($index, $type, $documents);
+            }
+        }
+    }
+    
+    private function sortObjects(array $objects, $serialize = true)
+    {
+        $documents = array();
+        foreach($objects as $object)
+        {
+            $metadata = $this->getClassMetadata(get_class($object));
+            $document = $serialize ? $this->serializer->serialize($object) : $object;
+            $documents[$metadata->index][$metadata->type][$object->getId()] = $document;
+        }
+        return $documents;
+    } 
+
+    /**
+     * Returns a search engine Query wrapper which can be executed
+     * to retrieve results;
+     * 
+     * @return Query
+     */
+    public function createQuery()
+    {
+        return new Query($this);
     }
 }

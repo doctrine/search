@@ -20,6 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Search\Mapping\ClassMetadata;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -40,23 +41,59 @@ interface SearchClientInterface
     function find($index, $type, $query);
 
     /**
-     * Allows to search by the search api of a backend like Solr directly
+     * Creates a document index
      *
-     * @param string $index The name of the index.
-     * @param string $type The type of the index.
-     * @param array $data The data to be indexed.
+     * @param string $name The name of the index.
+     * @param string $config The configuration of the index.
      */
-    function createIndex($index, $type, array $data);
+    function createIndex($name, array $config = array());
+    
+    /**
+     * Gets a document index reference
+     *
+     * @param string $name The name of the index.
+     */
+    function getIndex($name);
 
     /**
-     *
-     * @param array $data
+     * Deletes an index and its types and documents
+     * 
+     * @param string $index
      */
     function deleteIndex($index);
-
+    
     /**
-     * @param array $query
+     * Create a document type mapping as defined in the
+     * class annotations
+     *
+     * @param ClassMetadata $metadata
      */
-    function bulkSearch(array $query);
-
+    function createType(ClassMetadata $metadata);
+    
+    /**
+     * Adds documents of a given type to the specified index
+     *
+     * @param string $index
+     * @param string $type
+     * @param array $documents Indexed by document id
+     */
+    function addDocuments($index, $type, array $documents);
+    
+    /**
+     * Remove documents of a given type from the specified index
+     *
+     * @param string $index
+     * @param string $type
+     * @param array $documents Indexed by document id
+     */
+    function removeDocuments($index, $type, array $documents);
+    
+    /**
+     * Remove all documents of a given type from the specified index
+     * without deleting the index itself
+     *
+     * @param string $index
+     * @param string $type
+     */
+    function removeAll($index, $type);
 }

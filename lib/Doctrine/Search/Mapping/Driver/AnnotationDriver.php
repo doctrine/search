@@ -69,10 +69,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         $reflProperties = $reflClass->getProperties();
+        $reflMethods = $reflClass->getMethods();
 
         $this->extractClassAnnotations($reflClass, $metadata);
         $this->extractPropertiesAnnotations($reflProperties, $metadata);
-
+        $this->extractMethodsAnnotations($reflMethods, $metadata);
     }
 
 
@@ -126,26 +127,43 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $documentsFieldAnnotations = array();
         foreach ($reflProperties as $reflProperty) {
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
-                foreach (self::$documentFieldAnnotationClasses as $i => $fieldAnnotationClass) {
+                foreach (self::$documentFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
-                        $documentsFieldAnnotations[$i] = $annotation;
+                        $metadata->addFieldMapping($reflProperty, $annotation);
                         continue 2;
                     }
                 }
             }
         }
 
-        foreach ($documentsFieldAnnotations as $documentsFieldAnnotation) {
-            $reflFieldAnnotations = new \ReflectionClass($documentsFieldAnnotation);
-            $metadata = $this->addValuesToMetadata($reflFieldAnnotations->getProperties(),
-                $metadata,
-                $documentsFieldAnnotation);
-
+        return $metadata;
+    }
+    
+    /**
+     * Extract the methods annotations.
+     *
+     * @param \ReflectionMethod[]   $reflMethods
+     * @param ClassMetadata         $metadata
+     *
+     * @return ClassMetadata
+     */
+    private function extractMethodsAnnotations(array $reflMethods, ClassMetadata $metadata)
+    {
+        $documentsFieldAnnotations = array();
+        foreach ($reflMethods as $reflMethod) {
+            foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
+                foreach (self::$documentFieldAnnotationClasses as $fieldAnnotationClass) {
+                    if ($annotation instanceof $fieldAnnotationClass) {
+                        $metadata->addFieldMapping($reflMethod, $annotation);
+                        continue 2;
+                    }
+                }
+            }
         }
 
         return $metadata;
     }
-
+    
     /**
      * @param \ReflectionProperty[] $reflectedClassProperties
      * @param ClassMetadata         $metadata
@@ -163,10 +181,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if (false === property_exists($metadata, $propertyName)) {
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
             } else {
-                $metadata->$propertyName = $class->$propertyName;
-                /*I am not sure if that is needed
-                 * $metadata->addField($reflectedProperty);
-                $metadata->addFieldMapping($reflectedProperty);*/
+                if(!is_null($class->$propertyName)) {
+                    $metadata->$propertyName = $class->$propertyName;
+                }
             }
         }
 
