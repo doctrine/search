@@ -5,6 +5,7 @@ namespace Doctrine\Search\Serializer;
 use Doctrine\Search\SerializerInterface;
 use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 
 class JMSSerializer implements SerializerInterface
 {
@@ -14,7 +15,10 @@ class JMSSerializer implements SerializerInterface
     public function __construct(SerializationContext $context = null)
     {
         $this->context = $context;
-        $this->serializer = SerializerBuilder::create()->addDefaultHandlers()->build();	
+        $this->serializer = SerializerBuilder::create()
+            ->setPropertyNamingStrategy(new IdenticalPropertyNamingStrategy())
+            ->addDefaultHandlers()
+       	   ->build();	
     }
 
     public function serialize($object)
