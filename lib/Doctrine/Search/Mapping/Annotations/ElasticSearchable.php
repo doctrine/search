@@ -1,7 +1,5 @@
 <?php
 /*
- *  $Id$
- *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -22,23 +20,6 @@
 namespace Doctrine\Search\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
-
-/**
- * @Annotation
- * @Target("CLASS")
- */
-class Searchable extends Annotation
-{
-    /** 
-     * @var string $index 
-     */
-    public $index;
-    
-    /** 
-     * @var string $type 
-     */
-    public $type;
-}
 
 /**
  * @Annotation
@@ -81,62 +62,4 @@ final class ElasticSearchable extends Searchable
      * @var boolean
      */
     public $source;
-}
-
-/**
- * @Annotation
- * @Target("PROPERTY")
- */
-class Field extends Annotation
-{
-    /** 
-     * @var float 
-     */
-    public $boost;
-    
-    /** 
-     * @var string 
-     */
-    public $type;
-    
-    /** 
-     * @var string 
-     */
-    public $name;
-}
-
-/**
- * @Annotation
- * @Target("PROPERTY")
- */
-final class SolrField extends Field
-{
-    /* configuration */
-}
-
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
-final class ElasticField extends Field
-{
-    /**
-     * @var boolean
-     */
-    public $includeInAll;
-    
-    /** 
-     * @var string 
-     */
-    public $index;
-    
-    /** 
-     * @var array 
-     */
-    public $fields;
-    
-    /** 
-     * @var array 
-     */
-    public $properties;
 }
