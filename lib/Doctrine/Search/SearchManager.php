@@ -39,39 +39,39 @@ use Doctrine\ORM\EntityManager;
  */
 class SearchManager
 {
-    /** 
-     * @var SearchClientInterface 
+    /**
+     * @var SearchClientInterface
      */
     private $searchClient;
 
-    /** 
-     * @var Configuration $configuration 
+    /**
+     * @var Configuration $configuration
      */
     private $configuration;
 
-    /** 
-     * @var ClassMetadataFactory 
+    /**
+     * @var ClassMetadataFactory
      */
     private $metadataFactory;
-    
-    /** 
-     * @var SerializerInterface 
+
+    /**
+     * @var SerializerInterface
      */
     private $serializer;
-    
-    /** 
-     * @var array 
+
+    /**
+     * @var array
      */
     private $scheduledForPersist = array();
-    
-    /** 
-     * @var array 
+
+    /**
+     * @var array
      */
     private $scheduledForDelete = array();
-    
+
     /** @var EntityManager */
     private $entityManager;
-        
+
     /**
      * Constructor
      *
@@ -87,29 +87,29 @@ class SearchManager
         $this->metadataFactory->setSearchManager($this);
         $this->metadataFactory->setConfiguration($this->configuration);
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
-        
+
         $this->serializer = $this->configuration->getEntitySerializer();
-        $this->entityManager = $this->configuration->getEntityManager(); 
+        $this->entityManager = $this->configuration->getEntityManager();
     }
 
     /**
      * Inject a Doctrine 2 entity manager
-     * 
+     *
      * @param EntityManager $em
      */
     public function setEntityManager(EntityManager $em)
     {
-       $this->entityManager = $em;
+        $this->entityManager = $em;
     }
-    
+
     /**
      * @return EntityManager
      */
     public function getEntityManager()
     {
-       return $this->entityManager;
+        return $this->entityManager;
     }
-    
+
     /**
      * @return Configuration
      */
@@ -120,16 +120,16 @@ class SearchManager
 
     /**
      * Loads class metadata for the given class
-     * 
+     *
      * @param string $className
-     * 
+     *
      * @return ClassMetadata
      */
     public function getClassMetadata($className)
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
-    
+
     /**
      * @return SearchClientInterface
      */
@@ -162,7 +162,7 @@ class SearchManager
      */
     public function find($index, $type, $query)
     {
-       return $this->searchClient->find($index, $type, $query);
+        return $this->searchClient->find($index, $type, $query);
     }
 
     /**
@@ -177,7 +177,7 @@ class SearchManager
         if (!is_object($object)) {
             throw new UnexpectedTypeException($object, 'object');
         }
-        
+
         $this->scheduledForPersist[] = $object;
     }
 
@@ -193,7 +193,7 @@ class SearchManager
         if (!is_object($object)) {
             throw new UnexpectedTypeException($object, 'object');
         }
-        
+
         $this->scheduledForDelete[] = $object;
     }
 
@@ -205,49 +205,44 @@ class SearchManager
         $this->commitPersisted();
         $this->commitRemoved();
     }
-    
+
     private function commitPersisted()
     {
         $documents = $this->sortObjects($this->scheduledForPersist);
-    
-        foreach($documents as $index => $documentTypes)
-        {
-            foreach($documentTypes as $type => $documents)
-            {
+
+        foreach ($documents as $index => $documentTypes) {
+            foreach ($documentTypes as $type => $documents) {
                 $this->searchClient->addDocuments($index, $type, $documents);
             }
         }
     }
-    
+
     private function commitRemoved()
     {
         $documents = $this->sortObjects($this->scheduledForDelete, false);
-    
-        foreach($documents as $index => $documentTypes)
-        {
-            foreach($documentTypes as $type => $documents)
-            {
+
+        foreach ($documents as $index => $documentTypes) {
+            foreach ($documentTypes as $type => $documents) {
                 $this->searchClient->removeDocuments($index, $type, $documents);
             }
         }
     }
-    
+
     private function sortObjects(array $objects, $serialize = true)
     {
         $documents = array();
-        foreach($objects as $object)
-        {
+        foreach ($objects as $object) {
             $metadata = $this->getClassMetadata(get_class($object));
             $document = $serialize ? $this->serializer->serialize($object) : $object;
             $documents[$metadata->index][$metadata->type][$object->getId()] = $document;
         }
         return $documents;
-    } 
+    }
 
     /**
      * Returns a search engine Query wrapper which can be executed
      * to retrieve results;
-     * 
+     *
      * @return Query
      */
     public function createQuery()

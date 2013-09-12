@@ -27,15 +27,15 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-class Searchable extends Annotation
+class DoctrineAnnotations extends Annotation
 {
-    /** 
-     * @var string $index 
+    /**
+     * @var string $index
      */
     public $index;
-    
-    /** 
-     * @var string $type 
+
+    /**
+     * @var string $type
      */
     public $type;
 }
@@ -46,38 +46,38 @@ class Searchable extends Annotation
  */
 final class ElasticSearchable extends Searchable
 {
-    /** 
+    /**
      * @var int $numberOfShards
      */
     public $numberOfShards;
-    
-    /** 
+
+    /**
      * @var int $numnberOfReplicas
      */
     public $numberOfReplicas;
-    
-    /** 
+
+    /**
      * @var string $op_type
      */
     public $opType;
-    
-    /** 
+
+    /**
      * @var float $parent
      */
     public $parent;
-    
+
     /**
      * TTL in milliseconds
      * @var int $timeToLive
      */
     public $timeToLive;
-    
-    /** 
-     * @var float 
+
+    /**
+     * @var float
      */
     public $boost;
-    
-    /** 
+
+    /**
      * @var boolean
      */
     public $source;
@@ -89,18 +89,18 @@ final class ElasticSearchable extends Searchable
  */
 class Field extends Annotation
 {
-    /** 
-     * @var float 
+    /**
+     * @var float
      */
     public $boost;
-    
-    /** 
-     * @var string 
+
+    /**
+     * @var string
      */
     public $type;
-    
-    /** 
-     * @var string 
+
+    /**
+     * @var string
      */
     public $name;
 }
@@ -124,19 +124,19 @@ final class ElasticField extends Field
      * @var boolean
      */
     public $includeInAll;
-    
-    /** 
-     * @var string 
+
+    /**
+     * @var string
      */
     public $index;
-    
-    /** 
-     * @var array 
+
+    /**
+     * @var array
      */
     public $fields;
-    
-    /** 
-     * @var array 
+
+    /**
+     * @var array
      */
     public $properties;
 }

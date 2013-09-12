@@ -81,7 +81,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @var int
      */
     public $value = 1;
-    
+
     /**
      * @var boolean
      */
@@ -90,8 +90,8 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @var float
      */
-    public $boost = 1.0;    
-    
+    public $boost = 1.0;
+
     /**
      * @var string
      */
@@ -140,7 +140,7 @@ class ClassMetadata implements ClassMetadataInterface
     {
         // This metadata is always serialized/cached.
         return array(
-        		'boost',
+                'boost',
             'className',
             'fieldMappings',
             'index',
@@ -357,7 +357,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @param object $object
      * @return array
      */
-    function getIdentifierValues($object)
+    public function getIdentifierValues($object)
     {
         // TODO: Implement getIdentifierValues() method.
     }
@@ -367,9 +367,8 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @return array
      */
-    function getIdentifierFieldNames()
+    public function getIdentifierFieldNames()
     {
         // TODO: Implement getIdentifierFieldNames() method.
     }
-
 }
