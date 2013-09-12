@@ -27,7 +27,7 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target("CLASS")
  */
-class DoctrineAnnotations extends Annotation
+class Searchable extends Annotation
 {
     /**
      * @var string $index
