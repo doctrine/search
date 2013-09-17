@@ -19,15 +19,15 @@
 
 namespace Doctrine\Search\ElasticSearch;
 
-
-
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Exception\NoResultException;
 use Elastica\Client as ElasticaClient;
 use Elastica\Type\Mapping;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query\MatchAll;
+use Elastica\Exception\NotFoundException;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -87,12 +87,37 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function find($index, $type, $query)
+    public function find($index, $type, $id)
+    {
+        try {
+            $type = $this->getIndex($index)->getType($type);
+            $document = $type->getDocument($id);
+        } catch (NotFoundException $ex) {
+            throw new NoResultException();
+        }
+        
+        return $document;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function findAll($index, $type)
+    {
+        $type = $this->getIndex($index)->getType($type);
+        //TODO: override paging limit
+        return $type->createSearch()->search();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function search($index, $type, $query)
     {
         $type = $this->getIndex($index)->getType($type);
         return $type->search($query);
     }
-
+    
     /**
      * {@inheritDoc}
      */

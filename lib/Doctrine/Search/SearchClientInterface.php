@@ -31,14 +31,31 @@ use Doctrine\Search\Mapping\ClassMetadata;
 interface SearchClientInterface
 {
     /**
-     * Finds ids of indexed objects by a search string.
+     * Finds document by id.
      *
-     *
-     * @param String $index
-     * @param String $type
-     * @param String $query
+     * @param string $index
+     * @param string $type
+     * @param mixed $id
+     * @throws Doctrine\Search\Exception\NoResultException
      */
-    public function find($index, $type, $query);
+    public function find($index, $type, $id);
+    
+    /**
+     * Finds all documents by type
+     *
+     * @param string $index
+     * @param string $type
+     */
+    public function findAll($index, $type);
+    
+    /**
+     * Finds documents by a specific query.
+     *
+     * @param string $index
+     * @param string $type
+     * @param object $query
+     */
+    public function search($index, $type, $query);
 
     /**
      * Creates a document index
