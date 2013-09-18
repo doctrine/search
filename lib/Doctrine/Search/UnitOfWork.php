@@ -4,29 +4,38 @@ namespace Doctrine\Search;
 
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine\Search\Persisters\BasicEntityPersister;
 
 class UnitOfWork
 {
-     /**
-      * The SearchManager that "owns" this UnitOfWork instance.
-      *
-      * @var \Doctrine\Search\SearchManager
-      */
-     private $sm;
+    /**
+     * The SearchManager that "owns" this UnitOfWork instance.
+     *
+     * @var \Doctrine\Search\SearchManager
+     */
+    private $sm;
      
-     /**
-      * @var array
-      */
-     private $scheduledForPersist = array();
-     
-     /**
-      * @var array
-      */
-     private $scheduledForDelete = array();
+    /**
+     * The EventManager used for dispatching events.
+     *
+     * @var \Doctrine\Common\EventManager
+     */
+    private $evm;
+    
+    /**
+     * @var array
+     */
+    private $scheduledForPersist = array();
+    
+    /**
+     * @var array
+     */
+    private $scheduledForDelete = array();
     
     public function __construct(SearchManager $sm)
     {
         $this->sm = $sm;
+        $this->evm = $sm->getEventManager();
     }
     
     /**
@@ -36,7 +45,15 @@ class UnitOfWork
      */
     public function persist($entity)
     {
+        if ($this->evm->hasListeners(Events::prePersist)) {
+            $this->evm->dispatchEvent(Events::prePersist, new Event\LifecycleEventArgs($entity, $this->sm));
+        }
+        
         $this->scheduledForPersist[] = $entity;
+        
+        if ($this->evm->hasListeners(Events::postPersist)) {
+            $this->evm->dispatchEvent(Events::postPersist, new Event\LifecycleEventArgs($entity, $this->sm));
+        }
     }
     
     /**
@@ -46,7 +63,15 @@ class UnitOfWork
      */
     public function remove($entity)
     {
+        if ($this->evm->hasListeners(Events::preRemove)) {
+            $this->evm->dispatchEvent(Events::preRemove, new Event\LifecycleEventArgs($entity, $this->sm));
+        }
+        
         $this->scheduledForDelete[] = $entity;
+
+        if ($this->evm->hasListeners(Events::postRemove)) {
+            $this->evm->dispatchEvent(Events::postRemove, new Event\LifecycleEventArgs($entity, $this->sm));
+        }
     }
     
     /**
@@ -56,7 +81,13 @@ class UnitOfWork
      */
     public function clear($entityName = null)
     {
-        //TODO: to be implemented
+        //TODO: implement for named entity classes
+        $this->scheduledForDelete = array();
+        $this->scheduledForPersist = array();
+        
+        if ($this->evm->hasListeners(Events::onClear)) {
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->sm, $entityName));
+        }
     }
     
     /**
@@ -72,12 +103,18 @@ class UnitOfWork
      */
     public function commit($entity = null)
     {
+        if ($this->evm->hasListeners(Events::preFlush)) {
+            $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->sm));
+        }
+        
         //TODO: single/array entity commit handling
         $this->commitPersisted();
-        $this->scheduledForPersist = array();
-        
         $this->commitRemoved();
-        $this->scheduledForDelete = array();
+        $this->clear();
+        
+        if ($this->evm->hasListeners(Events::postFlush)) {
+            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->sm));
+        }
     }
     
     /**

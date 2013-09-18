@@ -69,6 +69,10 @@ class Query
      */
     public function __call($method, $arguments)
     {
+        if (!$this->query) {
+            throw new DoctrineSearchException('No client query has been provided using Query#searchWith().');
+        }
+        
         call_user_func_array(array($this->query, $method), $arguments);
         return $this;
     }
@@ -181,26 +185,33 @@ class Query
         }
 
         $classMetadata = $this->getSearchManager()->getClassMetadata($this->entityClass);
-        $resultSet = $this->getSearchManager()->find($classMetadata->index, $classMetadata->type, $this->query);
+        $resultSet = $this->getSearchManager()->getClient()->search(
+            $classMetadata->index,
+            $classMetadata->type,
+            $this->query
+        );
 
-        switch(get_class($resultSet)) {
+        $resultClass = get_class($resultSet);
+        
+        switch($resultClass) {
             case 'Elastica\ResultSet':
                 $this->count = $resultSet->getTotalHits();
                 $results = $resultSet->getResults();
                 break;
             default:
-                throw new DoctrineSearchException('Unknown result set class');
+                throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
         }
 
         if ($this->hydrationMode == self::HYDRATE_BYPASS) {
             return $resultSet;
         }
         
+        // Document ids are used to lookup dbms results
         $fn = function ($result) {
             return $result->getId();
         };
-
         $ids = array_map($fn, $results);
+        
         return $this->getHydrationQuery()
             ->setParameter($this->hydrationParameter, $ids ?: null)
             ->useResultCache($this->useResultCache, $this->cacheLifetime)

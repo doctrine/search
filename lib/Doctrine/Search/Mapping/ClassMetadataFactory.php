@@ -26,6 +26,8 @@ use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Search\Events;
+use Doctrine\Search\Event\LoadClassMetadataEventArgs;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -54,11 +56,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $driver;
 
     /**
+     * @var \Doctrine\Common\EventManager
+     */
+    private $evm;
+    
+    /**
      * {@inheritDoc}
      */
     protected function initialize()
     {
         $this->driver = $this->config->getMetadataDriverImpl();
+        $this->evm = $this->sm->getEventManager();
         $this->initialized = true;
     }
 
@@ -118,6 +126,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         //Manipulates $classMetadata;
         $this->driver->loadMetadataForClass($class->getName(), $class);
+        
+        if ($this->evm->hasListeners(Events::loadClassMetadata)) {
+            $eventArgs = new LoadClassMetadataEventArgs($class, $this->sm);
+            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        }
     }
 
     /**

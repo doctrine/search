@@ -5,6 +5,7 @@ namespace Doctrine\Search;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Exception\DoctrineSearchException;
 
 class EntityRepository implements ObjectRepository
 {
@@ -14,12 +15,12 @@ class EntityRepository implements ObjectRepository
     protected $_entityName;
     
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var \Doctrine\Search\Mapping\ClassMetadata
      */
     private $_class;
     
     /**
-     * @var SearchManager
+     * @var \Doctrine\Search\SearchManager
      */
     private $_sm;
      
@@ -31,16 +32,6 @@ class EntityRepository implements ObjectRepository
     }
     
     /**
-     * Execute a custom query
-     * 
-     * @param object $query
-     */
-    public function search($query)
-    {
-        return $this->_sm->getClient()->search($this->_class->index, $this->_class->type, $query);
-    }
-    
-    /**
      * Finds an object by its primary key / identifier.
      *
      * @param mixed $id The identifier.
@@ -48,7 +39,7 @@ class EntityRepository implements ObjectRepository
      */
     public function find($id)
     {
-        return $this->_sm->getClient()->find($this->_class->index, $this->_class->type, $id);
+        return $this->_sm->find($this->_entityName, $id);
     }
     
     /**
@@ -58,7 +49,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findAll()
     {
-        return $this->_sm->getClient()->findAll($this->_class->index, $this->_class->type);
+        return $this->findBy(array());
     }
     
     /**
@@ -77,7 +68,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        
+        throw new DoctrineSearchException('Not yet implemented.');
     }
     
     /**
@@ -88,7 +79,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        
+        throw new DoctrineSearchException('Not yet implemented.');
     }
     
     /**

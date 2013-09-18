@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -23,33 +23,38 @@ use Doctrine\Common\EventArgs;
 use Doctrine\Search\SearchManager;
 
 /**
- * Class that holds event arguments for a loadMetadata event.
+ * Provides event arguments for the onClear event.
  *
  * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
+ * @link        www.doctrine-project.org
+ * @since       2.0
+ * @author      Roman Borschel <roman@code-factory.de>
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LoadClassMetadataEventArgs extends EventArgs
+class OnClearEventArgs extends EventArgs
 {
     /**
      * @var \Doctrine\Search\SearchManager
      */
     private $sm;
-    
-    private $classMetadata;
 
-    public function __construct(ClassMetadata $classMetadata, SearchManager $sm)
+    /**
+     * @var string
+     */
+    private $entityClass;
+
+    /**
+     * Constructor.
+     *
+     * @param \Doctrine\Search\SearchManager $sm
+     * @param string $entityClass Optional entity class
+     */
+    public function __construct(SearchManager $em, $entityClass = null)
     {
-        $this->classMetadata = $classMetadata;
-        $this->sm = $sm;
+        $this->sm          = $sm;
+        $this->entityClass = $entityClass;
     }
 
-    public function getClassMetadata()
-    {
-        return $this->classMetadata;
-    }
-    
     /**
      * Retrieve associated SearchManager.
      *
@@ -58,5 +63,25 @@ class LoadClassMetadataEventArgs extends EventArgs
     public function getSearchManager()
     {
         return $this->sm;
+    }
+
+    /**
+     * Name of the entity class that is cleared, or empty if all are cleared.
+     *
+     * @return string
+     */
+    public function getEntityClass()
+    {
+        return $this->entityClass;
+    }
+
+    /**
+     * Check if event clears all entities.
+     *
+     * @return bool
+     */
+    public function clearsAllEntities()
+    {
+        return ($this->entityClass === null);
     }
 }

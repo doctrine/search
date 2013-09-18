@@ -27,6 +27,7 @@ use Doctrine\Search\Exception\InvalidHydrationModeException;
 use Doctrine\Search\EntityRepository;
 use Doctrine\Search\UnitOfWork;
 use Doctrine\Search\Query;
+use Doctrine\Common\EventManager;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -39,7 +40,7 @@ class SearchManager implements ObjectManager
     /**
      * @var SearchClientInterface
      */
-    private $searchClient;
+    private $client;
 
     /**
      * @var Configuration $configuration
@@ -62,6 +63,13 @@ class SearchManager implements ObjectManager
     private $entityManager;
     
     /**
+     * The event manager that is the central point of the event system.
+     *
+     * @var \Doctrine\Common\EventManager
+     */
+    private $eventManager;
+    
+    /**
      * The EntityRepository instances.
      *
      * @var array
@@ -79,12 +87,13 @@ class SearchManager implements ObjectManager
      * Constructor
      *
      * @param Configuration         $config
-     * @param SearchClientInterface $sc
+     * @param SearchClientInterface $client
      */
-    public function __construct(Configuration $config, SearchClientInterface $sc)
+    public function __construct(Configuration $config, SearchClientInterface $client, EventManager $eventManager)
     {
         $this->configuration = $config;
-        $this->searchClient = $sc;
+        $this->client = $client;
+        $this->eventManager = $eventManager;
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
@@ -124,13 +133,23 @@ class SearchManager implements ObjectManager
     }
     
     /**
-     * Gets the UnitOfWork used by the EntityManager to coordinate operations.
+     * Gets the UnitOfWork used by the SearchManager to coordinate operations.
      *
      * @return \Doctrine\Search\UnitOfWork
      */
     public function getUnitOfWork()
     {
         return $this->unitOfWork;
+    }
+    
+    /**
+     * Gets the EventManager used by the SearchManager.
+     *
+     * @return \Doctrine\Common\EventManager
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
     }
     
     /**
@@ -150,7 +169,7 @@ class SearchManager implements ObjectManager
      */
     public function getClient()
     {
-        return $this->searchClient;
+        return $this->client;
     }
 
     /**
@@ -168,13 +187,15 @@ class SearchManager implements ObjectManager
     {
         return $this->metadataFactory;
     }
-
+    
     /**
      * {@inheritDoc}
      */
-    public function find($className, $id)
+    public function find($entityName, $id)
     {
-        return $this->getRepository($className)->find($id);
+        $class = $this->getClassMetadata($entityName);
+        $document = $this->client->find($class->index, $class->type, $id);
+        return $document;
     }
 
     /**
@@ -238,7 +259,7 @@ class SearchManager implements ObjectManager
     
     /**
      * Returns a search engine Query wrapper which can be executed
-     * to retrieve results;
+     * to retrieve results.
      *
      * @return Query
      */
