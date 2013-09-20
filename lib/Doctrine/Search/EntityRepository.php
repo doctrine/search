@@ -79,7 +79,9 @@ class EntityRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        $key = key($criteria);
+        $value = current($criteria);
+        return $this->_sm->getUnitOfWork()->load($this->_entityName, $value, $key);
     }
     
     /**

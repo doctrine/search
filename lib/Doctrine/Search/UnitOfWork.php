@@ -32,6 +32,11 @@ class UnitOfWork
      */
     private $scheduledForDelete = array();
     
+    /**
+     * Initializes a new UnitOfWork instance, bound to the given SearchManager.
+     *
+     * @param \Doctrine\Search\EntityManager $sm
+     */
     public function __construct(SearchManager $sm)
     {
         $this->sm = $sm;
@@ -49,7 +54,8 @@ class UnitOfWork
             $this->evm->dispatchEvent(Events::prePersist, new Event\LifecycleEventArgs($entity, $this->sm));
         }
         
-        $this->scheduledForPersist[] = $entity;
+        $oid = spl_object_hash($entity);
+        $this->scheduledForPersist[$oid] = $entity;
         
         if ($this->evm->hasListeners(Events::postPersist)) {
             $this->evm->dispatchEvent(Events::postPersist, new Event\LifecycleEventArgs($entity, $this->sm));
@@ -67,7 +73,8 @@ class UnitOfWork
             $this->evm->dispatchEvent(Events::preRemove, new Event\LifecycleEventArgs($entity, $this->sm));
         }
         
-        $this->scheduledForDelete[] = $entity;
+        $oid = spl_object_hash($entity);
+        $this->scheduledForDelete[$oid] = $entity;
 
         if ($this->evm->hasListeners(Events::postRemove)) {
             $this->evm->dispatchEvent(Events::postRemove, new Event\LifecycleEventArgs($entity, $this->sm));
@@ -81,9 +88,12 @@ class UnitOfWork
      */
     public function clear($entityName = null)
     {
-        //TODO: implement for named entity classes
-        $this->scheduledForDelete = array();
-        $this->scheduledForPersist = array();
+        if ($entityName === null) {
+            $this->scheduledForDelete =
+            $this->scheduledForPersist = array();
+        } else {
+            //TODO: implement for named entity classes
+        }
         
         if ($this->evm->hasListeners(Events::onClear)) {
             $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->sm, $entityName));
@@ -164,13 +174,48 @@ class UnitOfWork
         foreach ($objects as $object) {
             $metadata = $this->sm->getClassMetadata(get_class($object));
             $document = $serialize ? $serializer->serialize($object) : $object;
+
             $id = $object->getId();
             if (!$id) {
-                throw new DoctrineSearchException('Entity does not have an id to index.');
+                throw new DoctrineSearchException('Entity must have an id to be indexed.');
             }
             $documents[$metadata->index][$metadata->type][$id] = $document;
         }
         
         return $documents;
+    }
+    
+    
+    public function load($className, $value, $key = null)
+    {
+        $class = $this->sm->getClassMetadata($className);
+        $client = $this->sm->getClient();
+        
+        if ($key) {
+            $document = $client->findOneBy($class->index, $class->type, $key, $value);
+        } else {
+            $document = $client->find($class->index, $class->type, $value);
+        }
+        
+        // TODO: add support for different result set types from different clients
+        // perhaps by wrapping documents in a layer of abstraction
+        $data = $document->getData();
+        $data[$class->getIdentifier()] = $document->getId();
+        $data = json_encode($data);
+        
+        return $this->sm->getSerializer()->deserialize($className, $data);
+    }
+    
+    /**
+     * Checks whether an entity is registered in the identity map of this UnitOfWork.
+     *
+     * @param object $entity
+     *
+     * @return boolean
+     */
+    public function isInIdentityMap($entity)
+    {
+        $oid = spl_object_hash($entity);
+        return isset($this->scheduledForPersist[$oid]) || isset($this->scheduledForDelete[$oid]);
     }
 }

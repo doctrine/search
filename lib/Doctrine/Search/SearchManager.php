@@ -193,9 +193,7 @@ class SearchManager implements ObjectManager
      */
     public function find($entityName, $id)
     {
-        $class = $this->getClassMetadata($entityName);
-        $document = $this->client->find($class->index, $class->type, $id);
-        return $document;
+        return $this->unitOfWork->load($entityName, $id);
     }
 
     /**

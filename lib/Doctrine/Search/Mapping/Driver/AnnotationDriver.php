@@ -44,16 +44,18 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable' => 2,
     );
 
+    protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
+    
     /**
      * Document fields annotation classes, ordered by precedence.
      */
     protected $entityFieldAnnotationClasses = array(
+        'Doctrine\\Search\\Mapping\\Annotations\\Id',
         'Doctrine\\Search\\Mapping\\Annotations\\Field',
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
-
-
+    
     /**
      * {@inheritDoc}
      *
@@ -130,7 +132,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
                 foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
-                        $metadata->addFieldMapping($reflProperty, $annotation);
+                        if ($annotation instanceof $this->entityIdAnnotationClass) {
+                            $metadata->setIdentifier($reflProperty->name);
+                        } else {
+                            $metadata->addFieldMapping($reflProperty, $annotation);
+                        }
                         continue 2;
                     }
                 }

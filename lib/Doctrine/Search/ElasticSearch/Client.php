@@ -27,6 +27,7 @@ use Elastica\Type\Mapping;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query\MatchAll;
+use Elastica\Query\Term;
 use Elastica\Exception\NotFoundException;
 
 /**
@@ -50,7 +51,7 @@ class Client implements SearchClientInterface
     {
         $this->client = $client;
     }
-
+    
     /**
      * {@inheritDoc}
      */
@@ -97,6 +98,20 @@ class Client implements SearchClientInterface
         }
         
         return $document;
+    }
+    
+    public function findOneBy($index, $type, $key, $value)
+    {
+        $query = new Term();
+        $query->setTerm($key, $value);
+        
+        $results = $this->search($index, $type, $query);
+        
+        if (!$results->count()) {
+            throw new NoResultException();
+        }
+        
+        return $results[0];
     }
     
     /**
@@ -155,6 +170,9 @@ class Client implements SearchClientInterface
         $mapping = new Mapping($type, $properties);
         $mapping->disableSource($metadata->source);
         $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        if (isset($metadata->parent)) {
+            $mapping->setParent($metadata->parent);
+        }
         $mapping->send();
 
         return $type;

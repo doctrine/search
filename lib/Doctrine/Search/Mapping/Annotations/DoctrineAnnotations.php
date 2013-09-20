@@ -62,7 +62,7 @@ final class ElasticSearchable extends Searchable
     public $opType;
 
     /**
-     * @var float $parent
+     * @var string $parent
      */
     public $parent;
 
@@ -81,6 +81,14 @@ final class ElasticSearchable extends Searchable
      * @var boolean
      */
     public $source;
+}
+
+/**
+ * @Annotation
+ * @Target("PROPERTY")
+ */
+class Id extends Annotation
+{
 }
 
 /**

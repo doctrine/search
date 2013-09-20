@@ -41,6 +41,17 @@ interface SearchClientInterface
     public function find($index, $type, $id);
     
     /**
+     * Finds document by specified key and value.
+     *
+     * @param string $index
+     * @param string $type
+     * @param string $key
+     * @param mixed $value
+     * @throws Doctrine\Search\Exception\NoResultException
+     */
+    public function findOneBy($index, $type, $key, $value);
+    
+    /**
      * Finds all documents by type
      *
      * @param string $index

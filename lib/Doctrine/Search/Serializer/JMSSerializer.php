@@ -19,12 +19,17 @@ class JMSSerializer implements SerializerInterface
         $this->serializer = SerializerBuilder::create()
             ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
             ->addDefaultHandlers()
-              ->build();
+            ->build();
     }
 
     public function serialize($object)
     {
         $context = $this->context ? clone $this->context : null;
         return json_decode($this->serializer->serialize($object, 'json', $context), true);
+    }
+    
+    public function deserialize($entityName, $data)
+    {
+        return $this->serializer->deserialize($data, $entityName, 'json');
     }
 }
