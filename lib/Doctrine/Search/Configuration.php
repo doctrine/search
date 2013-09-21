@@ -82,7 +82,9 @@ class Configuration
      */
     public function getMetadataCacheImpl()
     {
-        return isset($this->attributes['metadataCacheImpl']) ? $this->attributes['metadataCacheImpl'] : new ArrayCache();
+        return isset($this->attributes['metadataCacheImpl'])
+            ? $this->attributes['metadataCacheImpl']
+            : new ArrayCache();
     }
 
     /**
@@ -139,27 +141,27 @@ class Configuration
 
     /**
      * Sets an entity serializer
-     * 
+     *
      * @param SerializerInterface $serializer
      */
     public function setEntitySerializer(SerializerInterface $serializer)
     {
         $this->attributes['serializer'] = $serializer;
     }
-    
+
     /**
      * Gets the entity serializer or provides a default if not set
-     * 
+     *
      * @return SerializerInterface
      */
     public function getEntitySerializer()
     {
-        if(isset($this->attributes['serializer'])) {
-           return $this->attributes['serializer'];
+        if (isset($this->attributes['serializer'])) {
+            return $this->attributes['serializer'];
         }
         return new CallbackSerializer();
     }
-    
+
     /**
      * @param ObjectManager $entityManager
      */
@@ -167,12 +169,14 @@ class Configuration
     {
         $this->attributes['entityManager'] = $serializer;
     }
-    
+
     /**
      * @return ObjectManager
      */
     public function getEntityManager()
     {
-        if(isset($this->attributes['entityManager'])) return $this->attributes['entityManager'];
+        if (isset($this->attributes['entityManager'])) {
+            return $this->attributes['entityManager'];
+        }
     }
 }

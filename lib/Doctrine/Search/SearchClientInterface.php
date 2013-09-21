@@ -38,7 +38,7 @@ interface SearchClientInterface
      * @param String $type
      * @param String $query
      */
-    function find($index, $type, $query);
+    public function find($index, $type, $query);
 
     /**
      * Creates a document index
@@ -46,30 +46,30 @@ interface SearchClientInterface
      * @param string $name The name of the index.
      * @param string $config The configuration of the index.
      */
-    function createIndex($name, array $config = array());
-    
+    public function createIndex($name, array $config = array());
+
     /**
      * Gets a document index reference
      *
      * @param string $name The name of the index.
      */
-    function getIndex($name);
+    public function getIndex($name);
 
     /**
      * Deletes an index and its types and documents
-     * 
+     *
      * @param string $index
      */
-    function deleteIndex($index);
-    
+    public function deleteIndex($index);
+
     /**
      * Create a document type mapping as defined in the
      * class annotations
      *
      * @param ClassMetadata $metadata
      */
-    function createType(ClassMetadata $metadata);
-    
+    public function createType(ClassMetadata $metadata);
+
     /**
      * Adds documents of a given type to the specified index
      *
@@ -77,8 +77,8 @@ interface SearchClientInterface
      * @param string $type
      * @param array $documents Indexed by document id
      */
-    function addDocuments($index, $type, array $documents);
-    
+    public function addDocuments($index, $type, array $documents);
+
     /**
      * Remove documents of a given type from the specified index
      *
@@ -86,8 +86,8 @@ interface SearchClientInterface
      * @param string $type
      * @param array $documents Indexed by document id
      */
-    function removeDocuments($index, $type, array $documents);
-    
+    public function removeDocuments($index, $type, array $documents);
+
     /**
      * Remove all documents of a given type from the specified index
      * without deleting the index itself
@@ -95,5 +95,5 @@ interface SearchClientInterface
      * @param string $index
      * @param string $type
      */
-    function removeAll($index, $type);
+    public function removeAll($index, $type);
 }

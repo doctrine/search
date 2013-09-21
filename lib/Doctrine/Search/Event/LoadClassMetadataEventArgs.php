@@ -42,5 +42,4 @@ class LoadClassMetadataEventArgs extends EventArgs
     {
         return $this->classMetadata;
     }
-
 }

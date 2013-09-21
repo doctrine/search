@@ -7,7 +7,7 @@ use Doctrine\Search\SerializerInterface;
 class CallbackSerializer implements SerializerInterface
 {
     protected $callback;
-	
+
     public function __construct($callback = 'toArray')
     {
         $this->callback = $callback;

@@ -19,12 +19,11 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver,
-    Doctrine\Search\Mapping\Annotations as Search,
-    Doctrine\Search\Mapping\ClassMetadata as SearchMetadata,
-    Doctrine\Common\Persistence\Mapping\ClassMetadata,
-    Doctrine\Search\Exception\Driver as DriverException;
-
+use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Search\Mapping\Annotations as Search;
+use Doctrine\Search\Mapping\ClassMetadata as SearchMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Search\Exception\Driver as DriverException;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 
 /**
@@ -40,7 +39,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Document annotation classes, ordered by precedence.
      */
-    static private $documentAnnotationClasses = array(
+    private static $documentAnnotationClasses = array(
         'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable',
     );
@@ -48,7 +47,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * Document fields annotation classes, ordered by precedence.
      */
-    static private $documentFieldAnnotationClasses = array(
+    private static $documentFieldAnnotationClasses = array(
         'Doctrine\\Search\\Mapping\\Annotations\\Field',
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
@@ -107,9 +106,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         //choose only one (the first one)
         $annotationClass = $documentsClassAnnotations[0];
         $reflClassAnnotations = new \ReflectionClass($annotationClass);
-        $metadata = $this->addValuesToMetadata($reflClassAnnotations->getProperties(),
+        $metadata = $this->addValuesToMetadata(
+            $reflClassAnnotations->getProperties(),
             $metadata,
-            $annotationClass);
+            $annotationClass
+        );
 
         return $metadata;
     }
@@ -138,7 +139,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         return $metadata;
     }
-    
+
     /**
      * Extract the methods annotations.
      *
@@ -163,7 +164,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         return $metadata;
     }
-    
+
     /**
      * @param \ReflectionProperty[] $reflectedClassProperties
      * @param ClassMetadata         $metadata
@@ -181,7 +182,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             if (false === property_exists($metadata, $propertyName)) {
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
             } else {
-                if(!is_null($class->$propertyName)) {
+                if (!is_null($class->$propertyName)) {
                     $metadata->$propertyName = $class->$propertyName;
                 }
             }

@@ -37,7 +37,7 @@ class Connection
 
     private $httpClient;
 
-    public function __construct($host = null, $port = null, $path = null, HttpClientInterface $httpClient)
+    public function __construct(HttpClientInterface $httpClient, $host = null, $port = null, $path = null)
     {
         $this->host = $host;
         $this->port = $port;
