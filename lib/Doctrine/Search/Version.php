@@ -7,7 +7,7 @@ final class Version
     /**
      * @var string
      */
-    static $version = '0.1-alpha';
+    public static $version = '0.1-alpha';
 
     /**
      * Compare a given version with the current version
@@ -17,7 +17,7 @@ final class Version
      *
      * @return integer Return -1 if it older, 0 if it the same, 1 if $version is newer
      */
-    static public function compare($version)
+    public static function compare($version)
     {
         return version_compare($version, static::$version);
     }

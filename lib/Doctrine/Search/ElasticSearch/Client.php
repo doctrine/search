@@ -57,16 +57,15 @@ class Client implements SearchClientInterface
     public function addDocuments($index, $type, array $documents)
     {
         $type = $this->getIndex($index)->getType($type);
-        
+
         $batch = array();
-        foreach($documents as $id => $document)
-        {
+        foreach ($documents as $id => $document) {
             $batch[] = new Document($id, $document);
         }
-        
+
         $type->addDocuments($batch);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -75,7 +74,7 @@ class Client implements SearchClientInterface
         $type = $this->getIndex($index)->getType($type);
         $type->deleteIds(array_keys($documents));
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -83,8 +82,8 @@ class Client implements SearchClientInterface
     {
         $type = $this->getIndex($index)->getType($type);
         $type->deleteByQuery(new MatchAll());
-    }    
-    
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -103,7 +102,7 @@ class Client implements SearchClientInterface
         $index->create($config, true);
         return $index;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -111,15 +110,15 @@ class Client implements SearchClientInterface
     {
         return $this->client->getIndex($name);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public function deleteIndex($index)
     {
         $this->getIndex($index)->delete();
-    }    
-    
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -132,38 +131,47 @@ class Client implements SearchClientInterface
         $mapping->disableSource($metadata->source);
         $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
         $mapping->send();
-        
+
         return $type;
     }
-    
+
     /**
      * Generates property mapping from entity annotations
-     * 
+     *
      * @param array $fieldMapping
      */
     protected function getMapping($fieldMapping)
     {
         $properties = array();
-    	
-        foreach($fieldMapping as $propertyName => $fieldMapping)
-        {
-	         if(isset($fieldMapping->name)) $propertyName = $fieldMapping->name;
-	         $properties[$propertyName]['type'] = $fieldMapping->type;
-	         if(isset($fieldMapping->includeInAll)) $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
-	         if(isset($fieldMapping->index)) $properties[$propertyName]['index'] = $fieldMapping->index;
-	         if(isset($fieldMapping->boost)) $properties[$propertyName]['boost'] = $fieldMapping->boost;
-	         
-	         if($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) 
-	         {
-	         	$properties[$propertyName]['fields'] = $this->getMapping($fieldMapping->fields);
-	         }
-	         
-	         if(in_array($fieldMapping->type, array('nested', 'object')) && isset($fieldMapping->properties)) 
-	         {
-	             $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping->properties);
-	         }
+
+        foreach ($fieldMapping as $propertyName => $fieldMapping) {
+            if (isset($fieldMapping->name)) {
+                $propertyName = $fieldMapping->name;
+            }
+
+            $properties[$propertyName]['type'] = $fieldMapping->type;
+
+            if (isset($fieldMapping->includeInAll)) {
+                $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
+            }
+
+            if (isset($fieldMapping->index)) {
+                $properties[$propertyName]['index'] = $fieldMapping->index;
+            }
+
+            if (isset($fieldMapping->boost)) {
+                $properties[$propertyName]['boost'] = $fieldMapping->boost;
+            }
+
+            if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {
+                $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping->fields);
+            }
+
+            if (in_array($fieldMapping->type, array('nested', 'object')) && isset($fieldMapping->properties)) {
+                $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping->properties);
+            }
         }
-    	
+
         return $properties;
     }
 }

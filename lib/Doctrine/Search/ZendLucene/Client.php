@@ -56,12 +56,12 @@ class Client implements SearchClientInterface
     {
 
     }
-    
+
     public function createType(ClassMetadata $metadata)
     {
 
     }
-    
+
     public function getIndex($index)
     {
 
@@ -69,21 +69,21 @@ class Client implements SearchClientInterface
 
     public function deleteIndex($index)
     {
-    
+
     }
-    
+
     public function addDocuments($index, $type, array $documents)
     {
-    
+
     }
-    
+
     public function removeDocuments($index, $type, array $documents)
     {
-     
+
     }
-    
+
     public function removeAll($index, $type)
     {
-    
+
     }
 }
