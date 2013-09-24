@@ -5,6 +5,8 @@ namespace Doctrine\Search;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Exception\DoctrineSearchException;
 use Doctrine\Search\Persisters\BasicEntityPersister;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Search\Mapping\ClassMetadata;
 
 class UnitOfWork
 {
@@ -185,7 +187,13 @@ class UnitOfWork
         return $documents;
     }
     
-    
+    /**
+     * Load and hydrate a document model
+     * 
+     * @param string $className
+     * @param mixed $value
+     * @param string $key
+     */
     public function load($className, $value, $key = null)
     {
         $class = $this->sm->getClassMetadata($className);
@@ -197,13 +205,44 @@ class UnitOfWork
             $document = $client->find($class->index, $class->type, $value);
         }
         
+        return $this->hydrateEntity($class, $document);
+    }
+    
+    /**
+     * Load and hydrate a document collection
+     * 
+     * @param string $className
+     * @param unknown $query
+     */
+    public function loadCollection($className, $query)
+    {
+        $class = $this->sm->getClassMetadata($className);
+        $client = $this->sm->getClient();
+        
+        $results = $client->search($query, $class->index, $class->type);
+        
+        $collection = new ArrayCollection();
+        foreach ($results as $document) {
+            $collection[] = $this->hydrateEntity($class, $document);
+        }
+        
+        return $collection;
+    }
+    
+    /**
+     * Construct an entity object
+     * 
+     * @param ClassMetadata $class
+     * @param object $document
+     */
+    public function hydrateEntity(ClassMetadata $class, $document)
+    {
         // TODO: add support for different result set types from different clients
         // perhaps by wrapping documents in a layer of abstraction
         $data = $document->getData();
         $data[$class->getIdentifier()] = $document->getId();
-        $data = json_encode($data);
-        
-        return $this->sm->getSerializer()->deserialize($className, $data);
+        $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
+        return $entity;
     }
     
     /**

@@ -29,6 +29,7 @@ use Elastica\Index;
 use Elastica\Query\MatchAll;
 use Elastica\Query\Term;
 use Elastica\Exception\NotFoundException;
+use Elastica\Search;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -127,10 +128,19 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function search($index, $type, $query)
+    public function search($query, $index = null, $type = null)
     {
-        $type = $this->getIndex($index)->getType($type);
-        return $type->search($query);
+        $searchQuery = new Search($this->client);
+        
+        if ($index) {
+            $indexObject = $this->getIndex($index);
+            $searchQuery->addIndex($indexObject);
+            if ($type) {
+                $searchQuery->addType($indexObject->getType($type));
+            }
+        }
+        
+        return $searchQuery->search($query);
     }
     
     /**

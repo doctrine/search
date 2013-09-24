@@ -62,11 +62,11 @@ interface SearchClientInterface
     /**
      * Finds documents by a specific query.
      *
+     * @param object $query
      * @param string $index
      * @param string $type
-     * @param object $query
      */
-    public function search($index, $type, $query);
+    public function search($query, $index = null, $type = null);
 
     /**
      * Creates a document index

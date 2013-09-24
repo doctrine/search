@@ -85,12 +85,22 @@ class EntityRepository implements ObjectRepository
     }
     
     /**
+     * Execute a direct search query on the associated index and type
+     * 
+     * @param object $query
+     */
+    public function search($query)
+    {
+        return $this->_sm->getUnitOfWork()->loadCollection($this->_entityName, $query);
+    }
+    
+    /**
      * Returns the class name of the object managed by the repository
      *
      * @return string
      */
     public function getClassName()
     {
-        return $this->entityName;
+        return $this->_entityName;
     }
 }

@@ -3,10 +3,13 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Query
 {
     const HYDRATE_BYPASS = -1;
+    
+    const HYDRATE_INTERNAL = -2;
 
     const HYDRATION_PARAMETER = 'ids';
 
@@ -184,15 +187,16 @@ class Query
             $this->hydrationMode = $hydrationMode;
         }
 
-        $classMetadata = $this->getSearchManager()->getClassMetadata($this->entityClass);
+        $class = $this->getSearchManager()->getClassMetadata($this->entityClass);
         $resultSet = $this->getSearchManager()->getClient()->search(
-            $classMetadata->index,
-            $classMetadata->type,
-            $this->query
+            $this->query,
+            $class->index,
+            $class->type
         );
 
         $resultClass = get_class($resultSet);
         
+        // TODO: abstraction of support for different result sets
         switch($resultClass) {
             case 'Elastica\ResultSet':
                 $this->count = $resultSet->getTotalHits();
@@ -202,8 +206,16 @@ class Query
                 throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
         }
 
+        // Return results depending on hydration mode
         if ($this->hydrationMode == self::HYDRATE_BYPASS) {
             return $resultSet;
+        } elseif ($this->hydrationMode == self::HYDRATE_INTERNAL) {
+            $unitOfWork = $this->sm->getUnitOfWork();
+            $collection = new ArrayCollection();
+            foreach ($results as $document) {
+                $collection[] = $unitOfWork->hydrateEntity($class, $document);
+            }
+            return $collection;
         }
         
         // Document ids are used to lookup dbms results
