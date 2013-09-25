@@ -106,7 +106,7 @@ class Client implements SearchClientInterface
         $query = new Term();
         $query->setTerm($key, $value);
         
-        $results = $this->search($index, $type, $query);
+        $results = $this->search($query, $index, $type);
         
         if (!$results->count()) {
             throw new NoResultException();
