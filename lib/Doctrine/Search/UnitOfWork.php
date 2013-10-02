@@ -242,6 +242,11 @@ class UnitOfWork
         $data = $document->getData();
         $data[$class->getIdentifier()] = $document->getId();
         $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
+
+        if ($this->evm->hasListeners(Events::postLoad)) {
+            $this->evm->dispatchEvent(Events::postLoad, new Event\LifecycleEventArgs($entity, $this->sm));
+        }
+        
         return $entity;
     }
     
