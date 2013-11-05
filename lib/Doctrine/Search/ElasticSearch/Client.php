@@ -179,7 +179,9 @@ class Client implements SearchClientInterface
 
         $mapping = new Mapping($type, $properties);
         $mapping->disableSource($metadata->source);
-        $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        if (isset($metadata->boost)) {
+            $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        }
         if (isset($metadata->parent)) {
             $mapping->setParent($metadata->parent);
         }

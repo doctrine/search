@@ -90,7 +90,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @var float
      */
-    public $boost = 1.0;
+    public $boost;
 
     /**
      * @var string
