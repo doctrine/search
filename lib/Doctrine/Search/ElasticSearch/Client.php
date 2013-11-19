@@ -88,10 +88,11 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function removeAll($index, $type)
+    public function removeAll($index, $type, $query = null)
     {
         $type = $this->getIndex($index)->getType($type);
-        $type->deleteByQuery(new MatchAll());
+        $query = $query ?: new MatchAll();
+        $type->deleteByQuery($query);
     }
 
     /**

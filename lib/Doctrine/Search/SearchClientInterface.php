@@ -122,6 +122,7 @@ interface SearchClientInterface
      *
      * @param string $index
      * @param string $type
+     * @param object $query
      */
-    public function removeAll($index, $type);
+    public function removeAll($index, $type, $query = null);
 }

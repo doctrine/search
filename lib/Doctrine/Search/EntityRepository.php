@@ -95,6 +95,16 @@ class EntityRepository implements ObjectRepository
     }
     
     /**
+     * Execute a direct delete by query on the associated index and type
+     *
+     * @param object $query
+     */
+    public function delete($query)
+    {
+        return $this->_sm->getClient()->removeAll($this->_class->index, $this->_class->type, $query);
+    }
+    
+    /**
      * Returns the class name of the object managed by the repository
      *
      * @return string
