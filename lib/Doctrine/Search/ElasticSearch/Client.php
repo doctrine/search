@@ -54,6 +54,14 @@ class Client implements SearchClientInterface
     }
     
     /**
+     * @return ElasticaClient
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+    
+    /**
      * {@inheritDoc}
      */
     public function addDocuments($index, $type, array $documents)
