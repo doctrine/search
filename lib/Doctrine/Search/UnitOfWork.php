@@ -240,10 +240,11 @@ class UnitOfWork
         // TODO: add support for different result set types from different clients
         // perhaps by wrapping documents in a layer of abstraction
         $data = $document->getData();
-        $fields = $document->getFields();
-        $merged = array_merge($data, $fields);
-        $merged[$class->getIdentifier()] = $document->getId();
-        $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($merged));
+        if ($document->hasFields()) {
+            $data = array_merge($data, $document->getFields());
+        }
+        $data[$class->getIdentifier()] = $document->getId();
+        $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
 
         if ($this->evm->hasListeners(Events::postLoad)) {
             $this->evm->dispatchEvent(Events::postLoad, new Event\LifecycleEventArgs($entity, $this->sm));
