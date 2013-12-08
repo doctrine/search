@@ -215,6 +215,10 @@ class Client implements SearchClientInterface
 
             $properties[$propertyName]['type'] = $fieldMapping->type;
 
+            if (isset($fieldMapping->path)) {
+                $properties[$propertyName]['path'] = $fieldMapping->path;
+            }
+            
             if (isset($fieldMapping->includeInAll)) {
                 $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
             }
