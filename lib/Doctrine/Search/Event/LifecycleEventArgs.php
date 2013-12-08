@@ -13,58 +13,58 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
 namespace Doctrine\Search\Event;
 
 use Doctrine\Common\EventArgs;
 use Doctrine\Search\SearchManager;
-use Doctrine\Search\Mapping\ClassMetadata;
 
 /**
- * Class that holds event arguments for a loadMetadata event.
+ * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
+ * of entities.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
+ * @link   www.doctrine-project.org
+ * @since  2.0
+ * @author Roman Borschel <roman@code-factory.de>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LoadClassMetadataEventArgs extends EventArgs
+class LifecycleEventArgs extends EventArgs
 {
     /**
      * @var \Doctrine\Search\SearchManager
      */
     private $sm;
-    
-    /**
-     * @var \Doctrine\Search\Mapping\ClassMetadata
-     */
-    private $classMetadata;
 
     /**
-     * Constructor.
-     *
-     * @param \Doctrine\Search\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\Search\EntityManager $sm
+     * @var object
      */
-    public function __construct(ClassMetadata $classMetadata, SearchManager $sm)
+    private $entity;
+
+    /**
+     * Constructor
+     *
+     * @param object $entity
+     * @param \Doctrine\Search\SearchManager $em
+     */
+    public function __construct($entity, SearchManager $sm)
     {
-        $this->classMetadata = $classMetadata;
-        $this->sm = $sm;
+        $this->entity = $entity;
+        $this->sm     = $sm;
     }
 
     /**
-     * Retrieve associated ClassMetadata.
+     * Retrieve associated Entity.
      *
-     * @return \Doctrine\Search\Mapping\ClassMetadata
+     * @return object
      */
-    public function getClassMetadata()
+    public function getEntity()
     {
-        return $this->classMetadata;
+        return $this->entity;
     }
-    
+
     /**
      * Retrieve associated SearchManager.
      *

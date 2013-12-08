@@ -19,15 +19,17 @@
 
 namespace Doctrine\Search\ElasticSearch;
 
-
-
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Exception\NoResultException;
 use Elastica\Client as ElasticaClient;
 use Elastica\Type\Mapping;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query\MatchAll;
+use Elastica\Query\Term;
+use Elastica\Exception\NotFoundException;
+use Elastica\Search;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -50,7 +52,15 @@ class Client implements SearchClientInterface
     {
         $this->client = $client;
     }
-
+    
+    /**
+     * @return ElasticaClient
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -78,21 +88,70 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function removeAll($index, $type)
+    public function removeAll($index, $type, $query = null)
     {
         $type = $this->getIndex($index)->getType($type);
-        $type->deleteByQuery(new MatchAll());
+        $query = $query ?: new MatchAll();
+        $type->deleteByQuery($query);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function find($index, $type, $query)
+    public function find($index, $type, $id)
+    {
+        try {
+            $type = $this->getIndex($index)->getType($type);
+            $document = $type->getDocument($id);
+        } catch (NotFoundException $ex) {
+            throw new NoResultException();
+        }
+        
+        return $document;
+    }
+    
+    public function findOneBy($index, $type, $key, $value)
+    {
+        $query = new Term();
+        $query->setTerm($key, $value);
+        
+        $results = $this->search($query, $index, $type);
+        
+        if (!$results->count()) {
+            throw new NoResultException();
+        }
+        
+        return $results[0];
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function findAll($index, $type)
     {
         $type = $this->getIndex($index)->getType($type);
-        return $type->search($query);
+        //TODO: override paging limit
+        return $type->createSearch()->search();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function search($query, $index = null, $type = null)
+    {
+        $searchQuery = new Search($this->client);
+        
+        if ($index) {
+            $indexObject = $this->getIndex($index);
+            $searchQuery->addIndex($indexObject);
+            if ($type) {
+                $searchQuery->addType($indexObject->getType($type));
+            }
+        }
+        
+        return $searchQuery->search($query);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -129,7 +188,12 @@ class Client implements SearchClientInterface
 
         $mapping = new Mapping($type, $properties);
         $mapping->disableSource($metadata->source);
-        $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        if (isset($metadata->boost)) {
+            $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        }
+        if (isset($metadata->parent)) {
+            $mapping->setParent($metadata->parent);
+        }
         $mapping->send();
 
         return $type;
@@ -151,6 +215,10 @@ class Client implements SearchClientInterface
 
             $properties[$propertyName]['type'] = $fieldMapping->type;
 
+            if (isset($fieldMapping->path)) {
+                $properties[$propertyName]['path'] = $fieldMapping->path;
+            }
+            
             if (isset($fieldMapping->includeInAll)) {
                 $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
             }
@@ -161,6 +229,10 @@ class Client implements SearchClientInterface
 
             if (isset($fieldMapping->boost)) {
                 $properties[$propertyName]['boost'] = $fieldMapping->boost;
+            }
+            
+            if (isset($fieldMapping->analyzer)) {
+                $properties[$propertyName]['analyzer'] = $fieldMapping->analyzer;
             }
 
             if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {

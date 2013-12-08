@@ -41,9 +41,9 @@ final class ElasticSearchable extends Searchable
      * @var string $op_type
      */
     public $opType;
-    
-    /** 
-     * @var float $parent
+
+    /**
+     * @var string $parent
      */
     public $parent;
     

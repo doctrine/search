@@ -23,22 +23,8 @@ use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
- * @Target("PROPERTY")
+ * @Target({"PROPERTY"})
  */
-class Field extends Annotation
+final class Id extends Annotation
 {
-    /** 
-     * @var float 
-     */
-    public $boost;
-    
-    /** 
-     * @var string 
-     */
-    public $type;
-    
-    /** 
-     * @var string 
-     */
-    public $name;
 }

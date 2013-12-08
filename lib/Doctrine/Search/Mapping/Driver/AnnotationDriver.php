@@ -37,23 +37,25 @@ use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 class AnnotationDriver extends AbstractAnnotationDriver
 {
     /**
-     * Document annotation classes, ordered by precedence.
+     * {@inheritDoc}
      */
-    private static $documentAnnotationClasses = array(
-        'Doctrine\\Search\\Mapping\\Annotations\\Searchable',
-        'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable',
+    protected $entityAnnotationClasses = array(
+        'Doctrine\\Search\\Mapping\\Annotations\\Searchable' => 1,
+        'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable' => 2,
     );
 
+    protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
+    
     /**
      * Document fields annotation classes, ordered by precedence.
      */
-    private static $documentFieldAnnotationClasses = array(
+    protected $entityFieldAnnotationClasses = array(
+        'Doctrine\\Search\\Mapping\\Annotations\\Id',
         'Doctrine\\Search\\Mapping\\Annotations\\Field',
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
-
-
+    
     /**
      * {@inheritDoc}
      *
@@ -91,9 +93,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         $documentsClassAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
-            foreach (self::$documentAnnotationClasses as $i => $annotationClass) {
+            foreach ($this->entityAnnotationClasses as $annotationClass => $index) {
                 if ($annotation instanceof $annotationClass) {
-                    $documentsClassAnnotations[$i] = $annotation;
+                    $documentsClassAnnotations[$index] = $annotation;
                     break 2;
                 }
             }
@@ -104,7 +106,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         //choose only one (the first one)
-        $annotationClass = $documentsClassAnnotations[0];
+        $annotationClass = reset($documentsClassAnnotations);
         $reflClassAnnotations = new \ReflectionClass($annotationClass);
         $metadata = $this->addValuesToMetadata(
             $reflClassAnnotations->getProperties(),
@@ -128,9 +130,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $documentsFieldAnnotations = array();
         foreach ($reflProperties as $reflProperty) {
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
-                foreach (self::$documentFieldAnnotationClasses as $fieldAnnotationClass) {
+                foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
-                        $metadata->addFieldMapping($reflProperty, $annotation);
+                        if ($annotation instanceof $this->entityIdAnnotationClass) {
+                            $metadata->setIdentifier($reflProperty->name);
+                        } else {
+                            $metadata->addFieldMapping($reflProperty, $annotation);
+                        }
                         continue 2;
                     }
                 }
@@ -153,7 +159,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $documentsFieldAnnotations = array();
         foreach ($reflMethods as $reflMethod) {
             foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
-                foreach (self::$documentFieldAnnotationClasses as $fieldAnnotationClass) {
+                foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
                         $metadata->addFieldMapping($reflMethod, $annotation);
                         continue 2;

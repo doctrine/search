@@ -15,6 +15,7 @@ __Features__
   * Configurable search manager supports aggregate entity manager
   * supports direct API calls through search engine adapters such as Elastica
   * transforms returned ID's via batch operation into hydrated objects as required
+  * Supports event manager listeners for customizable entity handling
 * Support for indexing through event listeners via JMS Serializer or simple entity callback.
 * Annotations for index and data type creation using ObjectManager::getClassMetadata() as the base structure
 
@@ -31,13 +32,17 @@ $config->setEntitySerializer(
   )
 );
 
+$eventManager = new Doctrine\Search\EventManager();
+$eventManager->addListener($listener);
+
 $searchManager = new Doctrine\Search\SearchManager(
   $config,
   new Doctrine\Search\ElasticSearch\Client(
     new Elastica\Client(array(
       array('host' => 'localhost', 'port' => '9200')
     )
-  )
+  ),
+  $eventManager
 );
 ```
 
@@ -201,4 +206,11 @@ $query = $searchManager->createQuery()
 	->setFrom(0)
 	->setLimit(10)
 	->getResult();
+```
+
+Simple Repository ID queries and `Term` search can by done using the following technique. Deserialization is done
+independently of `Doctrine\ORM` but the same models are hydrated according to the registered `SerializerInterface`.
+```php
+$entity = $searchManager->getRepository('Entities\Post')->find($id);
+$entity = $searchManager->getRepository('Entities\Post')->findOneBy(array($key => $term));
 ```
