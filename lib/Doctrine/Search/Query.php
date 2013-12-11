@@ -34,9 +34,9 @@ class Query
     protected $hydrationParameter = self::HYDRATION_PARAMETER;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $entityClass;
+    protected $entityClasses;
 
     /**
      * @var integer
@@ -57,6 +57,11 @@ class Query
      * @var integer
      */
     protected $count;
+    
+    /**
+     * @var array
+     */
+    protected $facets;
 
     public function __construct(SearchManager $sm)
     {
@@ -83,11 +88,11 @@ class Query
     /**
      * Specifies the searchable entity class to search against.
      *
-     * @param string $entityClass
+     * @param mixed $entityClasses
      */
-    public function from($entityClass)
+    public function from($entityClasses)
     {
-        $this->entityClass = $entityClass;
+        $this->entityClasses = (array)$entityClasses;
         return $this;
     }
 
@@ -141,6 +146,11 @@ class Query
     {
         return $this->count;
     }
+    
+    public function getFacets()
+    {
+        return $this->facets;
+    }
 
     /**
      * Set a custom Doctrine Query to execute in order to hydrate the search
@@ -187,12 +197,13 @@ class Query
             $this->hydrationMode = $hydrationMode;
         }
 
-        $class = $this->getSearchManager()->getClassMetadata($this->entityClass);
-        $resultSet = $this->getSearchManager()->getClient()->search(
-            $this->query,
-            $class->index,
-            $class->type
-        );
+        $classes = array();
+        foreach($this->entityClasses as $entityClass)
+        {
+            $classes[] = $this->sm->getClassMetadata($entityClass);
+        }
+        
+        $resultSet = $this->getSearchManager()->getClient()->search($this->query, $classes);
 
         $resultClass = get_class($resultSet);
         
@@ -200,6 +211,7 @@ class Query
         switch($resultClass) {
             case 'Elastica\ResultSet':
                 $this->count = $resultSet->getTotalHits();
+                $this->facets = $resultSet->getFacets();
                 $results = $resultSet->getResults();
                 break;
             default:
@@ -210,12 +222,7 @@ class Query
         if ($this->hydrationMode == self::HYDRATE_BYPASS) {
             return $resultSet;
         } elseif ($this->hydrationMode == self::HYDRATE_INTERNAL) {
-            $unitOfWork = $this->sm->getUnitOfWork();
-            $collection = new ArrayCollection();
-            foreach ($results as $document) {
-                $collection[] = $unitOfWork->hydrateEntity($class, $document);
-            }
-            return $collection;
+            return $this->sm->getUnitOfWork()->hydrateCollection($classes, $resultSet);
         }
         
         // Document ids are used to lookup dbms results

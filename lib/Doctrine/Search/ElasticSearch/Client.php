@@ -27,9 +27,11 @@ use Elastica\Type\Mapping;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query\MatchAll;
-use Elastica\Query\Term;
+use Elastica\Filter\Term;
 use Elastica\Exception\NotFoundException;
 use Elastica\Search;
+use Doctrine\Common\Collections\ArrayCollection;
+use Elastica\Query\ConstantScore;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -64,9 +66,9 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function addDocuments($index, $type, array $documents)
+    public function addDocuments(ClassMetadata $class, array $documents)
     {
-        $type = $this->getIndex($index)->getType($type);
+        $type = $this->getIndex($class->index)->getType($class->type);
 
         $batch = array();
         foreach ($documents as $id => $document) {
@@ -79,18 +81,18 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function removeDocuments($index, $type, array $documents)
+    public function removeDocuments(ClassMetadata $class, array $documents)
     {
-        $type = $this->getIndex($index)->getType($type);
+        $type = $this->getIndex($class->index)->getType($class->type);
         $type->deleteIds(array_keys($documents));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeAll($index, $type, $query = null)
+    public function removeAll(ClassMetadata $class, $query = null)
     {
-        $type = $this->getIndex($index)->getType($type);
+        $type = $this->getIndex($class->index)->getType($class->type);
         $query = $query ?: new MatchAll();
         $type->deleteByQuery($query);
     }
@@ -98,10 +100,10 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function find($index, $type, $id)
+    public function find(ClassMetadata $class, $id)
     {
         try {
-            $type = $this->getIndex($index)->getType($type);
+            $type = $this->getIndex($class->index)->getType($class->type);
             $document = $type->getDocument($id);
         } catch (NotFoundException $ex) {
             throw new NoResultException();
@@ -110,10 +112,11 @@ class Client implements SearchClientInterface
         return $document;
     }
     
-    public function findOneBy($index, $type, $key, $value)
+    public function findOneBy(ClassMetadata $class, $key, $value)
     {
-        $query = new Term();
-        $query->setTerm($key, $value);
+        $query = new ConstantScore();
+        $filter = new Term(array($key => $value));
+        $query->setFilter($filter);
         
         $results = $this->search($query, $index, $type);
         
@@ -127,29 +130,32 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function findAll($index, $type)
+    public function findAll(array $classes)
     {
-        $type = $this->getIndex($index)->getType($type);
-        //TODO: override paging limit
-        return $type->createSearch()->search();
+        return $this->buildQuery($classes)->search();
     }
 
+    protected function buildQuery(array $classes)
+    {
+        $searchQuery = new Search($this->client);
+        foreach($classes as $class) {
+            if ($class->index) {
+                $indexObject = $this->getIndex($class->index);
+                $searchQuery->addIndex($indexObject);
+                if ($class->type) {
+                    $searchQuery->addType($indexObject->getType($class->type));
+                }
+            }
+        }
+        return $searchQuery;
+    }
+    
     /**
      * {@inheritDoc}
      */
-    public function search($query, $index = null, $type = null)
+    public function search($query, array $classes)
     {
-        $searchQuery = new Search($this->client);
-        
-        if ($index) {
-            $indexObject = $this->getIndex($index);
-            $searchQuery->addIndex($indexObject);
-            if ($type) {
-                $searchQuery->addType($indexObject->getType($type));
-            }
-        }
-        
-        return $searchQuery->search($query);
+        return $this->buildQuery($classes)->search($query);
     }
     
     /**
@@ -197,6 +203,15 @@ class Client implements SearchClientInterface
         $mapping->send();
 
         return $type;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteType(ClassMetadata $metadata)
+    {
+        $type = $this->getIndex($metadata->index)->getType($metadata->type);
+        return $type->delete();
     }
 
     /**

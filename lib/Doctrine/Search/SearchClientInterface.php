@@ -21,6 +21,7 @@ namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -33,40 +34,35 @@ interface SearchClientInterface
     /**
      * Finds document by id.
      *
-     * @param string $index
-     * @param string $type
+     * @param ClassMetadata $classes
      * @param mixed $id
      * @throws Doctrine\Search\Exception\NoResultException
      */
-    public function find($index, $type, $id);
+    public function find(ClassMetadata $class, $id);
     
     /**
      * Finds document by specified key and value.
      *
-     * @param string $index
-     * @param string $type
-     * @param string $key
+     * @param ClassMetadata $class
      * @param mixed $value
      * @throws Doctrine\Search\Exception\NoResultException
      */
-    public function findOneBy($index, $type, $key, $value);
+    public function findOneBy(ClassMetadata $class, $key, $value);
     
     /**
-     * Finds all documents by type
+     * Finds all documents
      *
-     * @param string $index
-     * @param string $type
+     * @param array $classes
      */
-    public function findAll($index, $type);
+    public function findAll(array $classes);
     
     /**
      * Finds documents by a specific query.
      *
      * @param object $query
-     * @param string $index
-     * @param string $type
+     * @param array $classes
      */
-    public function search($query, $index = null, $type = null);
+    public function search($query, array $classes);
 
     /**
      * Creates a document index
@@ -97,32 +93,36 @@ interface SearchClientInterface
      * @param ClassMetadata $metadata
      */
     public function createType(ClassMetadata $metadata);
+    
+    /**
+     * Delete a document type
+     *
+     * @param ClassMetadata $metadata
+     */
+    public function deleteType(ClassMetadata $metadata);
 
     /**
      * Adds documents of a given type to the specified index
      *
-     * @param string $index
-     * @param string $type
+     * @param ClassMetadata $class
      * @param array $documents Indexed by document id
      */
-    public function addDocuments($index, $type, array $documents);
+    public function addDocuments(ClassMetadata $class, array $documents);
 
     /**
      * Remove documents of a given type from the specified index
      *
-     * @param string $index
-     * @param string $type
+     * @param ClassMetadata
      * @param array $documents Indexed by document id
      */
-    public function removeDocuments($index, $type, array $documents);
+    public function removeDocuments(ClassMetadata $class, array $documents);
 
     /**
      * Remove all documents of a given type from the specified index
      * without deleting the index itself
      *
-     * @param string $index
-     * @param string $type
+     * @param ClassMetadata $class
      * @param object $query
      */
-    public function removeAll($index, $type, $query = null);
+    public function removeAll(ClassMetadata $class, $query = null);
 }

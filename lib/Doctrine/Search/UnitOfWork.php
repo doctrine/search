@@ -7,6 +7,7 @@ use Doctrine\Search\Exception\DoctrineSearchException;
 use Doctrine\Search\Persisters\BasicEntityPersister;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Traversable;
 
 class UnitOfWork
 {
@@ -137,10 +138,8 @@ class UnitOfWork
         $documents = $this->sortObjects($this->scheduledForPersist);
         $client = $this->sm->getClient();
         
-        foreach ($documents as $index => $documentTypes) {
-            foreach ($documentTypes as $type => $documents) {
-                $client->addDocuments($index, $type, $documents);
-            }
+        foreach ($documents as $entityName => $documents) {
+            $client->addDocuments($this->sm->getClassMetadata($entityName), $documents);
         }
     }
     
@@ -152,10 +151,8 @@ class UnitOfWork
         $documents = $this->sortObjects($this->scheduledForDelete, false);
         $client = $this->sm->getClient();
         
-        foreach ($documents as $index => $documentTypes) {
-            foreach ($documentTypes as $type => $documents) {
-                $client->removeDocuments($index, $type, $documents);
-            }
+        foreach ($documents as $entityName => $documents) {
+            $client->removeDocuments($this->sm->getClassMetadata($entityName), $documents);
         }
     }
     
@@ -174,14 +171,14 @@ class UnitOfWork
         $serializer = $this->sm->getSerializer();
         
         foreach ($objects as $object) {
-            $metadata = $this->sm->getClassMetadata(get_class($object));
             $document = $serialize ? $serializer->serialize($object) : $object;
 
             $id = $object->getId();
             if (!$id) {
                 throw new DoctrineSearchException('Entity must have an id to be indexed.');
             }
-            $documents[$metadata->index][$metadata->type][$id] = $document;
+            
+            $documents[get_class($object)][$id] = $document;
         }
         
         return $documents;
@@ -190,19 +187,18 @@ class UnitOfWork
     /**
      * Load and hydrate a document model
      * 
-     * @param string $className
+     * @param ClassMetadata $class
      * @param mixed $value
      * @param string $key
      */
-    public function load($className, $value, $key = null)
+    public function load(ClassMetadata $class, $value, $key = null)
     {
-        $class = $this->sm->getClassMetadata($className);
         $client = $this->sm->getClient();
         
         if ($key) {
-            $document = $client->findOneBy($class->index, $class->type, $key, $value);
+            $document = $client->findOneBy($class, $key, $value);
         } else {
-            $document = $client->find($class->index, $class->type, $value);
+            $document = $client->find($class, $value);
         }
         
         return $this->hydrateEntity($class, $document);
@@ -211,21 +207,33 @@ class UnitOfWork
     /**
      * Load and hydrate a document collection
      * 
-     * @param string $className
+     * @param array $classes
      * @param unknown $query
      */
-    public function loadCollection($className, $query)
+    public function loadCollection(array $classes, $query)
     {
-        $class = $this->sm->getClassMetadata($className);
-        $client = $this->sm->getClient();
-        
-        $results = $client->search($query, $class->index, $class->type);
-        
+        $results = $this->sm->getClient()->search($query, $classes);
+        return $this->hydrateCollection($classes, $results);
+    }
+    
+    /**
+     * Construct an entity collection
+     *
+     * @param array $classes
+     * @param Traversable $resultSet
+     */
+    public function hydrateCollection(array $classes, Traversable $resultSet)
+    {
         $collection = new ArrayCollection();
-        foreach ($results as $document) {
+        foreach ($resultSet as $document) {
+            foreach($classes as $class) {
+                if($document->getIndex() == $class->index && $document->getType() == $class->type) {
+                    break;
+                }
+            }
             $collection[] = $this->hydrateEntity($class, $document);
         }
-        
+    
         return $collection;
     }
     

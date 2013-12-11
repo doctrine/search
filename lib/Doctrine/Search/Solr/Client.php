@@ -60,6 +60,11 @@ class Client implements SearchClientInterface
     {
 
     }
+    
+    public function deleteType(ClassMetadata $metadata)
+    {
+
+    }
 
     public function getIndex($index)
     {

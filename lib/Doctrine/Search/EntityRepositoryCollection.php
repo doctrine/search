@@ -7,28 +7,31 @@ use Doctrine\Search\SearchManager;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Search\Exception\DoctrineSearchException;
 
-class EntityRepository implements ObjectRepository
+class EntityRepositoryCollection implements ObjectRepository
 {
     /**
-     * @var string
+     * @var array
      */
-    protected $_entityName;
-    
-    /**
-     * @var \Doctrine\Search\Mapping\ClassMetadata
-     */
-    private $_class;
+    private $_repositories = array();
     
     /**
      * @var \Doctrine\Search\SearchManager
      */
     private $_sm;
      
-    public function __construct(SearchManager $sm, ClassMetadata $class)
+    public function __construct(SearchManager $sm)
     {
         $this->_sm = $sm;
-        $this->_entityName = $class->className;
-        $this->_class = $class;
+    }
+    
+    /**
+     * Add a repository to the collection
+     * 
+     * @param EntityRepository $repository
+     */
+    public function addRepository(EntityRepository $repository)
+    {
+        $this->_repositories[] = $repository;
     }
     
     /**
@@ -68,7 +71,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        throw new DoctrineSearchException('Not implemented.');
     }
     
     /**
@@ -79,9 +82,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        $key = key($criteria);
-        $value = current($criteria);
-        return $this->_sm->getUnitOfWork()->load($this->_class, $value, $key);
+        throw new DoctrineSearchException('Not implemented.');
     }
     
     /**
@@ -91,7 +92,8 @@ class EntityRepository implements ObjectRepository
      */
     public function search($query)
     {
-        return $this->_sm->getUnitOfWork()->loadCollection(array($this->_class), $query);
+        $classes = $this->getClassMetadata();
+        return $this->_sm->getUnitOfWork()->loadCollection($classes, $query);
     }
     
     /**
@@ -101,26 +103,38 @@ class EntityRepository implements ObjectRepository
      */
     public function delete($query)
     {
-        $this->_sm->getClient()->removeAll($this->_class, $query);
+        $classes = $this->getClassMetadata();
+        foreach($classes as $class) {
+            $this->_sm->getClient()->removeAll($class, $query);
+        }
     }
     
     /**
-     * Returns the class name of the object managed by the repository
+     * Returns the class names of the objects managed by the repository
      *
      * @return string
      */
     public function getClassName()
     {
-        return $this->_entityName;
+        $classNames = array();
+        foreach($this->_repositories as $repository)
+        {
+            $classNames[] = $repository->getClassName();
+        }
+        return $classNames;
     }
     
     /**
-     * Returns the class metadata managed by the repository
+     * Returns the class metadata of the objects managed by the repository
      *
-     * @return string
+     * @return array
      */
-    public function getClassMetadata()
+    protected function getClassMetadata()
     {
-        return $this->_class;
+        $classes = array();
+        foreach($this->_repositories as $repository) {
+            $classes[] = $repository->getClassMetadata();
+        }
+        return $classes;
     }
 }

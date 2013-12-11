@@ -193,7 +193,8 @@ class SearchManager implements ObjectManager
      */
     public function find($entityName, $id)
     {
-        return $this->unitOfWork->load($entityName, $id);
+        $class = $this->getClassMetadata($entityName);
+        return $this->unitOfWork->load($class, $id);
     }
 
     /**
@@ -253,6 +254,21 @@ class SearchManager implements ObjectManager
         $this->repositories[$entityName] = $repository;
 
         return $repository;
+    }
+    
+    /**
+     * Gets a collection of entity repositories.
+     *
+     * @param array $entityNames The names of the entities.
+     * @return EntityRepositoryCollection The repository class.
+     */
+    public function getRepositories(array $entityNames)
+    {
+        $repositoryCollection = new EntityRepositoryCollection($this);
+        foreach($entityNames as $entityName) {
+            $repositoryCollection->addRepository($this->getRepository($entityName));
+        }
+        return $repositoryCollection;
     }
     
     /**
