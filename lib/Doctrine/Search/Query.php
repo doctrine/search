@@ -3,10 +3,13 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Query
 {
     const HYDRATE_BYPASS = -1;
+    
+    const HYDRATE_INTERNAL = -2;
 
     const HYDRATION_PARAMETER = 'ids';
 
@@ -69,6 +72,10 @@ class Query
      */
     public function __call($method, $arguments)
     {
+        if (!$this->query) {
+            throw new DoctrineSearchException('No client query has been provided using Query#searchWith().');
+        }
+        
         call_user_func_array(array($this->query, $method), $arguments);
         return $this;
     }
@@ -180,27 +187,43 @@ class Query
             $this->hydrationMode = $hydrationMode;
         }
 
-        $classMetadata = $this->getSearchManager()->getClassMetadata($this->entityClass);
-        $resultSet = $this->getSearchManager()->find($classMetadata->index, $classMetadata->type, $this->query);
+        $class = $this->getSearchManager()->getClassMetadata($this->entityClass);
+        $resultSet = $this->getSearchManager()->getClient()->search(
+            $this->query,
+            $class->index,
+            $class->type
+        );
 
-        switch(get_class($resultSet)) {
+        $resultClass = get_class($resultSet);
+        
+        // TODO: abstraction of support for different result sets
+        switch($resultClass) {
             case 'Elastica\ResultSet':
                 $this->count = $resultSet->getTotalHits();
                 $results = $resultSet->getResults();
                 break;
             default:
-                throw new DoctrineSearchException('Unknown result set class');
+                throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
         }
 
+        // Return results depending on hydration mode
         if ($this->hydrationMode == self::HYDRATE_BYPASS) {
             return $resultSet;
+        } elseif ($this->hydrationMode == self::HYDRATE_INTERNAL) {
+            $unitOfWork = $this->sm->getUnitOfWork();
+            $collection = new ArrayCollection();
+            foreach ($results as $document) {
+                $collection[] = $unitOfWork->hydrateEntity($class, $document);
+            }
+            return $collection;
         }
         
+        // Document ids are used to lookup dbms results
         $fn = function ($result) {
             return $result->getId();
         };
-
         $ids = array_map($fn, $results);
+        
         return $this->getHydrationQuery()
             ->setParameter($this->hydrationParameter, $ids ?: null)
             ->useResultCache($this->useResultCache, $this->cacheLifetime)

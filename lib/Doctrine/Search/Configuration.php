@@ -167,7 +167,7 @@ class Configuration
      */
     public function setEntityManager(ObjectManager $entityManager)
     {
-        $this->attributes['entityManager'] = $serializer;
+        $this->attributes['entityManager'] = $entityManager;
     }
 
     /**

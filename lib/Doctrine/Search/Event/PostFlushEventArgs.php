@@ -13,32 +13,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+namespace Doctrine\Search\Event;
 
-namespace Doctrine\Search\Mapping\Annotations;
-
-use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Search\SearchManager;
+use Doctrine\Common\EventArgs;
 
 /**
- * @Annotation
- * @Target("PROPERTY")
+ * Provides event arguments for the postFlush event.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.org
+ * @since       2.0
+ * @author      Daniel Freudenberger <df@rebuy.de>
  */
-class Field extends Annotation
+class PostFlushEventArgs extends EventArgs
 {
-    /** 
-     * @var float 
+    /**
+     * @var \Doctrine\Search\SearchManager
      */
-    public $boost;
-    
-    /** 
-     * @var string 
+    private $sm;
+
+    /**
+     * Constructor.
+     *
+     * @param \Doctrine\Search\SearchManager $sm
      */
-    public $type;
-    
-    /** 
-     * @var string 
+    public function __construct(SearchManager $sm)
+    {
+        $this->sm = $sm;
+    }
+
+    /**
+     * Retrieve associated SearchManager.
+     *
+     * @return \Doctrine\Search\SearchManager
      */
-    public $name;
+    public function getSearchManager()
+    {
+        return $this->sm;
+    }
 }

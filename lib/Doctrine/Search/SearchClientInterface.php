@@ -31,14 +31,42 @@ use Doctrine\Search\Mapping\ClassMetadata;
 interface SearchClientInterface
 {
     /**
-     * Finds ids of indexed objects by a search string.
+     * Finds document by id.
      *
-     *
-     * @param String $index
-     * @param String $type
-     * @param String $query
+     * @param string $index
+     * @param string $type
+     * @param mixed $id
+     * @throws Doctrine\Search\Exception\NoResultException
      */
-    public function find($index, $type, $query);
+    public function find($index, $type, $id);
+    
+    /**
+     * Finds document by specified key and value.
+     *
+     * @param string $index
+     * @param string $type
+     * @param string $key
+     * @param mixed $value
+     * @throws Doctrine\Search\Exception\NoResultException
+     */
+    public function findOneBy($index, $type, $key, $value);
+    
+    /**
+     * Finds all documents by type
+     *
+     * @param string $index
+     * @param string $type
+     */
+    public function findAll($index, $type);
+    
+    /**
+     * Finds documents by a specific query.
+     *
+     * @param object $query
+     * @param string $index
+     * @param string $type
+     */
+    public function search($query, $index = null, $type = null);
 
     /**
      * Creates a document index
@@ -94,6 +122,7 @@ interface SearchClientInterface
      *
      * @param string $index
      * @param string $type
+     * @param object $query
      */
-    public function removeAll($index, $type);
+    public function removeAll($index, $type, $query = null);
 }

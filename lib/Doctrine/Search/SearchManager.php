@@ -21,15 +21,13 @@ namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchClientInterface;
-use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Configuration;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Search\Exception\UnexpectedTypeException;
-use Doctrine\Search\Mapping\ClassMetadata;
-use Doctrine\Search\Mapping\ClassMetadataFactory;
-use Doctrine\Search\Serializer\CallbackSerializer;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Search\Exception\InvalidHydrationModeException;
+use Doctrine\Search\EntityRepository;
+use Doctrine\Search\UnitOfWork;
+use Doctrine\Search\Query;
+use Doctrine\Common\EventManager;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -37,12 +35,12 @@ use Doctrine\ORM\EntityManager;
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class SearchManager
+class SearchManager implements ObjectManager
 {
     /**
      * @var SearchClientInterface
      */
-    private $searchClient;
+    private $client;
 
     /**
      * @var Configuration $configuration
@@ -50,7 +48,7 @@ class SearchManager
     private $configuration;
 
     /**
-     * @var ClassMetadataFactory
+     * @var Doctrine\Search\Mapping\ClassMetadataFactory
      */
     private $metadataFactory;
 
@@ -59,29 +57,43 @@ class SearchManager
      */
     private $serializer;
 
-    /**
-     * @var array
+    /** 
+     * @var ObjectManager 
      */
-    private $scheduledForPersist = array();
-
-    /**
-     * @var array
-     */
-    private $scheduledForDelete = array();
-
-    /** @var EntityManager */
     private $entityManager;
+    
+    /**
+     * The event manager that is the central point of the event system.
+     *
+     * @var \Doctrine\Common\EventManager
+     */
+    private $eventManager;
+    
+    /**
+     * The EntityRepository instances.
+     *
+     * @var array
+     */
+    private $repositories = array();
+    
+    /**
+     * The UnitOfWork used to coordinate object-level transactions.
+     *
+     * @var \Doctrine\Search\UnitOfWork
+     */
+    private $unitOfWork;
 
     /**
      * Constructor
      *
      * @param Configuration         $config
-     * @param SearchClientInterface $sc
+     * @param SearchClientInterface $client
      */
-    public function __construct(Configuration $config, SearchClientInterface $sc)
+    public function __construct(Configuration $config, SearchClientInterface $client, EventManager $eventManager)
     {
         $this->configuration = $config;
-        $this->searchClient = $sc;
+        $this->client = $client;
+        $this->eventManager = $eventManager;
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
@@ -90,16 +102,18 @@ class SearchManager
 
         $this->serializer = $this->configuration->getEntitySerializer();
         $this->entityManager = $this->configuration->getEntityManager();
+        
+        $this->unitOfWork = new UnitOfWork($this);
     }
 
     /**
-     * Inject a Doctrine 2 entity manager
+     * Inject a Doctrine 2 object manager
      *
-     * @param EntityManager $em
+     * @param ObjectManager $em
      */
-    public function setEntityManager(EntityManager $em)
+    public function setEntityManager(ObjectManager $om)
     {
-        $this->entityManager = $em;
+        $this->entityManager = $om;
     }
 
     /**
@@ -117,13 +131,33 @@ class SearchManager
     {
         return $this->configuration;
     }
-
+    
+    /**
+     * Gets the UnitOfWork used by the SearchManager to coordinate operations.
+     *
+     * @return \Doctrine\Search\UnitOfWork
+     */
+    public function getUnitOfWork()
+    {
+        return $this->unitOfWork;
+    }
+    
+    /**
+     * Gets the EventManager used by the SearchManager.
+     *
+     * @return \Doctrine\Common\EventManager
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
+    }
+    
     /**
      * Loads class metadata for the given class
      *
      * @param string $className
      *
-     * @return ClassMetadata
+     * @return Doctrine\Search\Mapping\ClassMetadata
      */
     public function getClassMetadata($className)
     {
@@ -135,34 +169,31 @@ class SearchManager
      */
     public function getClient()
     {
-        return $this->searchClient;
+        return $this->client;
     }
 
     /**
-     * @return mixed
+     * @return SerializerInterface
      */
-    public function getIndex($name)
+    public function getSerializer()
     {
-        return $this->getClient()->getIndex($name);
+        return $this->serializer;
     }
 
     /**
-     * @return ClassMetadataFactory
+     * @return Doctrine\Search\Mapping\ClassMetadataFactory
      */
-    public function getClassMetadataFactory()
+    public function getMetadataFactory()
     {
         return $this->metadataFactory;
     }
-
+    
     /**
-     *
-     * @param string $index
-     * @param string $type
-     * @param string $query
+     * {@inheritDoc}
      */
-    public function find($index, $type, $query)
+    public function find($entityName, $id)
     {
-        return $this->searchClient->find($index, $type, $query);
+        return $this->unitOfWork->load($entityName, $id);
     }
 
     /**
@@ -178,7 +209,7 @@ class SearchManager
             throw new UnexpectedTypeException($object, 'object');
         }
 
-        $this->scheduledForPersist[] = $object;
+        $this->unitOfWork->persist($object);
     }
 
     /**
@@ -194,59 +225,75 @@ class SearchManager
             throw new UnexpectedTypeException($object, 'object');
         }
 
-        $this->scheduledForDelete[] = $object;
+        $this->unitOfWork->remove($object);
     }
 
     /**
      * Commit all changes
      */
-    public function commit()
+    public function flush($object = null)
     {
-        $this->commitPersisted();
-        $this->commitRemoved();
+        $this->unitOfWork->commit($object);
     }
-
-    private function commitPersisted()
+    
+    /**
+     * Gets the repository for an entity class.
+     *
+     * @param string $entityName The name of the entity.
+     * @return EntityRepository The repository class.
+     */
+    public function getRepository($entityName)
     {
-        $documents = $this->sortObjects($this->scheduledForPersist);
-
-        foreach ($documents as $index => $documentTypes) {
-            foreach ($documentTypes as $type => $documents) {
-                $this->searchClient->addDocuments($index, $type, $documents);
-            }
+        if (isset($this->repositories[$entityName])) {
+            return $this->repositories[$entityName];
         }
+        
+        $metadata = $this->getClassMetadata($entityName);
+        $repository = new EntityRepository($this, $metadata);
+        $this->repositories[$entityName] = $repository;
+
+        return $repository;
     }
-
-    private function commitRemoved()
-    {
-        $documents = $this->sortObjects($this->scheduledForDelete, false);
-
-        foreach ($documents as $index => $documentTypes) {
-            foreach ($documentTypes as $type => $documents) {
-                $this->searchClient->removeDocuments($index, $type, $documents);
-            }
-        }
-    }
-
-    private function sortObjects(array $objects, $serialize = true)
-    {
-        $documents = array();
-        foreach ($objects as $object) {
-            $metadata = $this->getClassMetadata(get_class($object));
-            $document = $serialize ? $this->serializer->serialize($object) : $object;
-            $documents[$metadata->index][$metadata->type][$object->getId()] = $document;
-        }
-        return $documents;
-    }
-
+    
     /**
      * Returns a search engine Query wrapper which can be executed
-     * to retrieve results;
+     * to retrieve results.
      *
      * @return Query
      */
     public function createQuery()
     {
         return new Query($this);
+    }
+    
+    public function initializeObject($obj)
+    {
+    }
+    
+    public function contains($object)
+    {
+    }
+    
+    public function merge($object)
+    {
+    }
+    
+    /**
+     * Clears the SearchManager. All entities that are currently managed
+     * by this EntityManager become detached.
+     *
+     * @param string $objectName if given, only entities of this type will get detached
+     */
+    public function clear($objectName = null)
+    {
+        $this->unitOfWork->clear($objectName);
+    }
+    
+    public function detach($object)
+    {
+    }
+    
+    public function refresh($object)
+    {
     }
 }
