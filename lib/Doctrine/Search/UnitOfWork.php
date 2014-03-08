@@ -36,6 +36,11 @@ class UnitOfWork
     private $scheduledForDelete = array();
     
     /**
+     * @var array
+     */
+    private $updatedIndexes = array();
+    
+    /**
      * Initializes a new UnitOfWork instance, bound to the given SearchManager.
      *
      * @param \Doctrine\Search\EntityManager $sm
@@ -93,7 +98,8 @@ class UnitOfWork
     {
         if ($entityName === null) {
             $this->scheduledForDelete =
-            $this->scheduledForPersist = array();
+            $this->scheduledForPersist = 
+            $this->updatedIndexes = array();
         } else {
             //TODO: implement for named entity classes
         }
@@ -123,6 +129,16 @@ class UnitOfWork
         //TODO: single/array entity commit handling
         $this->commitPersisted();
         $this->commitRemoved();
+        
+        //Force refresh of updated indexes
+        if($entity === true) {
+            $client = $this->sm->getClient();
+            foreach(array_unique($this->updatedIndexes) as $index) {
+            	
+                $client->refreshIndex($index);
+            }
+        }
+        
         $this->clear();
         
         if ($this->evm->hasListeners(Events::postFlush)) {
@@ -139,7 +155,9 @@ class UnitOfWork
         $client = $this->sm->getClient();
         
         foreach ($documents as $entityName => $documents) {
-            $client->addDocuments($this->sm->getClassMetadata($entityName), $documents);
+            $classMetadata = $this->sm->getClassMetadata($entityName);
+            $this->updatedIndexes[] = $classMetadata->index;
+            $client->addDocuments($classMetadata, $documents);
         }
     }
     
@@ -152,7 +170,9 @@ class UnitOfWork
         $client = $this->sm->getClient();
         
         foreach ($documents as $entityName => $documents) {
-            $client->removeDocuments($this->sm->getClassMetadata($entityName), $documents);
+            $classMetadata = $this->sm->getClassMetadata($entityName);
+            $this->updatedIndexes[] = $classMetadata->index;
+            $client->removeDocuments($classMetadata, $documents);
         }
     }
     

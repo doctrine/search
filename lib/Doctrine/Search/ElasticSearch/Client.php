@@ -183,6 +183,14 @@ class Client implements SearchClientInterface
     {
         $this->getIndex($index)->delete();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function refreshIndex($index)
+    {
+        $this->getIndex($index)->refresh();
+    }
 
     /**
      * {@inheritDoc}

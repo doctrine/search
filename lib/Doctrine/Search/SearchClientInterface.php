@@ -87,6 +87,11 @@ interface SearchClientInterface
     public function deleteIndex($index);
 
     /**
+     * Refresh the index to make documents available for search
+     */
+    public function refreshIndex($index);
+    
+    /**
      * Create a document type mapping as defined in the
      * class annotations
      *

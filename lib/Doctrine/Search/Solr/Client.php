@@ -75,6 +75,11 @@ class Client implements SearchClientInterface
     {
 
     }
+    
+    public function refreshIndex($index)
+    {
+    
+    }
 
     public function addDocuments($index, $type, array $documents)
     {
