@@ -72,7 +72,13 @@ class Client implements SearchClientInterface
 
         $batch = array();
         foreach ($documents as $id => $document) {
-            $batch[] = new Document($id, $document);
+            $elasticadoc = new Document($id);
+            if (isset($document['_parent'])) {
+                $elasticadoc->setParent($document['_parent']);
+	             unset($document['_parent']);
+            }
+            $elasticadoc->setData($document);
+            $batch[] = $elasticadoc;
         }
 
         $type->addDocuments($batch);
