@@ -4,7 +4,6 @@ namespace Doctrine\Search;
 
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Exception\DoctrineSearchException;
-use Doctrine\Search\Persisters\BasicEntityPersister;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Traversable;

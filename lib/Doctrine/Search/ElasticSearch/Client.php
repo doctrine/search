@@ -77,6 +77,10 @@ class Client implements SearchClientInterface
                 $elasticadoc->setParent($document['_parent']);
 	             unset($document['_parent']);
             }
+            if (isset($document['_routing'])) {
+                $elasticadoc->setRouting($document['_routing']);
+	             unset($document['_routing']);
+            }
             $elasticadoc->setData($document);
             $batch[] = $elasticadoc;
         }

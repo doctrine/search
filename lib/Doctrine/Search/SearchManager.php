@@ -23,7 +23,6 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Search\Configuration;
 use Doctrine\Search\Exception\UnexpectedTypeException;
-use Doctrine\Search\Exception\InvalidHydrationModeException;
 use Doctrine\Search\EntityRepository;
 use Doctrine\Search\UnitOfWork;
 use Doctrine\Search\Query;
