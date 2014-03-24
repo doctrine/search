@@ -10,8 +10,8 @@ namespace Doctrine\Search\Exception;
  */
 class NoResultException extends DoctrineSearchException
 {
-    public function __construct()
+    public function __construct($message = null)
     {
-        parent::__construct('No result was found for query although at least one row was expected.');
+        parent::__construct($message ?: 'No result was found for query although at least one row was expected.');
     }
 }
