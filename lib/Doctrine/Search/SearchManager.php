@@ -199,35 +199,37 @@ class SearchManager implements ObjectManager
     /**
      * Adds the object to the index
      *
-     * @param array|object $object
+     * @param array|object $objects
      *
      * @throws UnexpectedTypeException
      */
-    public function persist($object)
+    public function persist($objects)
     {
-        $objects = is_array($object) ? $object : array($object);
+        if(!is_array($objects)) $objects = array($objects);
         foreach($objects as $object) {
-           if (!is_object($object)) {
-               throw new UnexpectedTypeException($object, 'object');
-           }
-           $this->unitOfWork->persist($object);
+            if (!is_object($object)) {
+                throw new UnexpectedTypeException($object, 'object');
+            }
+            $this->unitOfWork->persist($object);
         }
     }
 
     /**
      * Remove the object from the index
      *
-     * @param object $object
+     * @param array|object $objects
      *
      * @throws UnexpectedTypeException
      */
-    public function remove($object)
+    public function remove($objects)
     {
-        if (!is_object($object)) {
-            throw new UnexpectedTypeException($object, 'object');
+        if(!is_array($objects)) $objects = array($objects);
+        foreach($objects as $object) {
+            if (!is_object($object)) {
+                throw new UnexpectedTypeException($object, 'object');
+            }
+            $this->unitOfWork->remove($object);
         }
-
-        $this->unitOfWork->remove($object);
     }
 
     /**
