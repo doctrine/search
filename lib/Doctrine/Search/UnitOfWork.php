@@ -266,8 +266,12 @@ class UnitOfWork
         // TODO: add support for different result set types from different clients
         // perhaps by wrapping documents in a layer of abstraction
         $data = $document->getData();
+        $fields = array_merge(
+            $document->getFields(),
+            array('_version' => $document->getVersion())
+        );
         
-        foreach($document->getFields() as $name => $value) {
+        foreach($fields as $name => $value) {
             if (isset($class->parameters[$name])) {
                 $data[$name] = $value;
             } else {
