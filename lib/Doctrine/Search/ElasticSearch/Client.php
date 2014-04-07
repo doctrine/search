@@ -70,22 +70,25 @@ class Client implements SearchClientInterface
     {
         $type = $this->getIndex($class->index)->getType($class->type);
 
-        $batch = array();
+        $parameters = $this->getParameters($class->parameters);
+        
+        $bulk = array();
         foreach ($documents as $id => $document) {
             $elasticadoc = new Document($id);
-            if (isset($document['_parent'])) {
-                $elasticadoc->setParent($document['_parent']);
-	             unset($document['_parent']);
-            }
-            if (isset($document['_routing'])) {
-                $elasticadoc->setRouting($document['_routing']);
-	             unset($document['_routing']);
+            foreach($parameters as $name => $value) {
+                if(isset($document[$value])) {
+                    if(method_exists($elasticadoc, "set{$name}")) {
+                        $elasticadoc->{"set{$name}"}($document[$value]);
+                    } else {
+                        $elasticadoc->setParam($name, $document[$value]);
+                    }
+                }
             }
             $elasticadoc->setData($document);
-            $batch[] = $elasticadoc;
+            $bulk[] = $elasticadoc;
         }
 
-        $type->addDocuments($batch);
+        $type->addDocuments($bulk);
     }
 
     /**
@@ -278,5 +281,20 @@ class Client implements SearchClientInterface
         }
 
         return $properties;
+    }
+    
+    /**
+     * Generates parameter mapping from entity annotations
+     *
+     * @param array $fieldMapping
+     */
+    protected function getParameters($paramMapping)
+    {
+        $parameters = array();
+        foreach ($paramMapping as $propertyName => $mapping) {
+            $paramName = isset($mapping->name) ? $mapping->name : $propertyName;
+            $parameters[$paramName] = $propertyName;
+        }
+        return $parameters;
     }
 }

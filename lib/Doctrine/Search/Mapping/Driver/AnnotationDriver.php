@@ -46,11 +46,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
     
+    protected $entityParamAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Parameter';
+    
     /**
      * Document fields annotation classes, ordered by precedence.
      */
     protected $entityFieldAnnotationClasses = array(
-        'Doctrine\\Search\\Mapping\\Annotations\\Id',
+        'Doctrine\\Search\\Mapping\\Annotations\\Id',        //Only here for convenience
+        'Doctrine\\Search\\Mapping\\Annotations\\Parameter', //Only here for convenience
         'Doctrine\\Search\\Mapping\\Annotations\\Field',
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
@@ -134,6 +137,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     if ($annotation instanceof $fieldAnnotationClass) {
                         if ($annotation instanceof $this->entityIdAnnotationClass) {
                             $metadata->setIdentifier($reflProperty->name);
+                        } elseif($annotation instanceof $this->entityParamAnnotationClass) {
+                            $metadata->addParameterMapping($reflProperty, $annotation);
                         } else {
                             $metadata->addFieldMapping($reflProperty, $annotation);
                         }

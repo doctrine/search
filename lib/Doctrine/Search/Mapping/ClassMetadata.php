@@ -104,7 +104,13 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public $fieldMappings = array();
 
-
+    /**
+     * The ReflectionProperty parameters of the mapped class.
+     *
+     * @var array
+     */
+    public $parameters = array();    
+    
     /**
      * The ReflectionClass instance of the mapped class.
      *
@@ -151,6 +157,7 @@ class ClassMetadata implements ClassMetadataInterface
             'boost',
             'className',
             'fieldMappings',
+            'parameters',
             'index',
             'numberOfReplicas',
             'numberOfShards',
@@ -258,6 +265,18 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
+    }
+    
+    /**
+     * This mapping is used in the _wakeup-method to set the parameters after _sleep.
+     *
+     * @param \ReflectionProperty $field
+     * @param array $mapping
+     */
+    public function addParameterMapping(\Reflector $field, $mapping = array())
+    {
+        $fieldName = $field->getName();
+        $this->parameters[$fieldName] = $mapping;
     }
 
     /**

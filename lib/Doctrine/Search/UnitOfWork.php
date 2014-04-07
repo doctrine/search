@@ -133,7 +133,6 @@ class UnitOfWork
         if($entity === true) {
             $client = $this->sm->getClient();
             foreach(array_unique($this->updatedIndexes) as $index) {
-            	
                 $client->refreshIndex($index);
             }
         }
