@@ -266,10 +266,22 @@ class UnitOfWork
         // TODO: add support for different result set types from different clients
         // perhaps by wrapping documents in a layer of abstraction
         $data = $document->getData();
-        if ($document->hasFields()) {
-            $data = array_merge($data, $document->getFields());
+        
+        foreach($document->getFields() as $name => $value) {
+            if (isset($class->parameters[$name])) {
+                $data[$name] = $value;
+            } else {
+                foreach($class->parameters as $param => $mapping) {
+                    if ($mapping->name == $name) {
+                        $data[$param] = $value;
+                        break;
+                    }
+                }
+            }
         }
+        
         $data[$class->getIdentifier()] = $document->getId();
+        
         $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
 
         if ($this->evm->hasListeners(Events::postLoad)) {
