@@ -82,6 +82,7 @@ class Client implements SearchClientInterface
                     } else {
                         $elasticadoc->setParam($name, $document[$value]);
                     }
+                    unset($document[$value]);
                 }
             }
             $elasticadoc->setData($document);
