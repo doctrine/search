@@ -31,7 +31,7 @@ use Elastica\Filter\Term;
 use Elastica\Exception\NotFoundException;
 use Elastica\Search;
 use Doctrine\Common\Collections\ArrayCollection;
-use Elastica\Query\ConstantScore;
+use Elastica\Query;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -127,7 +127,10 @@ class Client implements SearchClientInterface
     
     public function findOneBy(ClassMetadata $class, $key, $value)
     {
-        $query = new ConstantScore();
+        $query = new Query();
+        $query->setVersion(true);
+        $query->setSize(1);
+        
         $filter = new Term(array($key => $value));
         $query->setFilter($filter);
         
@@ -151,6 +154,7 @@ class Client implements SearchClientInterface
     protected function buildQuery(array $classes)
     {
         $searchQuery = new Search($this->client);
+        $searchQuery->setOption(Search::OPTION_VERSION, true);
         foreach($classes as $class) {
             if ($class->index) {
                 $indexObject = $this->getIndex($class->index);
