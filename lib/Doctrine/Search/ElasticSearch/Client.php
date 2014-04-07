@@ -89,7 +89,11 @@ class Client implements SearchClientInterface
             $bulk[] = $elasticadoc;
         }
 
-        $type->addDocuments($bulk);
+        if(count($bulk) > 1) {
+            $type->addDocuments($bulk);
+        } else {
+            $type->addDocument($bulk[0]);
+        }
     }
 
     /**
