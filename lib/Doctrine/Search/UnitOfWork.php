@@ -126,8 +126,8 @@ class UnitOfWork
         }
         
         //TODO: single/array entity commit handling
-        $this->commitPersisted();
         $this->commitRemoved();
+        $this->commitPersisted();
         
         //Force refresh of updated indexes
         if($entity === true) {
