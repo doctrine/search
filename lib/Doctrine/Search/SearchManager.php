@@ -205,7 +205,9 @@ class SearchManager implements ObjectManager
      */
     public function persist($objects)
     {
-        if(!is_array($objects)) $objects = array($objects);
+        if(!is_array($objects) && !$objects instanceof \Traversable) {
+            $objects = array($objects);
+        }
         foreach($objects as $object) {
             if (!is_object($object)) {
                 throw new UnexpectedTypeException($object, 'object');
@@ -223,7 +225,9 @@ class SearchManager implements ObjectManager
      */
     public function remove($objects)
     {
-        if(!is_array($objects)) $objects = array($objects);
+        if(!is_array($objects) && !$objects instanceof \Traversable) {
+            $objects = array($objects);
+        }
         foreach($objects as $object) {
             if (!is_object($object)) {
                 throw new UnexpectedTypeException($object, 'object');
