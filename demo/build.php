@@ -5,6 +5,7 @@ require_once 'ElasticSearch.php';
 
 use Entities\User;
 use Entities\Email;
+use Entities\Comment;
 
 $sm = ElasticSearch::get();
 
@@ -21,7 +22,7 @@ foreach($metadatas as $metadata)
 }
 
 // Recreate indexes and types
-foreach($metadatas as $oMetadata)
+foreach($metadatas as $metadata)
 {
 	if(!$client->getIndex($metadata->index)->exists())
 	{
@@ -45,5 +46,8 @@ $user2->addEmail(new Email('user2@example.com'));
 $user2->addEmail(new Email('user2@test.com'));
 $user2->addFriend($user1);
 
-$sm->persist(array($user1, $user2));
+$comment1 = new Comment($user1, 'comment from user 1');
+$comment2 = new Comment($user2, 'comment from user 2');
+
+$sm->persist(array($user1, $user2, $comment1, $comment2));
 $sm->flush();

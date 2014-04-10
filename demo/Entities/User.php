@@ -14,7 +14,7 @@ class User
 	/**
 	 * @MAP\Id
 	 * @JMS\Type("string")
-	 * @JMS\Expose @JMS\Groups({"public"})
+	 * @JMS\Expose @JMS\Groups({"api"})
 	 * 
 	 * Using Serialization groups allows us to provide a version of serialized object
 	 * for storage, and a different one for passing into a document output renderer, such

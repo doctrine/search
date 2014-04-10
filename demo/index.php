@@ -10,9 +10,9 @@ $sm = ElasticSearch::get();
 
 //Execute a direct Elastica term search
 $query = new Elastica\Filter\Term(array('username' => 'timmyl'));
-$results = $sm->getRepository('Entities\User')->search($query);
+$users = $sm->getRepository('Entities\User')->search($query);
 
-foreach($results as $user)
+foreach($users as $user)
 {
 	print_r($user);
 }
@@ -38,3 +38,16 @@ catch(Doctrine\Search\Exception\NoResultException $exception)
 	print_r($exception->getMessage());
 } 
 
+
+
+//Search for comments with parent user
+$query = new Elastica\Filter\HasParent(
+	new Elastica\Filter\Term(array('username' => 'mrhash')),
+	'users'
+);
+$comments = $sm->getRepository('Entities\Comment')->search($query);
+
+foreach($comments as $comment)
+{
+	print_r($comment);
+}

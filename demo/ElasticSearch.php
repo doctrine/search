@@ -10,6 +10,7 @@ use Elastica\Client;
 use Doctrine\Search\ElasticSearch\Client as ElasticaAdapter;
 use Doctrine\Search\Serializer\JMSSerializer;
 use JMS\Serializer\SerializationContext;
+use Doctrine\Common\Cache\ArrayCache;
 
 class ElasticSearch
 {
@@ -24,6 +25,7 @@ class ElasticSearch
 		$config = new Configuration();
 		$md = $config->newDefaultAnnotationDriver(array($entities['namespace']));
 		$config->setMetadataDriverImpl($md);
+		$config->setMetadataCacheImpl(new ArrayCache());
 		
 		//Set and configure preferred serializer for persistence
 		//If using serialaztion groups you can sepcify the names here
