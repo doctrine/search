@@ -40,11 +40,15 @@ catch(Doctrine\Search\Exception\NoResultException $exception)
 
 
 
-//Search for comments with parent user
-$query = new Elastica\Filter\HasParent(
+//Search for comments with parent user. Because of the way ES returns 
+//results, you have to explicitly ask for the _parent or _routing field if required.
+//On single document query e.g. find() the _parent field is returned by ES anyway.
+$query = new Elastica\Query();
+$query->setFilter(new Elastica\Filter\HasParent(
 	new Elastica\Filter\Term(array('username' => 'mrhash')),
 	'users'
-);
+));
+$query->setFields(array('_source', '_parent'));
 $comments = $sm->getRepository('Entities\Comment')->search($query);
 
 foreach($comments as $comment)
