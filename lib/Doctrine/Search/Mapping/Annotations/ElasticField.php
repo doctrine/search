@@ -56,4 +56,9 @@ final class ElasticField extends Field
      * @var string
      */
     public $path;
+    
+    /**
+     * @var string
+     */
+    public $indexName;
 }

@@ -279,6 +279,10 @@ class Client implements SearchClientInterface
             if (isset($fieldMapping->analyzer)) {
                 $properties[$propertyName]['analyzer'] = $fieldMapping->analyzer;
             }
+            
+            if (isset($fieldMapping->indexName)) {
+                $properties[$propertyName]['index_name'] = $fieldMapping->indexName;
+            }
 
             if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {
                 $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping->fields);
