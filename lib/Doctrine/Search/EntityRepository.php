@@ -49,7 +49,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findAll()
     {
-        return $this->findBy(array());
+        throw new DoctrineSearchException('Not yet implemented.');
     }
     
     /**

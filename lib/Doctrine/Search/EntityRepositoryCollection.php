@@ -52,7 +52,7 @@ class EntityRepositoryCollection implements ObjectRepository
      */
     public function findAll()
     {
-        return $this->findBy(array());
+        throw new DoctrineSearchException('Not yet implemented.');
     }
     
     /**
@@ -71,7 +71,7 @@ class EntityRepositoryCollection implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        throw new DoctrineSearchException('Not implemented.');
+        throw new DoctrineSearchException('Not yet implemented.');
     }
     
     /**
@@ -82,7 +82,7 @@ class EntityRepositoryCollection implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        throw new DoctrineSearchException('Not implemented.');
+        throw new DoctrineSearchException('Not yet implemented.');
     }
     
     /**
