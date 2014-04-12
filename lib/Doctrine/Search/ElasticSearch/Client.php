@@ -118,11 +118,11 @@ class Client implements SearchClientInterface
     /**
      * {@inheritDoc}
      */
-    public function find(ClassMetadata $class, $id)
+    public function find(ClassMetadata $class, $id, $options = array())
     {
         try {
             $type = $this->getIndex($class->index)->getType($class->type);
-            $document = $type->getDocument($id);
+            $document = $type->getDocument($id, $options);
         } catch (NotFoundException $ex) {
             throw new NoResultException();
         }
@@ -130,13 +130,13 @@ class Client implements SearchClientInterface
         return $document;
     }
     
-    public function findOneBy(ClassMetadata $class, $key, $value)
+    public function findOneBy(ClassMetadata $class, $field, $value)
     {
         $query = new Query();
         $query->setVersion(true);
         $query->setSize(1);
         
-        $filter = new Term(array($key => $value));
+        $filter = new Term(array($field => $value));
         $query->setFilter($filter);
         
         $results = $this->search($query, array($class));

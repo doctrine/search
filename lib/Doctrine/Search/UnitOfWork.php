@@ -193,7 +193,7 @@ class UnitOfWork
 
             $id = $object->getId();
             if (!$id) {
-                throw new DoctrineSearchException('Entity must have an id to be indexed.');
+                throw new DoctrineSearchException('Entity must have an id to be indexed');
             }
             
             $documents[get_class($object)][$id] = $document;
@@ -207,16 +207,16 @@ class UnitOfWork
      * 
      * @param ClassMetadata $class
      * @param mixed $value
-     * @param string $key
+     * @param array $options
      */
-    public function load(ClassMetadata $class, $value, $key = null)
+    public function load(ClassMetadata $class, $value, $options = array())
     {
         $client = $this->sm->getClient();
         
-        if ($key) {
-            $document = $client->findOneBy($class, $key, $value);
+        if (isset($options['field'])) {
+            $document = $client->findOneBy($class, $options['field'], $value);
         } else {
-            $document = $client->find($class, $value);
+            $document = $client->find($class, $value, $options);
         }
         
         return $this->hydrateEntity($class, $document);
@@ -267,7 +267,7 @@ class UnitOfWork
         // perhaps by wrapping documents in a layer of abstraction
         $data = $document->getData();
         $fields = array_merge(
-            $document->getFields(),
+            $document->hasFields() ? $document->getFields() : array(),
             array('_version' => $document->getVersion())
         );
         

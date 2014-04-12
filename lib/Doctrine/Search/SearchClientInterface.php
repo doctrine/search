@@ -36,18 +36,19 @@ interface SearchClientInterface
      *
      * @param ClassMetadata $classes
      * @param mixed $id
+     * @param array $options
      * @throws Doctrine\Search\Exception\NoResultException
      */
-    public function find(ClassMetadata $class, $id);
+    public function find(ClassMetadata $class, $id, $options = array());
     
     /**
-     * Finds document by specified key and value.
+     * Finds document by specified field and value.
      *
      * @param ClassMetadata $class
      * @param mixed $value
      * @throws Doctrine\Search\Exception\NoResultException
      */
-    public function findOneBy(ClassMetadata $class, $key, $value);
+    public function findOneBy(ClassMetadata $class, $field, $value);
     
     /**
      * Finds all documents
