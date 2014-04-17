@@ -37,10 +37,13 @@ class ElasticSearch
 		$eventManager = new EventManager();
 		//$eventManager->addEventListener('prePersist', $listener);
 		
+		//Create the client
+		$client = new Client(array('connections' => Config::getServers()));
+		
 		//Get the search manager
 		return new SearchManager(
 			$config,
-			new ElasticaAdapter(new Client(Config::getServers())),
+			new ElasticaAdapter($client),
 			$eventManager
 		);
 	}
