@@ -1,0 +1,5 @@
+1. Make sure you have composer installed
+2. Run `composer update` to install dependencies. Check composer.json for correct version of Elastica which corresponds to your ES installation.
+3. Make sure you have ES running and modify config.php to point at it.
+4. Run `php build.php` from command line to create the index and fixtures
+5. Run `php index.php` from the command line or navigate to in the browser

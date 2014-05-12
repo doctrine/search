@@ -68,9 +68,9 @@ class ClassMetadata implements ClassMetadataInterface
     public $opType = 1;
 
     /**
-     * @var int
+     * @var string
      */
-    public $parent = 1;
+    public $parent;
 
     /**
      * @var int
@@ -90,7 +90,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @var float
      */
-    public $boost = 1.0;
+    public $boost;
 
     /**
      * @var string
@@ -104,7 +104,13 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public $fieldMappings = array();
 
-
+    /**
+     * The ReflectionProperty parameters of the mapped class.
+     *
+     * @var array
+     */
+    public $parameters = array();    
+    
     /**
      * The ReflectionClass instance of the mapped class.
      *
@@ -118,6 +124,14 @@ class ClassMetadata implements ClassMetadataInterface
      * @var ReflectionClass
      */
     public $reflFields;
+    
+    /**
+     * READ-ONLY: The field names of all fields that are part of the identifier/primary key
+     * of the mapped entity class.
+     *
+     * @var mixed
+     */
+    public $identifier;
 
 
     public function __construct($documentName)
@@ -140,9 +154,10 @@ class ClassMetadata implements ClassMetadataInterface
     {
         // This metadata is always serialized/cached.
         return array(
-                'boost',
+            'boost',
             'className',
             'fieldMappings',
+            'parameters',
             'index',
             'numberOfReplicas',
             'numberOfShards',
@@ -152,6 +167,7 @@ class ClassMetadata implements ClassMetadataInterface
             'type',
             'value',
             'reflFields',
+            'identifier'
         );
     }
 
@@ -192,8 +208,19 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getIdentifier()
     {
-        return array();
-
+        return $this->identifier;
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets the mapped identifier key field of this class.
+     * Mainly used by the ClassMetadataFactory to assign inherited identifiers.
+     *
+     * @param mixed $identifier
+     */
+    public function setIdentifier($identifier)
+    {
+        $this->identifier = $identifier;
     }
 
     /**
@@ -204,7 +231,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function getReflectionClass()
     {
         return $this->reflClass;
-
     }
 
     /**
@@ -215,8 +241,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isIdentifier($fieldName)
     {
-        return false;
-
+        return $this->identifier === $fieldName;
     }
 
     /**
@@ -228,7 +253,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function hasField($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -241,6 +265,18 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
+    }
+    
+    /**
+     * This mapping is used in the _wakeup-method to set the parameters after _sleep.
+     *
+     * @param \ReflectionProperty $field
+     * @param array $mapping
+     */
+    public function addParameterMapping(\Reflector $field, $mapping = array())
+    {
+        $fieldName = $field->getName();
+        $this->parameters[$fieldName] = $mapping;
     }
 
     /**
@@ -262,7 +298,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function hasAssociation($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -274,7 +309,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isSingleValuedAssociation($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -286,7 +320,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isCollectionValuedAssociation($fieldName)
     {
         return false;
-
     }
 
     /**
@@ -309,7 +342,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function getAssociationNames()
     {
         return array();
-
     }
 
     /**

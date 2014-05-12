@@ -3,10 +3,13 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class Query
 {
     const HYDRATE_BYPASS = -1;
+    
+    const HYDRATE_INTERNAL = -2;
 
     const HYDRATION_PARAMETER = 'ids';
 
@@ -31,9 +34,9 @@ class Query
     protected $hydrationParameter = self::HYDRATION_PARAMETER;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $entityClass;
+    protected $entityClasses;
 
     /**
      * @var integer
@@ -54,6 +57,11 @@ class Query
      * @var integer
      */
     protected $count;
+    
+    /**
+     * @var array
+     */
+    protected $facets;
 
     public function __construct(SearchManager $sm)
     {
@@ -69,6 +77,10 @@ class Query
      */
     public function __call($method, $arguments)
     {
+        if (!$this->query) {
+            throw new DoctrineSearchException('No client query has been provided using Query#searchWith().');
+        }
+        
         call_user_func_array(array($this->query, $method), $arguments);
         return $this;
     }
@@ -76,11 +88,11 @@ class Query
     /**
      * Specifies the searchable entity class to search against.
      *
-     * @param string $entityClass
+     * @param mixed $entityClasses
      */
-    public function from($entityClass)
+    public function from($entityClasses)
     {
-        $this->entityClass = $entityClass;
+        $this->entityClasses = (array)$entityClasses;
         return $this;
     }
 
@@ -134,6 +146,11 @@ class Query
     {
         return $this->count;
     }
+    
+    public function getFacets()
+    {
+        return $this->facets;
+    }
 
     /**
      * Set a custom Doctrine Query to execute in order to hydrate the search
@@ -180,27 +197,40 @@ class Query
             $this->hydrationMode = $hydrationMode;
         }
 
-        $classMetadata = $this->getSearchManager()->getClassMetadata($this->entityClass);
-        $resultSet = $this->getSearchManager()->find($classMetadata->index, $classMetadata->type, $this->query);
+        $classes = array();
+        foreach($this->entityClasses as $entityClass)
+        {
+            $classes[] = $this->sm->getClassMetadata($entityClass);
+        }
+        
+        $resultSet = $this->getSearchManager()->getClient()->search($this->query, $classes);
 
-        switch(get_class($resultSet)) {
+        $resultClass = get_class($resultSet);
+        
+        // TODO: abstraction of support for different result sets
+        switch($resultClass) {
             case 'Elastica\ResultSet':
                 $this->count = $resultSet->getTotalHits();
+                $this->facets = $resultSet->getFacets();
                 $results = $resultSet->getResults();
                 break;
             default:
-                throw new DoctrineSearchException('Unknown result set class');
+                throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
         }
 
+        // Return results depending on hydration mode
         if ($this->hydrationMode == self::HYDRATE_BYPASS) {
             return $resultSet;
+        } elseif ($this->hydrationMode == self::HYDRATE_INTERNAL) {
+            return $this->sm->getUnitOfWork()->hydrateCollection($classes, $resultSet);
         }
         
+        // Document ids are used to lookup dbms results
         $fn = function ($result) {
             return $result->getId();
         };
-
         $ids = array_map($fn, $results);
+        
         return $this->getHydrationQuery()
             ->setParameter($this->hydrationParameter, $ids ?: null)
             ->useResultCache($this->useResultCache, $this->cacheLifetime)

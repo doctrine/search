@@ -19,15 +19,19 @@
 
 namespace Doctrine\Search\ElasticSearch;
 
-
-
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Exception\NoResultException;
 use Elastica\Client as ElasticaClient;
 use Elastica\Type\Mapping;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query\MatchAll;
+use Elastica\Filter\Term;
+use Elastica\Exception\NotFoundException;
+use Elastica\Search;
+use Doctrine\Common\Collections\ArrayCollection;
+use Elastica\Query;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -50,49 +54,132 @@ class Client implements SearchClientInterface
     {
         $this->client = $client;
     }
-
+    
+    /**
+     * @return ElasticaClient
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+    
     /**
      * {@inheritDoc}
      */
-    public function addDocuments($index, $type, array $documents)
+    public function addDocuments(ClassMetadata $class, array $documents)
     {
-        $type = $this->getIndex($index)->getType($type);
+        $type = $this->getIndex($class->index)->getType($class->type);
 
-        $batch = array();
+        $parameters = $this->getParameters($class->parameters);
+        
+        $bulk = array();
         foreach ($documents as $id => $document) {
-            $batch[] = new Document($id, $document);
+            $elasticadoc = new Document($id);
+            foreach($parameters as $name => $value) {
+                if(isset($document[$value])) {
+                    if(method_exists($elasticadoc, "set{$name}")) {
+                        $elasticadoc->{"set{$name}"}($document[$value]);
+                    } else {
+                        $elasticadoc->setParam($name, $document[$value]);
+                    }
+                    unset($document[$value]);
+                }
+            }
+            $elasticadoc->setData($document);
+            $bulk[] = $elasticadoc;
         }
 
-        $type->addDocuments($batch);
+        if(count($bulk) > 1) {
+            $type->addDocuments($bulk);
+        } else {
+            $type->addDocument($bulk[0]);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeDocuments($index, $type, array $documents)
+    public function removeDocuments(ClassMetadata $class, array $documents)
     {
-        $type = $this->getIndex($index)->getType($type);
+        $type = $this->getIndex($class->index)->getType($class->type);
         $type->deleteIds(array_keys($documents));
     }
 
     /**
      * {@inheritDoc}
      */
-    public function removeAll($index, $type)
+    public function removeAll(ClassMetadata $class, $query = null)
     {
-        $type = $this->getIndex($index)->getType($type);
-        $type->deleteByQuery(new MatchAll());
+        $type = $this->getIndex($class->index)->getType($class->type);
+        $query = $query ?: new MatchAll();
+        $type->deleteByQuery($query);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function find($index, $type, $query)
+    public function find(ClassMetadata $class, $id, $options = array())
     {
-        $type = $this->getIndex($index)->getType($type);
-        return $type->search($query);
+        try {
+            $type = $this->getIndex($class->index)->getType($class->type);
+            $document = $type->getDocument($id, $options);
+        } catch (NotFoundException $ex) {
+            throw new NoResultException();
+        }
+        
+        return $document;
+    }
+    
+    public function findOneBy(ClassMetadata $class, $field, $value)
+    {
+        $query = new Query();
+        $query->setVersion(true);
+        $query->setSize(1);
+        
+        $filter = new Term(array($field => $value));
+        $query->setFilter($filter);
+        
+        $results = $this->search($query, array($class));
+        
+        if (!$results->count()) {
+            throw new NoResultException();
+        }
+        
+        return $results[0];
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function findAll(array $classes)
+    {
+        return $this->buildQuery($classes)->search();
     }
 
+    protected function buildQuery(array $classes)
+    {
+        $searchQuery = new Search($this->client);
+        $searchQuery->setOption(Search::OPTION_VERSION, true);
+        foreach($classes as $class) {
+            if ($class->index) {
+                $indexObject = $this->getIndex($class->index);
+                $searchQuery->addIndex($indexObject);
+                if ($class->type) {
+                    $searchQuery->addType($indexObject->getType($class->type));
+                }
+            }
+        }
+        return $searchQuery;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function search($query, array $classes)
+    {
+        return $this->buildQuery($classes)->search($query);
+    }
+    
     /**
      * {@inheritDoc}
      */
@@ -118,6 +205,14 @@ class Client implements SearchClientInterface
     {
         $this->getIndex($index)->delete();
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function refreshIndex($index)
+    {
+        $this->getIndex($index)->refresh();
+    }
 
     /**
      * {@inheritDoc}
@@ -129,10 +224,24 @@ class Client implements SearchClientInterface
 
         $mapping = new Mapping($type, $properties);
         $mapping->disableSource($metadata->source);
-        $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        if (isset($metadata->boost)) {
+            $mapping->setParam('_boost', array('name' => '_boost', 'null_value' => $metadata->boost));
+        }
+        if (isset($metadata->parent)) {
+            $mapping->setParent($metadata->parent);
+        }
         $mapping->send();
 
         return $type;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function deleteType(ClassMetadata $metadata)
+    {
+        $type = $this->getIndex($metadata->index)->getType($metadata->type);
+        return $type->delete();
     }
 
     /**
@@ -151,6 +260,10 @@ class Client implements SearchClientInterface
 
             $properties[$propertyName]['type'] = $fieldMapping->type;
 
+            if (isset($fieldMapping->path)) {
+                $properties[$propertyName]['path'] = $fieldMapping->path;
+            }
+            
             if (isset($fieldMapping->includeInAll)) {
                 $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
             }
@@ -161,6 +274,14 @@ class Client implements SearchClientInterface
 
             if (isset($fieldMapping->boost)) {
                 $properties[$propertyName]['boost'] = $fieldMapping->boost;
+            }
+            
+            if (isset($fieldMapping->analyzer)) {
+                $properties[$propertyName]['analyzer'] = $fieldMapping->analyzer;
+            }
+            
+            if (isset($fieldMapping->indexName)) {
+                $properties[$propertyName]['index_name'] = $fieldMapping->indexName;
             }
 
             if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {
@@ -173,5 +294,20 @@ class Client implements SearchClientInterface
         }
 
         return $properties;
+    }
+    
+    /**
+     * Generates parameter mapping from entity annotations
+     *
+     * @param array $fieldMapping
+     */
+    protected function getParameters($paramMapping)
+    {
+        $parameters = array();
+        foreach ($paramMapping as $propertyName => $mapping) {
+            $paramName = isset($mapping->name) ? $mapping->name : $propertyName;
+            $parameters[$paramName] = $propertyName;
+        }
+        return $parameters;
     }
 }
