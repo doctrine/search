@@ -1,6 +1,6 @@
 # Doctrine Search #
 
-Note: This project is a prototype at the moment. 
+Note: This project is a prototype at the moment. See `demo` folder for practical implementation example.
 
 __Supported search engines__
 
