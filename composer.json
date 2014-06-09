@@ -12,7 +12,7 @@
     "suggest": {
         "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
     },
-    {
+    "autoload": {
         "psr-0": {
             "Doctrine\\Search": "lib/"
         }
