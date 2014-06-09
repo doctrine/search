@@ -9,10 +9,10 @@
         "php": ">=5.3.2",
         "doctrine/common": ">=2.3.0"
     },
-    "require-dev": {
-        "ruflin/Elastica": ">=0.90.1.0"
+    "suggest": {
+        "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
     },
-    "autoload": {
+    {
         "psr-0": {
             "Doctrine\\Search": "lib/"
         }
