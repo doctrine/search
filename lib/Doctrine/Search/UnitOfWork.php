@@ -16,29 +16,29 @@ class UnitOfWork
      * @var \Doctrine\Search\SearchManager
      */
     private $sm;
-     
+
     /**
      * The EventManager used for dispatching events.
      *
      * @var \Doctrine\Common\EventManager
      */
     private $evm;
-    
+
     /**
      * @var array
      */
     private $scheduledForPersist = array();
-    
+
     /**
      * @var array
      */
     private $scheduledForDelete = array();
-    
+
     /**
      * @var array
      */
     private $updatedIndexes = array();
-    
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given SearchManager.
      *
@@ -49,7 +49,7 @@ class UnitOfWork
         $this->sm = $sm;
         $this->evm = $sm->getEventManager();
     }
-    
+
     /**
      * Persists an entity as part of the current unit of work.
      *
@@ -60,15 +60,15 @@ class UnitOfWork
         if ($this->evm->hasListeners(Events::prePersist)) {
             $this->evm->dispatchEvent(Events::prePersist, new Event\LifecycleEventArgs($entity, $this->sm));
         }
-        
+
         $oid = spl_object_hash($entity);
         $this->scheduledForPersist[$oid] = $entity;
-        
+
         if ($this->evm->hasListeners(Events::postPersist)) {
             $this->evm->dispatchEvent(Events::postPersist, new Event\LifecycleEventArgs($entity, $this->sm));
         }
     }
-    
+
     /**
      * Deletes an entity as part of the current unit of work.
      *
@@ -79,7 +79,7 @@ class UnitOfWork
         if ($this->evm->hasListeners(Events::preRemove)) {
             $this->evm->dispatchEvent(Events::preRemove, new Event\LifecycleEventArgs($entity, $this->sm));
         }
-        
+
         $oid = spl_object_hash($entity);
         $this->scheduledForDelete[$oid] = $entity;
 
@@ -87,7 +87,7 @@ class UnitOfWork
             $this->evm->dispatchEvent(Events::postRemove, new Event\LifecycleEventArgs($entity, $this->sm));
         }
     }
-    
+
     /**
      * Clears the UnitOfWork.
      *
@@ -97,17 +97,17 @@ class UnitOfWork
     {
         if ($entityName === null) {
             $this->scheduledForDelete =
-            $this->scheduledForPersist = 
+            $this->scheduledForPersist =
             $this->updatedIndexes = array();
         } else {
             //TODO: implement for named entity classes
         }
-        
+
         if ($this->evm->hasListeners(Events::onClear)) {
             $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->sm, $entityName));
         }
     }
-    
+
     /**
      * Commits the UnitOfWork, executing all operations that have been postponed
      * up to this point.
@@ -124,11 +124,11 @@ class UnitOfWork
         if ($this->evm->hasListeners(Events::preFlush)) {
             $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->sm));
         }
-        
+
         //TODO: single/array entity commit handling
         $this->commitRemoved();
         $this->commitPersisted();
-        
+
         //Force refresh of updated indexes
         if($entity === true) {
             $client = $this->sm->getClient();
@@ -136,14 +136,14 @@ class UnitOfWork
                 $client->refreshIndex($index);
             }
         }
-        
+
         $this->clear();
-        
+
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->sm));
         }
     }
-    
+
     /**
      * Commit persisted entities to the database
      */
@@ -151,14 +151,14 @@ class UnitOfWork
     {
         $documents = $this->sortObjects($this->scheduledForPersist);
         $client = $this->sm->getClient();
-        
+
         foreach ($documents as $entityName => $documents) {
             $classMetadata = $this->sm->getClassMetadata($entityName);
             $this->updatedIndexes[] = $classMetadata->index;
             $client->addDocuments($classMetadata, $documents);
         }
     }
-    
+
     /**
      * Commit deleted entities to the database
      */
@@ -166,18 +166,18 @@ class UnitOfWork
     {
         $documents = $this->sortObjects($this->scheduledForDelete, false);
         $client = $this->sm->getClient();
-        
+
         foreach ($documents as $entityName => $documents) {
             $classMetadata = $this->sm->getClassMetadata($entityName);
             $this->updatedIndexes[] = $classMetadata->index;
             $client->removeDocuments($classMetadata, $documents);
         }
     }
-    
+
     /**
      * Prepare entities for commit. Entities scheduled for deletion do not need
      * to be serialized.
-     * 
+     *
      * @param array $objects
      * @param boolean $serialize
      * @throws DoctrineSearchException
@@ -187,24 +187,28 @@ class UnitOfWork
     {
         $documents = array();
         $serializer = $this->sm->getSerializer();
-        
+
         foreach ($objects as $object) {
             $document = $serialize ? $serializer->serialize($object) : $object;
 
-            $id = $object->getId();
-            if (!$id) {
-                throw new DoctrineSearchException('Entity must have an id to be indexed');
+            if(!array_key_exists('id', $document)){
+                $id = $object->getId();
+                if (!isset($id)) {
+                    throw new DoctrineSearchException('Entity must have an id to be indexed');
+                } else {
+                    $document['id'] = $id;
+                }
             }
-            
-            $documents[get_class($object)][$id] = $document;
+
+            $documents[get_class($object)][] = $document;
         }
-        
+
         return $documents;
     }
-    
+
     /**
      * Load and hydrate a document model
-     * 
+     *
      * @param ClassMetadata $class
      * @param mixed $value
      * @param array $options
@@ -212,19 +216,19 @@ class UnitOfWork
     public function load(ClassMetadata $class, $value, $options = array())
     {
         $client = $this->sm->getClient();
-        
+
         if (isset($options['field'])) {
             $document = $client->findOneBy($class, $options['field'], $value);
         } else {
             $document = $client->find($class, $value, $options);
         }
-        
+
         return $this->hydrateEntity($class, $document);
     }
-    
+
     /**
      * Load and hydrate a document collection
-     * 
+     *
      * @param array $classes
      * @param unknown $query
      */
@@ -233,7 +237,7 @@ class UnitOfWork
         $results = $this->sm->getClient()->search($query, $classes);
         return $this->hydrateCollection($classes, $results);
     }
-    
+
     /**
      * Construct an entity collection
      *
@@ -251,13 +255,13 @@ class UnitOfWork
             }
             $collection[] = $this->hydrateEntity($class, $document);
         }
-    
+
         return $collection;
     }
-    
+
     /**
      * Construct an entity object
-     * 
+     *
      * @param ClassMetadata $class
      * @param object $document
      */
@@ -270,7 +274,7 @@ class UnitOfWork
             $document->hasFields() ? $document->getFields() : array(),
             array('_version' => $document->getVersion())
         );
-        
+
         foreach($fields as $name => $value) {
             if (isset($class->parameters[$name])) {
                 $data[$name] = $value;
@@ -283,18 +287,18 @@ class UnitOfWork
                 }
             }
         }
-        
+
         $data[$class->getIdentifier()] = $document->getId();
-        
+
         $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
 
         if ($this->evm->hasListeners(Events::postLoad)) {
             $this->evm->dispatchEvent(Events::postLoad, new Event\LifecycleEventArgs($entity, $this->sm));
         }
-        
+
         return $entity;
     }
-    
+
     /**
      * Checks whether an entity is registered in the identity map of this UnitOfWork.
      *
