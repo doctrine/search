@@ -191,12 +191,16 @@ class UnitOfWork
         foreach ($objects as $object) {
             $document = $serialize ? $serializer->serialize($object) : $object;
 
-            $id = $object->getId();
-            if (!isset($id)) {
-                throw new DoctrineSearchException('Entity must have an id to be indexed');
+            if(!array_key_exists('id', $document)){
+                $id = $object->getId();
+                if (!isset($id)) {
+                    throw new DoctrineSearchException('Entity must have an id to be indexed');
+                } else {
+                    $document['id'] = $id;
+                }
             }
 
-            $documents[get_class($object)][$id] = $document;
+            $documents[get_class($object)][] = $document;
         }
 
         return $documents;
