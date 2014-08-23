@@ -123,4 +123,14 @@ class EntityRepository implements ObjectRepository
     {
         return $this->_class;
     }
+    
+    /**
+     * Returns the search manager
+     *
+     * @return \Doctrine\Search\SearchManager
+     */
+    public function getSearchManager()
+    {
+        return $this->_sm;
+    }
 }
