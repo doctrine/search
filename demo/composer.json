@@ -2,7 +2,7 @@
    "repositories":[
       {
          "type":"vcs",
-         "url":"http://github.com/MrHash/search"
+         "url":"http://github.com/doctrine/search"
       }
    ],
    "require":{
