@@ -40,6 +40,13 @@ class User
    private $username;
 
    /**
+    * @JMS\Type("string")
+    * @JMS\Expose @JMS\Groups({"api", "store"})
+    * @MAP\ElasticField(type="ip", includeInAll=false, index="no", store=true)
+    */
+   private $ip;
+
+   /**
     * @JMS\Type("array")
     * @JMS\Expose @JMS\Groups({"store"})
     * @MAP\ElasticField(type="string", includeInAll=false, index="not_analyzed")
@@ -75,6 +82,16 @@ class User
    public function getUsername()
    {
       return $this->username;
+   }
+
+   public function setIp($ip)
+   {
+      $this->ip = $ip;
+   }
+
+   public function getIp()
+   {
+      return $this->ip;
    }
 
    public function getFriends()
