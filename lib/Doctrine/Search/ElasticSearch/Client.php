@@ -269,9 +269,9 @@ class Client implements SearchClientInterface
             }
 
             if (isset($fieldMapping->store)) {
-            	$properties[$propertyName]['store'] = $fieldMapping->store;
+                $properties[$propertyName]['store'] = $fieldMapping->store;
             }
-            
+
             if (isset($fieldMapping->index)) {
                 $properties[$propertyName]['index'] = $fieldMapping->index;
             }
@@ -286,6 +286,11 @@ class Client implements SearchClientInterface
 
             if (isset($fieldMapping->indexName)) {
                 $properties[$propertyName]['index_name'] = $fieldMapping->indexName;
+            }
+
+            if ($fieldMapping->type == 'attachment' && isset($fieldMapping->fields)) {
+                $callback = function ($field) { unset($field['type']); return $field; };
+                $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping->fields));
             }
 
             if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {

@@ -61,7 +61,7 @@ final class ElasticField extends Field
      * @var string
      */
     public $indexName;
-    
+
     /**
      * @var boolean
      */

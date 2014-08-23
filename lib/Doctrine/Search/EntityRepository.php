@@ -123,7 +123,7 @@ class EntityRepository implements ObjectRepository
     {
         return $this->_class;
     }
-    
+
     /**
      * Returns the search manager
      *
