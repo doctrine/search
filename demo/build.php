@@ -46,8 +46,9 @@ $user2->addEmail(new Email('user2@example.com'));
 $user2->addEmail(new Email('user2@test.com'));
 $user2->addFriend($user1);
 
-$comment1 = new Comment($user1, 'comment from user 1');
-$comment2 = new Comment($user2, 'comment from user 2');
+$comment1 = new Comment($user1, 'comment 1 from user 1');
+$comment2 = new Comment($user2, 'comment 1 from user 2');
+$comment3 = new Comment($user2, 'comment 2 from user 2');
 
-$sm->persist(array($user1, $user2, $comment1, $comment2));
+$sm->persist(array($user1, $user2, $comment1, $comment2, $comment3));
 $sm->flush();
