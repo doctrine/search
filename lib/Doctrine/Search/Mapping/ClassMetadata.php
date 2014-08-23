@@ -109,8 +109,8 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var array
      */
-    public $parameters = array();    
-    
+    public $parameters = array();
+
     /**
      * The ReflectionClass instance of the mapped class.
      *
@@ -124,7 +124,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @var ReflectionClass
      */
     public $reflFields;
-    
+
     /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
@@ -210,7 +210,7 @@ class ClassMetadata implements ClassMetadataInterface
     {
         return $this->identifier;
     }
-    
+
     /**
      * INTERNAL:
      * Sets the mapped identifier key field of this class.
@@ -266,7 +266,7 @@ class ClassMetadata implements ClassMetadataInterface
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
     }
-    
+
     /**
      * This mapping is used in the _wakeup-method to set the parameters after _sleep.
      *

@@ -40,7 +40,7 @@ interface SearchClientInterface
      * @throws Doctrine\Search\Exception\NoResultException
      */
     public function find(ClassMetadata $class, $id, $options = array());
-    
+
     /**
      * Finds document by specified field and value.
      *
@@ -49,14 +49,14 @@ interface SearchClientInterface
      * @throws Doctrine\Search\Exception\NoResultException
      */
     public function findOneBy(ClassMetadata $class, $field, $value);
-    
+
     /**
      * Finds all documents
      *
      * @param array $classes
      */
     public function findAll(array $classes);
-    
+
     /**
      * Finds documents by a specific query.
      *
@@ -91,7 +91,7 @@ interface SearchClientInterface
      * Refresh the index to make documents available for search
      */
     public function refreshIndex($index);
-    
+
     /**
      * Create a document type mapping as defined in the
      * class annotations
@@ -99,7 +99,7 @@ interface SearchClientInterface
      * @param ClassMetadata $metadata
      */
     public function createType(ClassMetadata $metadata);
-    
+
     /**
      * Delete a document type
      *

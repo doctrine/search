@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Query
 {
     const HYDRATE_BYPASS = -1;
-    
+
     const HYDRATE_INTERNAL = -2;
 
     const HYDRATION_PARAMETER = 'ids';
@@ -57,7 +57,7 @@ class Query
      * @var integer
      */
     protected $count;
-    
+
     /**
      * @var array
      */
@@ -80,7 +80,7 @@ class Query
         if (!$this->query) {
             throw new DoctrineSearchException('No client query has been provided using Query#searchWith().');
         }
-        
+
         call_user_func_array(array($this->query, $method), $arguments);
         return $this;
     }
@@ -146,7 +146,7 @@ class Query
     {
         return $this->count;
     }
-    
+
     public function getFacets()
     {
         return $this->facets;
@@ -198,15 +198,14 @@ class Query
         }
 
         $classes = array();
-        foreach($this->entityClasses as $entityClass)
-        {
+        foreach($this->entityClasses as $entityClass) {
             $classes[] = $this->sm->getClassMetadata($entityClass);
         }
-        
+
         $resultSet = $this->getSearchManager()->getClient()->search($this->query, $classes);
 
         $resultClass = get_class($resultSet);
-        
+
         // TODO: abstraction of support for different result sets
         switch($resultClass) {
             case 'Elastica\ResultSet':
@@ -224,13 +223,13 @@ class Query
         } elseif ($this->hydrationMode == self::HYDRATE_INTERNAL) {
             return $this->sm->getUnitOfWork()->hydrateCollection($classes, $resultSet);
         }
-        
+
         // Document ids are used to lookup dbms results
         $fn = function ($result) {
             return $result->getId();
         };
         $ids = array_map($fn, $results);
-        
+
         return $this->getHydrationQuery()
             ->setParameter($this->hydrationParameter, $ids ?: null)
             ->useResultCache($this->useResultCache, $this->cacheLifetime)

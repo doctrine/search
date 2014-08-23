@@ -37,7 +37,7 @@ class LoadClassMetadataEventArgs extends EventArgs
      * @var \Doctrine\Search\SearchManager
      */
     private $sm;
-    
+
     /**
      * @var \Doctrine\Search\Mapping\ClassMetadata
      */
@@ -64,7 +64,7 @@ class LoadClassMetadataEventArgs extends EventArgs
     {
         return $this->classMetadata;
     }
-    
+
     /**
      * Retrieve associated SearchManager.
      *

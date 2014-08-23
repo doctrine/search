@@ -45,9 +45,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
     );
 
     protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
-    
+
     protected $entityParamAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Parameter';
-    
+
     /**
      * Document fields annotation classes, ordered by precedence.
      */
@@ -58,7 +58,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
-    
+
     /**
      * {@inheritDoc}
      *

@@ -27,18 +27,18 @@ use Doctrine\Common\Annotations\Annotation;
  */
 class Field extends Annotation
 {
-    /** 
-     * @var float 
+    /**
+     * @var float
      */
     public $boost;
-    
-    /** 
-     * @var string 
+
+    /**
+     * @var string
      */
     public $type;
-    
-    /** 
-     * @var string 
+
+    /**
+     * @var string
      */
     public $name;
 }

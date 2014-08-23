@@ -37,7 +37,7 @@ class PreFlushEventArgs extends EventArgs
      * @var \Doctrine\Search\SearchManager
      */
     private $sm;
-    
+
     /**
      * Constructor.
      *

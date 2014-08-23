@@ -27,10 +27,10 @@ use Doctrine\Common\Annotations\Annotation;
  */
 final class Parameter extends Annotation
 {
-    /** 
-     * @var string 
+    /**
+     * @var string
      */
     public $name;
-    
+
     public $type = 'string';
 }

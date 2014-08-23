@@ -59,7 +59,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @var \Doctrine\Common\EventManager
      */
     private $evm;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -126,7 +126,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         //Manipulates $classMetadata;
         $this->driver->loadMetadataForClass($class->getName(), $class);
-        
+
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($class, $this->sm);
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);

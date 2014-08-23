@@ -56,25 +56,25 @@ class SearchManager implements ObjectManager
      */
     private $serializer;
 
-    /** 
-     * @var ObjectManager 
+    /**
+     * @var ObjectManager
      */
     private $entityManager;
-    
+
     /**
      * The event manager that is the central point of the event system.
      *
      * @var \Doctrine\Common\EventManager
      */
     private $eventManager;
-    
+
     /**
      * The EntityRepository instances.
      *
      * @var array
      */
     private $repositories = array();
-    
+
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
@@ -101,7 +101,7 @@ class SearchManager implements ObjectManager
 
         $this->serializer = $this->configuration->getEntitySerializer();
         $this->entityManager = $this->configuration->getEntityManager();
-        
+
         $this->unitOfWork = new UnitOfWork($this);
     }
 
@@ -130,7 +130,7 @@ class SearchManager implements ObjectManager
     {
         return $this->configuration;
     }
-    
+
     /**
      * Gets the UnitOfWork used by the SearchManager to coordinate operations.
      *
@@ -140,7 +140,7 @@ class SearchManager implements ObjectManager
     {
         return $this->unitOfWork;
     }
-    
+
     /**
      * Gets the EventManager used by the SearchManager.
      *
@@ -150,7 +150,7 @@ class SearchManager implements ObjectManager
     {
         return $this->eventManager;
     }
-    
+
     /**
      * Loads class metadata for the given class
      *
@@ -186,7 +186,7 @@ class SearchManager implements ObjectManager
     {
         return $this->metadataFactory;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -201,7 +201,7 @@ class SearchManager implements ObjectManager
             $id = $options['id'];
             unset($options['id']);
         }
-        
+
         $class = $this->getClassMetadata($entityName);
         return $this->unitOfWork->load($class, $id, $options);
     }
@@ -253,7 +253,7 @@ class SearchManager implements ObjectManager
     {
         $this->unitOfWork->commit($object);
     }
-    
+
     /**
      * Gets the repository for an entity class.
      *
@@ -265,14 +265,14 @@ class SearchManager implements ObjectManager
         if (isset($this->repositories[$entityName])) {
             return $this->repositories[$entityName];
         }
-        
+
         $metadata = $this->getClassMetadata($entityName);
         $repository = new EntityRepository($this, $metadata);
         $this->repositories[$entityName] = $repository;
 
         return $repository;
     }
-    
+
     /**
      * Gets a collection of entity repositories.
      *
@@ -287,7 +287,7 @@ class SearchManager implements ObjectManager
         }
         return $repositoryCollection;
     }
-    
+
     /**
      * Returns a search engine Query wrapper which can be executed
      * to retrieve results.
@@ -298,19 +298,19 @@ class SearchManager implements ObjectManager
     {
         return new Query($this);
     }
-    
+
     public function initializeObject($obj)
     {
     }
-    
+
     public function contains($object)
     {
     }
-    
+
     public function merge($object)
     {
     }
-    
+
     /**
      * Clears the SearchManager. All entities that are currently managed
      * by this EntityManager become detached.
@@ -321,11 +321,11 @@ class SearchManager implements ObjectManager
     {
         $this->unitOfWork->clear($objectName);
     }
-    
+
     public function detach($object)
     {
     }
-    
+
     public function refresh($object)
     {
     }

@@ -27,13 +27,13 @@ use Doctrine\Common\Annotations\Annotation;
  */
 class Searchable extends Annotation
 {
-    /** 
-     * @var string $index 
+    /**
+     * @var string $index
      */
     public $index;
-    
-    /** 
-     * @var string $type 
+
+    /**
+     * @var string $type
      */
     public $type;
 }

@@ -19,7 +19,7 @@ class CallbackSerializer implements SerializerInterface
     {
         return $object->{$this->serializerCallback}();
     }
-    
+
     public function deserialize($entityName, $data)
     {
         $entity = new $entityName();

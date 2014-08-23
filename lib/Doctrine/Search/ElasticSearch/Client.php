@@ -54,7 +54,7 @@ class Client implements SearchClientInterface
     {
         $this->client = $client;
     }
-    
+
     /**
      * @return ElasticaClient
      */
@@ -62,7 +62,7 @@ class Client implements SearchClientInterface
     {
         return $this->client;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -71,7 +71,7 @@ class Client implements SearchClientInterface
         $type = $this->getIndex($class->index)->getType($class->type);
 
         $parameters = $this->getParameters($class->parameters);
-        
+
         $bulk = array();
         foreach ($documents as $id => $document) {
             $elasticadoc = new Document($id);
@@ -126,28 +126,28 @@ class Client implements SearchClientInterface
         } catch (NotFoundException $ex) {
             throw new NoResultException();
         }
-        
+
         return $document;
     }
-    
+
     public function findOneBy(ClassMetadata $class, $field, $value)
     {
         $query = new Query();
         $query->setVersion(true);
         $query->setSize(1);
-        
+
         $filter = new Term(array($field => $value));
         $query->setFilter($filter);
-        
+
         $results = $this->search($query, array($class));
-        
+
         if (!$results->count()) {
             throw new NoResultException();
         }
-        
+
         return $results[0];
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -171,7 +171,7 @@ class Client implements SearchClientInterface
         }
         return $searchQuery;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -179,7 +179,7 @@ class Client implements SearchClientInterface
     {
         return $this->buildQuery($classes)->search($query);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -205,7 +205,7 @@ class Client implements SearchClientInterface
     {
         $this->getIndex($index)->delete();
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -234,7 +234,7 @@ class Client implements SearchClientInterface
 
         return $type;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -263,7 +263,7 @@ class Client implements SearchClientInterface
             if (isset($fieldMapping->path)) {
                 $properties[$propertyName]['path'] = $fieldMapping->path;
             }
-            
+
             if (isset($fieldMapping->includeInAll)) {
                 $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
             }
@@ -275,11 +275,11 @@ class Client implements SearchClientInterface
             if (isset($fieldMapping->boost)) {
                 $properties[$propertyName]['boost'] = $fieldMapping->boost;
             }
-            
+
             if (isset($fieldMapping->analyzer)) {
                 $properties[$propertyName]['analyzer'] = $fieldMapping->analyzer;
             }
-            
+
             if (isset($fieldMapping->indexName)) {
                 $properties[$propertyName]['index_name'] = $fieldMapping->indexName;
             }
@@ -295,7 +295,7 @@ class Client implements SearchClientInterface
 
         return $properties;
     }
-    
+
     /**
      * Generates parameter mapping from entity annotations
      *

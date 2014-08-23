@@ -13,24 +13,24 @@ class EntityRepository implements ObjectRepository
      * @var string
      */
     protected $_entityName;
-    
+
     /**
      * @var \Doctrine\Search\Mapping\ClassMetadata
      */
     private $_class;
-    
+
     /**
      * @var \Doctrine\Search\SearchManager
      */
     private $_sm;
-     
+
     public function __construct(SearchManager $sm, ClassMetadata $class)
     {
         $this->_sm = $sm;
         $this->_entityName = $class->className;
         $this->_class = $class;
     }
-    
+
     /**
      * Finds an object by its primary key / identifier.
      *
@@ -41,7 +41,7 @@ class EntityRepository implements ObjectRepository
     {
         return $this->_sm->find($this->_entityName, $id);
     }
-    
+
     /**
      * Finds all objects in the repository.
      *
@@ -51,7 +51,7 @@ class EntityRepository implements ObjectRepository
     {
         throw new DoctrineSearchException('Not yet implemented.');
     }
-    
+
     /**
      * Finds objects by a set of criteria.
      *
@@ -70,7 +70,7 @@ class EntityRepository implements ObjectRepository
     {
         throw new DoctrineSearchException('Not yet implemented.');
     }
-    
+
     /**
      * Finds a single object by a set of criteria.
      *
@@ -83,17 +83,17 @@ class EntityRepository implements ObjectRepository
         $value = current($criteria);
         return $this->_sm->getUnitOfWork()->load($this->_class, $value, $options);
     }
-    
+
     /**
      * Execute a direct search query on the associated index and type
-     * 
+     *
      * @param object $query
      */
     public function search($query)
     {
         return $this->_sm->getUnitOfWork()->loadCollection(array($this->_class), $query);
     }
-    
+
     /**
      * Execute a direct delete by query on the associated index and type
      *
@@ -103,7 +103,7 @@ class EntityRepository implements ObjectRepository
     {
         $this->_sm->getClient()->removeAll($this->_class, $query);
     }
-    
+
     /**
      * Returns the class name of the object managed by the repository
      *
@@ -113,7 +113,7 @@ class EntityRepository implements ObjectRepository
     {
         return $this->_entityName;
     }
-    
+
     /**
      * Returns the class metadata managed by the repository
      *

@@ -27,17 +27,17 @@ use Doctrine\Common\Annotations\Annotation;
  */
 final class ElasticSearchable extends Searchable
 {
-    /** 
+    /**
      * @var int $numberOfShards
      */
     public $numberOfShards;
-    
-    /** 
+
+    /**
      * @var int $numnberOfReplicas
      */
     public $numberOfReplicas;
-    
-    /** 
+
+    /**
      * @var string $op_type
      */
     public $opType;
@@ -46,19 +46,19 @@ final class ElasticSearchable extends Searchable
      * @var string $parent
      */
     public $parent;
-    
+
     /**
      * TTL in milliseconds
      * @var int $timeToLive
      */
     public $timeToLive;
-    
-    /** 
-     * @var float 
+
+    /**
+     * @var float
      */
     public $boost;
-    
-    /** 
+
+    /**
      * @var boolean
      */
     public $source;
