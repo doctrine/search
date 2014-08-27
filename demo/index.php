@@ -14,7 +14,7 @@ echo PHP_EOL."*** Direct Term Search ***".PHP_EOL;
 $query = new Elastica\Filter\Term(array('username' => 'timmyl'));
 $users = $sm->getRepository('Entities\User')->search($query);
 
-foreach($users as $user) {
+foreach ($users as $user) {
     print_r($user);
 }
 
@@ -34,7 +34,7 @@ $sm->flush();
 echo PHP_EOL."*** Single lookup with no results ***".PHP_EOL;
 try {
     $user = $sm->find('Entities\User', 'unknownid');
-} catch(Doctrine\Search\Exception\NoResultException $exception) {
+} catch (Doctrine\Search\Exception\NoResultException $exception) {
     print_r($exception->getMessage());
     echo PHP_EOL;
 }
@@ -53,7 +53,7 @@ $query->setFilter(new Elastica\Filter\HasParent(
 $query->setFields(array('_source', '_parent'));
 $comments = $sm->getRepository('Entities\Comment')->search($query);
 
-foreach($comments as $comment) {
+foreach ($comments as $comment) {
     print_r($comment);
 }
 
@@ -75,7 +75,7 @@ $pager->setMaxPerPage(1);
 $pager->setCurrentPage(2);
 $comments = $pager->getCurrentPageResults();
 
-foreach($comments as $comment) {
+foreach ($comments as $comment) {
     print_r($comment);
 }
 

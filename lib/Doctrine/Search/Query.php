@@ -198,7 +198,7 @@ class Query
         }
 
         $classes = array();
-        foreach($this->entityClasses as $entityClass) {
+        foreach ($this->entityClasses as $entityClass) {
             $classes[] = $this->sm->getClassMetadata($entityClass);
         }
 

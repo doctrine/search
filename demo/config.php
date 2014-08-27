@@ -2,7 +2,7 @@
 
 Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
 
-class config
+class Config
 {
     //List of available servers
     public static function getServers()

@@ -104,7 +104,7 @@ class EntityRepositoryCollection implements ObjectRepository
     public function delete($query)
     {
         $classes = $this->getClassMetadata();
-        foreach($classes as $class) {
+        foreach ($classes as $class) {
             $this->_sm->getClient()->removeAll($class, $query);
         }
     }
@@ -117,7 +117,7 @@ class EntityRepositoryCollection implements ObjectRepository
     public function getClassName()
     {
         $classNames = array();
-        foreach($this->_repositories as $repository) {
+        foreach ($this->_repositories as $repository) {
             $classNames[] = $repository->getClassName();
         }
         return $classNames;
@@ -131,7 +131,7 @@ class EntityRepositoryCollection implements ObjectRepository
     protected function getClassMetadata()
     {
         $classes = array();
-        foreach($this->_repositories as $repository) {
+        foreach ($this->_repositories as $repository) {
             $classes[] = $repository->getClassMetadata();
         }
         return $classes;

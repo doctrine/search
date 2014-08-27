@@ -105,6 +105,13 @@ class ClassMetadata implements ClassMetadataInterface
     public $fieldMappings = array();
 
     /**
+     *  Additional root annotations of the mapped class.
+     *  
+     * @var array
+     */
+    public $rootMappings = array();
+    
+    /**
      * The ReflectionProperty parameters of the mapped class.
      *
      * @var array
@@ -166,8 +173,8 @@ class ClassMetadata implements ClassMetadataInterface
             'timeToLive',
             'type',
             'value',
-            'reflFields',
-            'identifier'
+            'identifier',
+            'rootMappings'
         );
     }
 
@@ -265,6 +272,14 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
+    }
+
+    /**
+     * @param array $mapping
+     */
+    public function addRootMapping($mapping = array())
+    {
+        $this->rootMappings[] = $mapping;
     }
 
     /**

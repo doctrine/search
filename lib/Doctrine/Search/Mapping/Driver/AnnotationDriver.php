@@ -42,7 +42,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
     protected $entityAnnotationClasses = array(
         'Doctrine\\Search\\Mapping\\Annotations\\Searchable' => 1,
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable' => 2,
+        'Doctrine\\Search\\Mapping\\Annotations\\ElasticRoot' => 3,
     );
+
+    protected $entityRootAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\ElasticRoot';
 
     protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
 
@@ -97,9 +100,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $documentsClassAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
             foreach ($this->entityAnnotationClasses as $annotationClass => $index) {
-                if ($annotation instanceof $annotationClass) {
+                if ($annotation instanceof $this->entityRootAnnotationClass) {
+                    $metadata->addRootMapping($annotation);
+                    break;
+                } elseif ($annotation instanceof $annotationClass) {
                     $documentsClassAnnotations[$index] = $annotation;
-                    break 2;
+                    break;
                 }
             }
         }
@@ -137,7 +143,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     if ($annotation instanceof $fieldAnnotationClass) {
                         if ($annotation instanceof $this->entityIdAnnotationClass) {
                             $metadata->setIdentifier($reflProperty->name);
-                        } elseif($annotation instanceof $this->entityParamAnnotationClass) {
+                        } elseif ($annotation instanceof $this->entityParamAnnotationClass) {
                             $metadata->addParameterMapping($reflProperty, $annotation);
                         } else {
                             $metadata->addFieldMapping($reflProperty, $annotation);

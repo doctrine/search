@@ -130,9 +130,9 @@ class UnitOfWork
         $this->commitPersisted();
 
         //Force refresh of updated indexes
-        if($entity === true) {
+        if ($entity === true) {
             $client = $this->sm->getClient();
-            foreach(array_unique($this->updatedIndexes) as $index) {
+            foreach (array_unique($this->updatedIndexes) as $index) {
                 $client->refreshIndex($index);
             }
         }
@@ -244,8 +244,8 @@ class UnitOfWork
     {
         $collection = new ArrayCollection();
         foreach ($resultSet as $document) {
-            foreach($classes as $class) {
-                if($document->getIndex() == $class->index && $document->getType() == $class->type) {
+            foreach ($classes as $class) {
+                if ($document->getIndex() == $class->index && $document->getType() == $class->type) {
                     break;
                 }
             }
@@ -271,11 +271,11 @@ class UnitOfWork
             array('_version' => $document->getVersion())
         );
 
-        foreach($fields as $name => $value) {
+        foreach ($fields as $name => $value) {
             if (isset($class->parameters[$name])) {
                 $data[$name] = $value;
             } else {
-                foreach($class->parameters as $param => $mapping) {
+                foreach ($class->parameters as $param => $mapping) {
                     if ($mapping->name == $name) {
                         $data[$param] = $value;
                         break;

@@ -215,10 +215,10 @@ class SearchManager implements ObjectManager
      */
     public function persist($objects)
     {
-        if(!is_array($objects) && !$objects instanceof \Traversable) {
+        if (!is_array($objects) && !$objects instanceof \Traversable) {
             $objects = array($objects);
         }
-        foreach($objects as $object) {
+        foreach ($objects as $object) {
             if (!is_object($object)) {
                 throw new UnexpectedTypeException($object, 'object');
             }
@@ -235,10 +235,10 @@ class SearchManager implements ObjectManager
      */
     public function remove($objects)
     {
-        if(!is_array($objects) && !$objects instanceof \Traversable) {
+        if (!is_array($objects) && !$objects instanceof \Traversable) {
             $objects = array($objects);
         }
-        foreach($objects as $object) {
+        foreach ($objects as $object) {
             if (!is_object($object)) {
                 throw new UnexpectedTypeException($object, 'object');
             }
@@ -282,7 +282,7 @@ class SearchManager implements ObjectManager
     public function getRepositories(array $entityNames)
     {
         $repositoryCollection = new EntityRepositoryCollection($this);
-        foreach($entityNames as $entityName) {
+        foreach ($entityNames as $entityName) {
             $repositoryCollection->addRepository($this->getRepository($entityName));
         }
         return $repositoryCollection;

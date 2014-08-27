@@ -75,9 +75,9 @@ class Client implements SearchClientInterface
         $bulk = array();
         foreach ($documents as $id => $document) {
             $elasticadoc = new Document($id);
-            foreach($parameters as $name => $value) {
-                if(isset($document[$value])) {
-                    if(method_exists($elasticadoc, "set{$name}")) {
+            foreach ($parameters as $name => $value) {
+                if (isset($document[$value])) {
+                    if (method_exists($elasticadoc, "set{$name}")) {
                         $elasticadoc->{"set{$name}"}($document[$value]);
                     } else {
                         $elasticadoc->setParam($name, $document[$value]);
@@ -89,7 +89,7 @@ class Client implements SearchClientInterface
             $bulk[] = $elasticadoc;
         }
 
-        if(count($bulk) > 1) {
+        if (count($bulk) > 1) {
             $type->addDocuments($bulk);
         } else {
             $type->addDocument($bulk[0]);
@@ -160,7 +160,7 @@ class Client implements SearchClientInterface
     {
         $searchQuery = new Search($this->client);
         $searchQuery->setOption(Search::OPTION_VERSION, true);
-        foreach($classes as $class) {
+        foreach ($classes as $class) {
             if ($class->index) {
                 $indexObject = $this->getIndex($class->index);
                 $searchQuery->addIndex($indexObject);
@@ -221,7 +221,8 @@ class Client implements SearchClientInterface
     {
         $type = $this->getIndex($metadata->index)->getType($metadata->type);
         $properties = $this->getMapping($metadata->fieldMappings);
-
+        $rootProperties = $this->getRootMapping($metadata->rootMappings);
+        
         $mapping = new Mapping($type, $properties);
         $mapping->disableSource($metadata->source);
         if (isset($metadata->boost)) {
@@ -230,6 +231,10 @@ class Client implements SearchClientInterface
         if (isset($metadata->parent)) {
             $mapping->setParent($metadata->parent);
         }
+        foreach ($rootProperties as $key => $value) {
+            $mapping->setParam($key, $value);
+        }
+
         $mapping->send();
 
         return $type;
@@ -289,7 +294,10 @@ class Client implements SearchClientInterface
             }
 
             if ($fieldMapping->type == 'attachment' && isset($fieldMapping->fields)) {
-                $callback = function ($field) { unset($field['type']); return $field; };
+                $callback = function ($field) {
+                    unset($field['type']);
+                    return $field;
+                };
                 $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping->fields));
             }
 
@@ -308,7 +316,7 @@ class Client implements SearchClientInterface
     /**
      * Generates parameter mapping from entity annotations
      *
-     * @param array $fieldMapping
+     * @param array $paramMapping
      */
     protected function getParameters($paramMapping)
     {
@@ -318,5 +326,60 @@ class Client implements SearchClientInterface
             $parameters[$paramName] = $propertyName;
         }
         return $parameters;
+    }
+    
+    /**
+     * Generates root mapping from entity annotations
+     *
+     * @param array $rootMapping
+     */
+    protected function getRootMapping($rootMapping)
+    {
+        $properties = array();
+
+        foreach ($rootMapping as $rootMapping) {
+            $propertyName = $rootMapping->name;
+            $mapping = array();
+
+            if (isset($rootMapping->value)) {
+                $mapping = $rootMapping->value;
+            }
+
+            if (isset($rootMapping->match)) {
+                $mapping['match'] = $rootMapping->match;
+            }
+
+            if (isset($rootMapping->pathMatch)) {
+                $mapping['path_match'] = $rootMapping->pathMatch;
+            }
+
+            if (isset($rootMapping->unmatch)) {
+                $mapping['unmatch'] = $rootMapping->unmatch;
+            }
+
+            if (isset($rootMapping->pathUnmatch)) {
+                $mapping['path_unmatch'] = $rootMapping->pathUnmatch;
+            }
+
+            if (isset($rootMapping->matchPattern)) {
+                $mapping['match_pattern'] = $rootMapping->matchPattern;
+            }
+
+            if (isset($rootMapping->matchMappingType)) {
+                $mapping['match_mapping_type'] = $rootMapping->matchMappingType;
+            }
+
+            if (isset($rootMapping->mapping)) {
+                $mapping['mapping'] = current($this->getMapping($rootMapping->mapping));
+            }
+
+            if (isset($rootMapping->id)) {
+                $properties[$propertyName][][$rootMapping->id] = $mapping;
+            } else {
+                $properties[$propertyName] = $mapping;
+            }
+        }
+
+        return $properties;
     }
 }
