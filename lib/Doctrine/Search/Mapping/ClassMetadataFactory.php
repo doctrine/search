@@ -72,6 +72,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($this->driver instanceof DependentMappingDriver && $om instanceof ObjectManager) {
             $parentMetadataFactory = $om->getMetadataFactory();
             if ($parentMetadataFactory instanceof AbstractClassMetadataFactory) {
+                $parentMetadataFactory->initialize();
                 $this->driver->setParentDriver($parentMetadataFactory->getDriver());
             }
         }
