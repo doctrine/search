@@ -11,17 +11,22 @@ use Doctrine\Search\Mapping\ClassMetadata;
 class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Doctrine\Search\Mapping\Driver\AnnotationDriver
+     * @var \Doctrine\Search\Mapping\Driver\AnnotationDriver
      */
     private $annotationDriver;
 
     /**
-     * @var Doctrine\Common\Annotations\Reader
+     * @var \Doctrine\Common\Annotations\Reader|\PHPUnit_Framework_MockObject_MockObject
      */
     private $reader;
 
     /**
-     * @var \ReflectionClass
+     * @var \Doctrine\Search\Mapping\ClassMetadata|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $classMetadata;
+
+    /**
+     * @var \ReflectionClass|\PHPUnit_Framework_MockObject_MockObject
      */
     private $reflectionClass;
 
@@ -29,9 +34,13 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     {
         $this->reader = $this->getMock('Doctrine\\Common\\Annotations\\Reader');
 
-        $this->classMetadata = $this->getMock('Doctrine\\Search\\Mapping\\ClassMetadata', array(), array(), '', false);
+        $this->classMetadata = $this->getMockBuilder('Doctrine\\Search\\Mapping\\ClassMetadata')
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->reflectionClass = $this->getMock('\ReflectionClass', array(), array(), '', false);
+        $this->reflectionClass = $this->getMockBuilder('\ReflectionClass')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->annotationDriver = new AnnotationDriver($this->reader);
     }
@@ -42,21 +51,24 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
             ->method('getClassAnnotations')
             ->will($this->returnValue(array(0, new TestSearchable2(array()))));
 
-        $this->reader->expects($this->any())
+        $this->reader->expects($this->atLeastOnce())
             ->method('getPropertyAnnotations')
             ->will($this->returnValue(array(0, new TestField(array()))));
 
-        $classMetadata = new ClassMetadata('Doctrine\Tests\Search\Documents\BlogPost');
+        $this->reader->expects($this->atLeastOnce())
+            ->method('getMethodAnnotations')
+            ->will($this->returnValue(array()));
 
-        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $classMetadata);
+        $classMetadata = new ClassMetadata('Doctrine\Tests\Models\Blog\BlogPost');
+
+        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Models\Blog\BlogPost', $classMetadata);
 
         $this->assertInstanceOf('Doctrine\Search\Mapping\ClassMetadata', $this->classMetadata);
-        $this->assertEquals('Doctrine\Tests\Search\Documents\BlogPost', $classMetadata->getName());
-
+        $this->assertEquals('Doctrine\Tests\Models\Blog\BlogPost', $classMetadata->getName());
     }
 
     /**
-     * @expectedException Doctrine\Search\Exception\Driver\ClassIsNotAValidDocumentException
+     * @expectedException \Doctrine\Search\Exception\Driver\ClassIsNotAValidDocumentException
      */
     public function testLoadMetadataForClassExtractClassAnnotationsException()
     {
@@ -73,11 +85,11 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
             ->method('getReflectionClass')
             ->will($this->returnValue($this->reflectionClass));
 
-        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $this->classMetadata);
+        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Models\Blog\BlogPost', $this->classMetadata);
     }
 
     /**
-     * @expectedException ReflectionException
+     * @expectedException \ReflectionException
      */
     public function testLoadMetadataForReflectionErrorClassNotFound()
     {
@@ -89,7 +101,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Doctrine\Search\Exception\Driver\PropertyDoesNotExistsInMetadataException
+     * @expectedException \Doctrine\Search\Exception\Driver\PropertyDoesNotExistsInMetadataException
      */
     public function testLoadMetadataForClassAddValuesToMetadata()
     {
@@ -105,13 +117,12 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
             ->method('getReflectionClass')
             ->will($this->returnValue($this->reflectionClass));
 
-        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Search\Documents\BlogPost', $this->classMetadata);
+        $this->annotationDriver->loadMetadataForClass('Doctrine\Tests\Models\Blog\BlogPost', $this->classMetadata);
     }
 
 
     /**
-     *
-     * @expectedException PHPUnit_Framework_Error
+     * @expectedException \PHPUnit_Framework_Error
      */
     public function testLoadMetadataForClassWrongParameterClassName()
     {
@@ -119,8 +130,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *
-     * @expectedException PHPUnit_Framework_Error
+     * @expectedException \PHPUnit_Framework_Error
      */
     public function testLoadMetadataForClassWrongParameterClassMetadata()
     {

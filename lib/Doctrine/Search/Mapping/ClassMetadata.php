@@ -141,7 +141,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var mixed
      */
-    public $identifier;
+    public $identifier = array();
 
 
     public function __construct($documentName)
@@ -182,30 +182,13 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Restores some state that can not be serialized/unserialized.
-     *
-     * @return void
-     */
-    public function __wakeup()
-    {
-        // Restore ReflectionClass and properties
-        $this->reflClass = new \ReflectionClass($this->className);
-
-        foreach ($this->fieldMappings as $field => $mapping) {
-            $reflField = $this->reflClass->getProperty($field);
-            $reflField->setAccessible(true);
-            $this->reflFields[$field] = $reflField;
-        }
-    }
-
-    /**
      * Get fully-qualified class name of this persistent class.
      *
      * @return string
      */
     public function getName()
     {
-        return $this->reflClass->getName();
+        return $this->className;
 
     }
 
@@ -422,8 +405,6 @@ class ClassMetadata implements ClassMetadataInterface
         // TODO: Implement getIdentifierFieldNames() method.
     }
 
-
-
     /**
      * Restores some state that can not be serialized/unserialized.
      *
@@ -441,8 +422,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
     }
 
-
-
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
@@ -454,5 +433,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function initializeReflection($reflService)
     {
         $this->reflClass = $reflService->getClass($this->className);
+        $this->className = $this->reflClass->getName(); // normalize classname
     }
 }

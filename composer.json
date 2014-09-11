@@ -29,7 +29,8 @@
     },
     "autoload-dev": {
         "psr-0": {
-            "Doctrine\\Tests\\Search": "tests/"
+            "Doctrine\\Tests\\Search": "tests/",
+            "Doctrine\\Tests\\Models": "tests/"
         }
     }
 }

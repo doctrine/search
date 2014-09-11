@@ -31,8 +31,10 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function testSetMetadataDriverImpl()
     {
-        $mockedMetadataDriverImpl = $this->getMock('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver'
-                                                   , array(), array(), '', false);
+        $mockedMetadataDriverImpl = $this->getMockBuilder('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->configuration->setMetadataDriverImpl($mockedMetadataDriverImpl);
 
         $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
@@ -41,7 +43,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error
+     * @expectedException \PHPUnit_Framework_Error
      */
     public function testSetMetadataCacheImplWrongParameter()
     {
@@ -64,7 +66,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException PHPUnit_Framework_Error
+     * @expectedException \PHPUnit_Framework_Error
      */
     public function testNewDefaultAnnotationDriverWrongParameter()
     {
