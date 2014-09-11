@@ -49,7 +49,7 @@ class OnClearEventArgs extends EventArgs
      * @param \Doctrine\Search\SearchManager $sm
      * @param string $entityClass Optional entity class
      */
-    public function __construct(SearchManager $em, $entityClass = null)
+    public function __construct(SearchManager $sm, $entityClass = null)
     {
         $this->sm          = $sm;
         $this->entityClass = $entityClass;
