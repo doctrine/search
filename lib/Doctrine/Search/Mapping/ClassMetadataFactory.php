@@ -21,10 +21,9 @@ namespace Doctrine\Search\Mapping;
 
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Configuration;
-use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Search\Events;
 use Doctrine\Search\Event\LoadClassMetadataEventArgs;
@@ -116,8 +115,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Actually load the metadata from the underlying metadata
      *
-     * @param ClassMetadata $class
-     * @param ClassMetadata $parent
+     * @param ClassMetadataInterface|ClassMetadata $class
+     * @param ClassMetadataInterface|ClassMetadata $parent
      * @param bool $rootEntityFound
      *
      * @return void
@@ -137,7 +136,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Creates a new ClassMetadata instance for the given class name.
      *
      * @param string $className
-     * @return ClassMetadata
+     * @return ClassMetadataInterface|ClassMetadata
      */
     protected function newClassMetadataInstance($className)
     {
@@ -147,29 +146,33 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Wakeup reflection after ClassMetadata gets unserialized from cache.
      *
-     * @param BaseClassMetadata $class
+     * @param ClassMetadataInterface|ClassMetadata $class
      * @param ReflectionService $reflService
      *
      * @return void
      */
-    protected function wakeupReflection(BaseClassMetadata $class, ReflectionService $reflService)
+    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        // TODO: Implement wakeupReflection() method.
+        $class->wakeupReflection($reflService);
     }
 
     /**
      * Initialize Reflection after ClassMetadata was constructed.
      *
-     * @param ClassMetadata $class
+     * @param ClassMetadataInterface|ClassMetadata $class
      * @param ReflectionService $reflService
      * @return void
      */
-    protected function initializeReflection(BaseClassMetadata $class, ReflectionService $reflService)
+    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        // TODO: Implement initializeReflection() method.
+        $class->initializeReflection($reflService);
     }
 
-    protected function isEntity(BaseClassMetadata $class)
+    /**
+     * @param ClassMetadataInterface|ClassMetadata $class
+     * @return bool
+     */
+    protected function isEntity(ClassMetadataInterface $class)
     {
 
     }
