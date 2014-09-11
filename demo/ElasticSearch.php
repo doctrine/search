@@ -18,12 +18,10 @@ class ElasticSearch
     {
         //Entity loader
         $entities = Config::getEntityNamespacePath();
-        $cl = new ClassLoader($entities['namespace'], $entities['path']);
-        $cl->register();
 
         //Annotation metadata driver
         $config = new Configuration();
-        $md = $config->newDefaultAnnotationDriver(array($entities['namespace']));
+        $md = $config->newDefaultAnnotationDriver(array($entities['path']));
         $config->setMetadataDriverImpl($md);
         $config->setMetadataCacheImpl(new ArrayCache());
 

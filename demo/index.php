@@ -12,7 +12,7 @@ $sm = ElasticSearch::get();
 //Execute a direct Elastica term search
 echo PHP_EOL."*** Direct Term Search ***".PHP_EOL;
 $query = new Elastica\Filter\Term(array('username' => 'timmyl'));
-$users = $sm->getRepository('Entities\User')->search($query);
+$users = $sm->getRepository('Doctrine\Tests\Models\Comments\User')->search($query);
 
 foreach ($users as $user) {
     print_r($user);
@@ -22,7 +22,7 @@ foreach ($users as $user) {
 
 //Execute a single term lookup, modify and persist
 echo PHP_EOL."*** Single term lookup, modify and persist ***".PHP_EOL;
-$user = $sm->getRepository('Entities\User')->findOneBy(array('username' => 'mrhash'));
+$user = $sm->getRepository('Doctrine\Tests\Models\Comments\User')->findOneBy(array('username' => 'mrhash'));
 print_r($user);
 $user->setName('New name');
 $sm->persist($user);
@@ -33,7 +33,7 @@ $sm->flush();
 //Execute a single lookup with no results
 echo PHP_EOL."*** Single lookup with no results ***".PHP_EOL;
 try {
-    $user = $sm->find('Entities\User', 'unknownid');
+    $user = $sm->find('Doctrine\Tests\Models\Comments\User', 'unknownid');
 } catch (Doctrine\Search\Exception\NoResultException $exception) {
     print_r($exception->getMessage());
     echo PHP_EOL;
@@ -51,7 +51,7 @@ $query->setFilter(new Elastica\Filter\HasParent(
     'users'
 ));
 $query->setFields(array('_source', '_parent'));
-$comments = $sm->getRepository('Entities\Comment')->search($query);
+$comments = $sm->getRepository('Doctrine\Tests\Models\Comments\Comment')->search($query);
 
 foreach ($comments as $comment) {
     print_r($comment);
@@ -63,7 +63,7 @@ foreach ($comments as $comment) {
 //pass an Elastica query directly into a modified pagination adapter.
 echo PHP_EOL."*** Pagerfanta paginated results ***".PHP_EOL;
 $query = $sm->createQuery()
-    ->from('Entities\Comment')
+    ->from('Doctrine\Tests\Models\Comments\Comment')
     ->searchWith(new Elastica\Query())
     ->setQuery(new Elastica\Query\MatchAll())
     ->setFields(['_source', '_parent'])

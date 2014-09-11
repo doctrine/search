@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Search;
+
 use Doctrine\Search\Version;
 
 class VersionTest extends \PHPUnit_Framework_TestCase {

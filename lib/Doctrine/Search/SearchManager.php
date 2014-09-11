@@ -159,6 +159,14 @@ class SearchManager implements ObjectManager
     }
 
     /**
+     * @return Mapping\ClassMetadataFactory
+     */
+    public function getClassMetadataFactory()
+    {
+        return $this->metadataFactory;
+    }
+
+    /**
      * @return SearchClientInterface
      */
     public function getClient()

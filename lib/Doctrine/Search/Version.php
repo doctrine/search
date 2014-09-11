@@ -30,7 +30,6 @@ final class Version
      * Compare a given version with the current version
      *
      * @param string $version
-     * @param string $operator
      *
      * @return integer Return -1 if it older, 0 if it the same, 1 if $version is newer
      */

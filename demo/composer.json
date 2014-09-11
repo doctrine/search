@@ -1,14 +1,19 @@
 {
-   "repositories":[
-      {
-         "type":"vcs",
-         "url":"http://github.com/doctrine/search"
-      }
-   ],
-   "require":{
-      "jms/serializer":"0.15.0",
-      "ruflin/elastica":"v1.0.1.2",
-      "doctrine/search":"dev-master",
-      "pagerfanta/pagerfanta":"v1.0.1"
-   }
+    "repositories":[
+        {
+            "type":"vcs",
+            "url":"http://github.com/doctrine/search"
+        }
+    ],
+    "require":{
+        "jms/serializer":"0.15.0",
+        "ruflin/elastica":"v1.0.1.2",
+        "doctrine/search":"dev-master",
+        "pagerfanta/pagerfanta":"v1.0.1"
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "Doctrine\\Tests\\Models": "../tests/"
+        }
+    }
 }

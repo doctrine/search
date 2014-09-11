@@ -1,6 +1,6 @@
 <?php
 
-namespace Entities;
+namespace Doctrine\Tests\Models\Comments;
 
 use JMS\Serializer\Annotation as JMS;
 use Doctrine\Search\Mapping\Annotations as MAP;

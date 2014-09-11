@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\Search\Documents;
+namespace Doctrine\Tests\Models\Blog;
 
 use Doctrine\Search\Mapping\Annotations as SEARCH;
 

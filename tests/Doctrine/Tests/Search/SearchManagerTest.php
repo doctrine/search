@@ -1,27 +1,26 @@
 <?php
 namespace Doctrine\Tests\Search;
 
+use Doctrine\Common\EventManager;
 use Doctrine\Search\SearchManager;
-use Doctrine\Search\Configuration;
 use Doctrine\Search\Mapping\ClassMetadata;
-
-use Doctrine\Tests\Search\Documents\BlogPost;
+use Doctrine\Tests\Models\Blog\BlogPost;
 
 
 class SearchManagerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Doctrine\Search\Mapping\ClassMetadataFactory
+     * @var \Doctrine\Search\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $metadataFactory;
 
     /**
-     * @var Doctrine\Search\ElasticSearch\Client
+     * @var \Doctrine\Search\ElasticSearch\Client|\PHPUnit_Framework_MockObject_MockObject
      */
     private $searchClient;
 
     /**
-     * @var Doctrine\Search\Configuration
+     * @var \Doctrine\Search\Configuration|\PHPUnit_Framework_MockObject_MockObject
      */
     private $configuration;
 
@@ -31,6 +30,11 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     protected $sm;
 
     /**
+     * @var EventManager
+     */
+    private $evm;
+
+    /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
@@ -38,7 +42,9 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         $this->metadataFactory = $this->getMock('Doctrine\\Search\\Mapping\\ClassMetadataFactory');
 
-        $this->searchClient = $this->getMock('Doctrine\\Search\\ElasticSearch\\Client', array(), array(), '', false);
+        $this->searchClient = $this->getMockBuilder('Doctrine\\Search\\ElasticSearch\\Client')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->configuration = $this->getMock('Doctrine\\Search\\Configuration');
         $this->configuration->expects($this->once())
@@ -49,7 +55,9 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
               ->method('getMetadataCacheImpl')
               ->will($this->returnValue($this->getMock('Doctrine\\Common\\Cache\\ArrayCache')));
 
-        $this->sm = new SearchManager($this->configuration, $this->searchClient);
+        $this->evm = new EventManager();
+
+        $this->sm = new SearchManager($this->configuration, $this->searchClient, $this->evm);
     }
 
     /**

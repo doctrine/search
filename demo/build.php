@@ -1,11 +1,11 @@
 <?php
 
+use Doctrine\Tests\Models\Comments\User;
+use Doctrine\Tests\Models\Comments\Email;
+use Doctrine\Tests\Models\Comments\Comment;
+
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/ElasticSearch.php';
-
-use Entities\User;
-use Entities\Email;
-use Entities\Comment;
 
 $sm = ElasticSearch::get();
 
