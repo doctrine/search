@@ -1,8 +1,8 @@
 <?php
 
-require_once 'vendor/autoload.php';
-require_once 'ElasticSearch.php';
-require_once 'Pagination/PagerFantaAdapter.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/ElasticSearch.php';
+require_once __DIR__ . '/Pagination/PagerfantaAdapter.php';
 
 //Get the search manager
 $sm = ElasticSearch::get();

@@ -4,7 +4,13 @@
     "keywords": ["elasticsearch", "solr", "lucene", "search", "odm", "orm"],
     "homepage": "https://github.com/doctrine/search",
     "type": "library",
-    "licence": "LGPL",
+    "licence": "MIT",
+    "authors": [
+        {
+            "name": "Doctrine Search Community",
+            "homepage": "https://github.com/doctrine/search/graphs/contributors"
+        }
+    ],
     "require": {
         "php": ">=5.3.2",
         "doctrine/common": ">=2.3.0"

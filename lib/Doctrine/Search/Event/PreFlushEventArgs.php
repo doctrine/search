@@ -25,7 +25,6 @@ use Doctrine\Common\EventArgs;
 /**
  * Provides event arguments for the preFlush event.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       2.0
  * @author      Roman Borschel <roman@code-factory.de>

@@ -16,6 +16,7 @@
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
+
 namespace Doctrine\Search\Event;
 
 use Doctrine\Search\SearchManager;
@@ -24,7 +25,6 @@ use Doctrine\Common\EventArgs;
 /**
  * Provides event arguments for the postFlush event.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.org
  * @since       2.0
  * @author      Daniel Freudenberger <df@rebuy.de>
