@@ -149,10 +149,10 @@ class UnitOfWork
      */
     private function commitPersisted()
     {
-        $documents = $this->sortObjects($this->scheduledForPersist);
+        $sortedDocuments = $this->sortObjects($this->scheduledForPersist);
         $client = $this->sm->getClient();
 
-        foreach ($documents as $entityName => $documents) {
+        foreach ($sortedDocuments as $entityName => $documents) {
             $classMetadata = $this->sm->getClassMetadata($entityName);
             $this->updatedIndexes[] = $classMetadata->index;
             $client->addDocuments($classMetadata, $documents);

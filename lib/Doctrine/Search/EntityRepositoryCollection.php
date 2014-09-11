@@ -3,14 +3,12 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Search\SearchManager;
-use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Search\Exception\DoctrineSearchException;
 
 class EntityRepositoryCollection implements ObjectRepository
 {
     /**
-     * @var array
+     * @var array|EntityRepository[]
      */
     private $_repositories = array();
 

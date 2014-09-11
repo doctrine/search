@@ -1,11 +1,11 @@
 language: php
 
 php:
-    - 5.3
-    - 5.4
+  - 5.3
+  - 5.4
 
-before_script: 
-	- curl -s https://getcomposer.org/installer | php
-	- php composer.phar install --dev
+before_script:
+  - curl -s https://getcomposer.org/installer | php
+  - php composer.phar install --dev
 
 script: phpunit --coverage-text

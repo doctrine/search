@@ -74,19 +74,19 @@ class Client implements SearchClientInterface
 
         $bulk = array();
         foreach ($documents as $id => $document) {
-            $elasticadoc = new Document($id);
+            $elasticaDoc = new Document($id);
             foreach ($parameters as $name => $value) {
                 if (isset($document[$value])) {
-                    if (method_exists($elasticadoc, "set{$name}")) {
-                        $elasticadoc->{"set{$name}"}($document[$value]);
+                    if (method_exists($elasticaDoc, "set{$name}")) {
+                        $elasticaDoc->{"set{$name}"}($document[$value]);
                     } else {
-                        $elasticadoc->setParam($name, $document[$value]);
+                        $elasticaDoc->setParam($name, $document[$value]);
                     }
                     unset($document[$value]);
                 }
             }
-            $elasticadoc->setData($document);
-            $bulk[] = $elasticadoc;
+            $elasticaDoc->setData($document);
+            $bulk[] = $elasticaDoc;
         }
 
         if (count($bulk) > 1) {
@@ -222,7 +222,7 @@ class Client implements SearchClientInterface
         $type = $this->getIndex($metadata->index)->getType($metadata->type);
         $properties = $this->getMapping($metadata->fieldMappings);
         $rootProperties = $this->getRootMapping($metadata->rootMappings);
-        
+
         $mapping = new Mapping($type, $properties);
         $mapping->disableSource($metadata->source);
         if (isset($metadata->boost)) {
@@ -252,13 +252,13 @@ class Client implements SearchClientInterface
     /**
      * Generates property mapping from entity annotations
      *
-     * @param array $fieldMapping
+     * @param array $mappings
      */
-    protected function getMapping($fieldMapping)
+    protected function getMapping($mappings)
     {
         $properties = array();
 
-        foreach ($fieldMapping as $propertyName => $fieldMapping) {
+        foreach ($mappings as $propertyName => $fieldMapping) {
             if (isset($fieldMapping->name)) {
                 $propertyName = $fieldMapping->name;
             }
@@ -327,17 +327,17 @@ class Client implements SearchClientInterface
         }
         return $parameters;
     }
-    
+
     /**
      * Generates root mapping from entity annotations
      *
-     * @param array $rootMapping
+     * @param array $mappings
      */
-    protected function getRootMapping($rootMapping)
+    protected function getRootMapping($mappings)
     {
         $properties = array();
 
-        foreach ($rootMapping as $rootMapping) {
+        foreach ($mappings as $rootMapping) {
             $propertyName = $rootMapping->name;
             $mapping = array();
 

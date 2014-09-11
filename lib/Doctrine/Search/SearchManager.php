@@ -20,12 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Search\SearchClientInterface;
-use Doctrine\Search\Configuration;
 use Doctrine\Search\Exception\UnexpectedTypeException;
-use Doctrine\Search\EntityRepository;
-use Doctrine\Search\UnitOfWork;
-use Doctrine\Search\Query;
 use Doctrine\Common\EventManager;
 
 /**
@@ -47,7 +42,7 @@ class SearchManager implements ObjectManager
     private $configuration;
 
     /**
-     * @var Doctrine\Search\Mapping\ClassMetadataFactory
+     * @var \Doctrine\Search\Mapping\ClassMetadataFactory
      */
     private $metadataFactory;
 
@@ -87,6 +82,7 @@ class SearchManager implements ObjectManager
      *
      * @param Configuration         $config
      * @param SearchClientInterface $client
+     * @param EventManager          $eventManager
      */
     public function __construct(Configuration $config, SearchClientInterface $client, EventManager $eventManager)
     {
@@ -108,7 +104,7 @@ class SearchManager implements ObjectManager
     /**
      * Inject a Doctrine 2 object manager
      *
-     * @param ObjectManager $em
+     * @param ObjectManager $om
      */
     public function setEntityManager(ObjectManager $om)
     {
@@ -116,7 +112,7 @@ class SearchManager implements ObjectManager
     }
 
     /**
-     * @return EntityManager
+     * @return ObjectManager|\Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
@@ -156,7 +152,7 @@ class SearchManager implements ObjectManager
      *
      * @param string $className
      *
-     * @return Doctrine\Search\Mapping\ClassMetadata
+     * @return \Doctrine\Search\Mapping\ClassMetadata
      */
     public function getClassMetadata($className)
     {
@@ -180,7 +176,7 @@ class SearchManager implements ObjectManager
     }
 
     /**
-     * @return Doctrine\Search\Mapping\ClassMetadataFactory
+     * @return \Doctrine\Search\Mapping\ClassMetadataFactory
      */
     public function getMetadataFactory()
     {
@@ -195,7 +191,7 @@ class SearchManager implements ObjectManager
         $options = array();
         if (is_array($id)) {
             if (!isset($id['id'])) {
-                throw new InvalidArgumentException('An "id" field is required');
+                throw new \InvalidArgumentException('An "id" field is required');
             }
             $options = $id;
             $id = $options['id'];

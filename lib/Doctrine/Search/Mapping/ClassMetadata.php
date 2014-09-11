@@ -20,6 +20,10 @@
 namespace Doctrine\Search\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Search\Mapping\Annotations\ElasticField;
+use Doctrine\Search\Mapping\Annotations\ElasticRoot;
+
+
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -100,17 +104,17 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var array
+     * @var array|ElasticField[]
      */
     public $fieldMappings = array();
 
     /**
      *  Additional root annotations of the mapped class.
-     *  
-     * @var array
+     *
+     * @var array|ElasticRoot[]
      */
     public $rootMappings = array();
-    
+
     /**
      * The ReflectionProperty parameters of the mapped class.
      *
@@ -121,14 +125,14 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflClass;
 
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflFields;
 
@@ -233,7 +237,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Gets the ReflectionClass instance for this mapped class.
      *
-     * @return ReflectionClass
+     * @return \ReflectionClass
      */
     public function getReflectionClass()
     {
@@ -417,5 +421,39 @@ class ClassMetadata implements ClassMetadataInterface
     public function getIdentifierFieldNames()
     {
         // TODO: Implement getIdentifierFieldNames() method.
+    }
+
+
+
+    /**
+     * Restores some state that can not be serialized/unserialized.
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
+     *
+     * @return void
+     */
+    public function wakeupReflection($reflService)
+    {
+        // Restore ReflectionClass and properties
+        $this->reflClass = $reflService->getClass($this->className);
+
+        foreach ($this->fieldMappings as $field => $mapping) {
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->className, $field);
+        }
+    }
+
+
+
+    /**
+     * Initializes a new ClassMetadata instance that will hold the object-relational mapping
+     * metadata of the class with the given name.
+     *
+     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService The reflection service.
+     *
+     * @return void
+     */
+    public function initializeReflection($reflService)
+    {
+        $this->reflClass = $reflService->getClass($this->className);
     }
 }

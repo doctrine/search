@@ -21,10 +21,8 @@ namespace Doctrine\Search\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\Search\Mapping\Annotations as Search;
-use Doctrine\Search\Mapping\ClassMetadata as SearchMetadata;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Search\Exception\Driver as DriverException;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -62,8 +60,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
 
+
+
     /**
-     * {@inheritDoc}
+     * @param string $className
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
      *
      * @throws \ReflectionException
      */
@@ -89,9 +90,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * them into metadata.
      *
      * @param \ReflectionClass $reflClass
-     * @param ClassMetadata    $metadata
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata    $metadata
      *
-     * @return ClassMetadata
+     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
      *
      * @throws DriverException\ClassIsNotAValidDocumentException|DriverException\PropertyDoesNotExistsInMetadataException
      */
@@ -130,9 +131,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Extract the property annotations.
      *
      * @param \ReflectionProperty[] $reflProperties
-     * @param ClassMetadata         $metadata
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
      *
-     * @return ClassMetadata
+     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
      */
     private function extractPropertiesAnnotations(array $reflProperties, ClassMetadata $metadata)
     {
@@ -161,9 +162,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * Extract the methods annotations.
      *
      * @param \ReflectionMethod[]   $reflMethods
-     * @param ClassMetadata         $metadata
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
      *
-     * @return ClassMetadata
+     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
      */
     private function extractMethodsAnnotations(array $reflMethods, ClassMetadata $metadata)
     {
@@ -184,10 +185,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     /**
      * @param \ReflectionProperty[] $reflectedClassProperties
-     * @param ClassMetadata         $metadata
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
      * @param string                $class
      *
-     * @return ClassMetadata
+     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
      *
      * @throws DriverException\PropertyDoesNotExistsInMetadataException
      */
