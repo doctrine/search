@@ -1,7 +1,7 @@
 <?php
 
-require_once 'vendor/autoload.php';
-require_once 'ElasticSearch.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/ElasticSearch.php';
 
 use Entities\User;
 use Entities\Email;
