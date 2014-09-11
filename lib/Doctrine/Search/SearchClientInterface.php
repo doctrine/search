@@ -19,9 +19,7 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\Mapping\ClassMetadata;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -34,10 +32,10 @@ interface SearchClientInterface
     /**
      * Finds document by id.
      *
-     * @param ClassMetadata $classes
+     * @param ClassMetadata $class
      * @param mixed $id
      * @param array $options
-     * @throws Doctrine\Search\Exception\NoResultException
+     * @throws \Doctrine\Search\Exception\NoResultException
      */
     public function find(ClassMetadata $class, $id, $options = array());
 
@@ -45,8 +43,9 @@ interface SearchClientInterface
      * Finds document by specified field and value.
      *
      * @param ClassMetadata $class
+     * @param string $field
      * @param mixed $value
-     * @throws Doctrine\Search\Exception\NoResultException
+     * @throws \Doctrine\Search\Exception\NoResultException
      */
     public function findOneBy(ClassMetadata $class, $field, $value);
 
@@ -89,6 +88,8 @@ interface SearchClientInterface
 
     /**
      * Refresh the index to make documents available for search
+     *
+     * @param string $index
      */
     public function refreshIndex($index);
 
@@ -118,7 +119,7 @@ interface SearchClientInterface
     /**
      * Remove documents of a given type from the specified index
      *
-     * @param ClassMetadata
+     * @param ClassMetadata $class
      * @param array $documents Indexed by document id
      */
     public function removeDocuments(ClassMetadata $class, array $documents);
