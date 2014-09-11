@@ -19,6 +19,7 @@
 
 namespace Doctrine\Search\Mapping;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
@@ -66,6 +67,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->driver = $this->config->getMetadataDriverImpl();
         $this->evm = $this->sm->getEventManager();
         $this->initialized = true;
+
+        $om = $this->sm->getObjectManager();
+        if ($this->driver instanceof DependentMappingDriver && $om instanceof ObjectManager) {
+            $parentMetadataFactory = $om->getMetadataFactory();
+            if ($parentMetadataFactory instanceof AbstractClassMetadataFactory) {
+                $this->driver->setParentDriver($parentMetadataFactory->getDriver());
+            }
+        }
     }
 
     /**
