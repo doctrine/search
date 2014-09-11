@@ -272,6 +272,10 @@ class Client implements SearchClientInterface
                 $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
             }
 
+            if (isset($fieldMapping->nullValue)) {
+                $properties[$propertyName]['null_value'] = $fieldMapping->nullValue;
+            }
+
             if (isset($fieldMapping->store)) {
                 $properties[$propertyName]['store'] = $fieldMapping->store;
             }

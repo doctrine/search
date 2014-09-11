@@ -42,7 +42,7 @@ class User
     /**
      * @JMS\Type("string")
      * @JMS\Expose @JMS\Groups({"api", "store"})
-     * @MAP\ElasticField(type="ip", includeInAll=false, index="no", store=true)
+     * @MAP\ElasticField(type="ip", includeInAll=false, index="no", store=true, nullValue="127.0.0.1")
      */
     private $ip;
    
@@ -62,6 +62,13 @@ class User
      * })
      */
     private $emails = array();
+   
+    /**
+     * @JMS\Type("boolean")
+     * @JMS\Expose @JMS\Groups({"store"})
+     * @MAP\ElasticField(type="boolean", nullValue=false)
+     */
+    private $active;
    
     public function getId()
     {
