@@ -20,9 +20,13 @@
 namespace Doctrine\Search\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Search\Mapping\Annotations as Search;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Search\Exception\Driver as DriverException;
+use Doctrine\Search\Mapping\DependentMappingDriver;
+
+
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -31,7 +35,7 @@ use Doctrine\Search\Exception\Driver as DriverException;
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-class AnnotationDriver extends AbstractAnnotationDriver
+class AnnotationDriver extends AbstractAnnotationDriver implements DependentMappingDriver
 {
     /**
      * {@inheritDoc}
@@ -59,7 +63,18 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
     );
 
+    /**
+     * @var MappingDriver
+     */
+    private $parentDriver;
 
+    /**
+     * @param MappingDriver $driver
+     */
+    public function setParentDriver(MappingDriver $driver)
+    {
+        $this->parentDriver = $driver;
+    }
 
     /**
      * @param string $className
@@ -207,4 +222,25 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         return $metadata;
     }
+
+    public function getAllClassNames()
+    {
+        if ($this->classNames !== NULL) {
+            return $this->classNames;
+        }
+
+        if ($this->parentDriver === NULL) {
+            return parent::getAllClassNames();
+        }
+
+        $classes = array();
+        foreach ($this->parentDriver->getAllClassNames() as $className) {
+            if (!$this->isTransient($className)) {
+                $classes[] = $className;
+            }
+        }
+
+        return $this->classNames = $classes;
+    }
+
 }
