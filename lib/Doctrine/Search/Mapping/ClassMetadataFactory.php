@@ -13,7 +13,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
+ * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
  */
 
@@ -32,7 +32,6 @@ use Doctrine\Search\Event\LoadClassMetadataEventArgs;
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a search backend should be configured.
  *
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
