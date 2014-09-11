@@ -133,7 +133,7 @@ class Query
      */
     public function useResultCache($useCache, $cacheLifetime = null)
     {
-        $this->useCache = $useCache;
+        $this->useResultCache = $useCache;
         $this->cacheLifetime = $cacheLifetime;
         return $this;
     }
