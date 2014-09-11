@@ -23,7 +23,6 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Search\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Search\SerializerInterface;
 use Doctrine\Search\Serializer\CallbackSerializer;
 use Doctrine\Common\Persistence\ObjectManager;
 

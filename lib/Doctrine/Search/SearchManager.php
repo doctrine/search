@@ -20,12 +20,8 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Search\SearchClientInterface;
-use Doctrine\Search\Configuration;
+use Doctrine\ORM\EntityManager;
 use Doctrine\Search\Exception\UnexpectedTypeException;
-use Doctrine\Search\EntityRepository;
-use Doctrine\Search\UnitOfWork;
-use Doctrine\Search\Query;
 use Doctrine\Common\EventManager;
 
 /**
@@ -47,7 +43,7 @@ class SearchManager implements ObjectManager
     private $configuration;
 
     /**
-     * @var Doctrine\Search\Mapping\ClassMetadataFactory
+     * @var \Doctrine\Search\Mapping\ClassMetadataFactory
      */
     private $metadataFactory;
 
@@ -156,7 +152,7 @@ class SearchManager implements ObjectManager
      *
      * @param string $className
      *
-     * @return Doctrine\Search\Mapping\ClassMetadata
+     * @return \Doctrine\Search\Mapping\ClassMetadata
      */
     public function getClassMetadata($className)
     {
@@ -180,7 +176,7 @@ class SearchManager implements ObjectManager
     }
 
     /**
-     * @return Doctrine\Search\Mapping\ClassMetadataFactory
+     * @return \Doctrine\Search\Mapping\ClassMetadataFactory
      */
     public function getMetadataFactory()
     {
