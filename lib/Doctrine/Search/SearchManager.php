@@ -20,7 +20,6 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\ORM\EntityManager;
 use Doctrine\Search\Exception\UnexpectedTypeException;
 use Doctrine\Common\EventManager;
 
@@ -83,6 +82,7 @@ class SearchManager implements ObjectManager
      *
      * @param Configuration         $config
      * @param SearchClientInterface $client
+     * @param EventManager          $eventManager
      */
     public function __construct(Configuration $config, SearchClientInterface $client, EventManager $eventManager)
     {
@@ -104,7 +104,7 @@ class SearchManager implements ObjectManager
     /**
      * Inject a Doctrine 2 object manager
      *
-     * @param ObjectManager $em
+     * @param ObjectManager $om
      */
     public function setEntityManager(ObjectManager $om)
     {
@@ -112,7 +112,7 @@ class SearchManager implements ObjectManager
     }
 
     /**
-     * @return EntityManager
+     * @return ObjectManager|\Doctrine\ORM\EntityManager
      */
     public function getEntityManager()
     {
