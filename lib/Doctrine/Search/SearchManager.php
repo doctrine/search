@@ -191,7 +191,7 @@ class SearchManager implements ObjectManager
         $options = array();
         if (is_array($id)) {
             if (!isset($id['id'])) {
-                throw new InvalidArgumentException('An "id" field is required');
+                throw new \InvalidArgumentException('An "id" field is required');
             }
             $options = $id;
             $id = $options['id'];
