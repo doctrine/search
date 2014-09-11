@@ -3,7 +3,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Exception\DoctrineSearchException;
-use Doctrine\Common\Collections\ArrayCollection;
+use Elastica;
 
 class Query
 {
@@ -99,7 +99,7 @@ class Query
     /**
      * Set the query object to be executed on the search engine
      *
-     * @param mixes $query
+     * @param mixed $query
      */
     public function searchWith($query)
     {
@@ -147,6 +147,9 @@ class Query
         return $this->count;
     }
 
+    /**
+     * @return array
+     */
     public function getFacets()
     {
         return $this->facets;
@@ -204,17 +207,15 @@ class Query
 
         $resultSet = $this->getSearchManager()->getClient()->search($this->query, $classes);
 
-        $resultClass = get_class($resultSet);
-
         // TODO: abstraction of support for different result sets
-        switch($resultClass) {
-            case 'Elastica\ResultSet':
-                $this->count = $resultSet->getTotalHits();
-                $this->facets = $resultSet->getFacets();
-                $results = $resultSet->getResults();
-                break;
-            default:
-                throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
+        if ($resultSet instanceof Elastica\ResultSet) {
+            $this->count = $resultSet->getTotalHits();
+            $this->facets = $resultSet->getFacets();
+            $results = $resultSet->getResults();
+
+        } else {
+            $resultClass = get_class($resultSet);
+            throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
         }
 
         // Return results depending on hydration mode
