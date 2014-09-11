@@ -1,7 +1,6 @@
 <?php
-namespace Doctrine\Search\Exception;
 
-use Doctrine\Search\Exception\DoctrineSearchException;
+namespace Doctrine\Search\Exception;
 
 class UnexpectedTypeException extends DoctrineSearchException
 {
