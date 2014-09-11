@@ -32,5 +32,8 @@ final class Parameter extends Annotation
      */
     public $name;
 
+    /**
+     * @var string
+     */
     public $type = 'string';
 }
