@@ -18,10 +18,18 @@
     "suggest": {
         "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
     },
+    "require-dev": {
+        "doctrine/orm": "~2.4",
+        "phpunit/phpunit": "~4.2"
+    },
     "autoload": {
         "psr-0": {
             "Doctrine\\Search": "lib/"
         }
     },
-    "minimum-stability": "dev"
+    "autoload-dev": {
+        "psr-0": {
+            "Doctrine\\Tests\\Search": "tests/"
+        }
+    }
 }
