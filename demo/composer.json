@@ -7,7 +7,7 @@
     ],
     "require":{
         "jms/serializer":"0.15.0",
-        "ruflin/elastica":"v1.0.1.2",
+        "ruflin/elastica":"v1.3.0.0",
         "doctrine/search":"dev-master",
         "pagerfanta/pagerfanta":"v1.0.1"
     },
