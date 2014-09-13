@@ -23,8 +23,6 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Search\Mapping\Annotations\ElasticField;
 use Doctrine\Search\Mapping\Annotations\ElasticRoot;
 
-
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
  * of a document and it's references.
