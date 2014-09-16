@@ -73,7 +73,7 @@ final class ElasticRoot extends Annotation
     public $value;
 
     /**
-     * @var array
+     * @var array|ElasticField[]
      */
     public $mapping;
 }

@@ -19,6 +19,8 @@
 
 namespace Doctrine\Search\ElasticSearch;
 
+use Doctrine\Search\Mapping\Annotations\ElasticField;
+use Doctrine\Search\Mapping\Annotations\ElasticRoot;
 use Doctrine\Search\SearchClientInterface;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Search\Exception\NoResultException;
@@ -251,7 +253,7 @@ class Client implements SearchClientInterface
     /**
      * Generates property mapping from entity annotations
      *
-     * @param array $mappings
+     * @param array|ElasticField[] $mappings
      */
     protected function getMapping($mappings)
     {
@@ -334,7 +336,7 @@ class Client implements SearchClientInterface
     /**
      * Generates root mapping from entity annotations
      *
-     * @param array $mappings
+     * @param array|ElasticRoot[] $mappings
      */
     protected function getRootMapping($mappings)
     {

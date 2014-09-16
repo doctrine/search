@@ -36,6 +36,8 @@ use Doctrine\Search\Event\LoadClassMetadataEventArgs;
  * @link        www.doctrine-project.com
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
+ *
+ * @method ClassMetadata[] getAllMetadata()
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
