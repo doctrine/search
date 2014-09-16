@@ -222,6 +222,7 @@ class Client implements SearchClientInterface
     {
         $type = $this->getIndex($metadata->index)->getType($metadata->type);
         $properties = $this->getMapping($metadata->fieldMappings);
+        $properties += $this->getMapping($metadata->methodMappings);
         $rootProperties = $this->getRootMapping($metadata->rootMappings);
 
         $mapping = new Mapping($type, $properties);

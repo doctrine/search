@@ -106,6 +106,11 @@ class ClassMetadata implements ClassMetadataInterface
     public $fieldMappings = array();
 
     /**
+     * @var array|ElasticField[]
+     */
+    public $methodMappings = array();
+
+    /**
      *  Additional root annotations of the mapped class.
      *
      * @var array|ElasticRoot[]
@@ -254,8 +259,20 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addFieldMapping(\Reflector $field, $mapping = array())
     {
-        $fieldName = $field->getName();
-        $this->fieldMappings[$fieldName] = $mapping;
+        $this->fieldMappings[$field->getName()] = $mapping;
+        $this->reflFields[$field->getName()] = $field;
+    }
+
+    /**
+     * This mapping is used in the _wakeup-method to set the reflFields after _sleep.
+     *
+     * @param \ReflectionProperty $field
+     * @param array $mapping
+     */
+    public function addMethodMapping(\Reflector $field, $mapping = array())
+    {
+        $this->methodMappings[$field->getName()] = $mapping;
+		$this->reflFields[$field->getName()] = $field;
     }
 
     /**
@@ -274,8 +291,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addParameterMapping(\Reflector $field, $mapping = array())
     {
-        $fieldName = $field->getName();
-        $this->parameters[$fieldName] = $mapping;
+        $this->parameters[$field->getName()] = $mapping;
     }
 
     /**
@@ -417,6 +433,11 @@ class ClassMetadata implements ClassMetadataInterface
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $this->reflFields[$field] = $reflService->getAccessibleProperty($this->className, $field);
+        }
+
+        foreach ($this->methodMappings as $field => $mapping) {
+            $this->reflFields[$field] = $reflService->getClass($this->className)->getMethod($field);
+            $this->reflFields[$field]->setAccessible(TRUE);
         }
     }
 
