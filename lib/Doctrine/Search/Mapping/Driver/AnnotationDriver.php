@@ -19,6 +19,7 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
+use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Search\Mapping\Annotations as Search;
@@ -85,28 +86,17 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $reflClass = $metadata->getReflectionClass();
-
-        if (!$reflClass) {
-            $reflClass = new \ReflectionClass((string)$className);
-        }
-
-        $reflProperties = $reflClass->getProperties();
-        $reflMethods = $reflClass->getMethods();
-
         $this->extractClassAnnotations($reflClass, $metadata);
-        $this->extractPropertiesAnnotations($reflProperties, $metadata);
-        $this->extractMethodsAnnotations($reflMethods, $metadata);
+        $this->extractPropertiesAnnotations($reflClass, $metadata);
+        $this->extractMethodsAnnotations($reflClass, $metadata);
     }
 
-
     /**
-     * This function extracts the class annotations for search from the given reflected class and writes
-     * them into metadata.
+     * This function extracts the class annotations for search from the given reflected class
+     * and writes them into metadata.
      *
      * @param \ReflectionClass $reflClass
      * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata    $metadata
-     *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
      *
      * @throws DriverException\ClassIsNotAValidDocumentException|DriverException\PropertyDoesNotExistsInMetadataException
      */
@@ -114,11 +104,13 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
     {
         $documentsClassAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
+            if ($annotation instanceof $this->entityRootAnnotationClass) {
+                $metadata->addRootMapping($annotation);
+                continue;
+            }
+
             foreach ($this->entityAnnotationClasses as $annotationClass => $index) {
-                if ($annotation instanceof $this->entityRootAnnotationClass) {
-                    $metadata->addRootMapping($annotation);
-                    break;
-                } elseif ($annotation instanceof $annotationClass) {
+                if ($annotation instanceof $annotationClass) {
                     $documentsClassAnnotations[$index] = $annotation;
                     break;
                 }
@@ -129,30 +121,20 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
             throw new DriverException\ClassIsNotAValidDocumentException($metadata->getName());
         }
 
-        //choose only one (the first one)
+        // choose only one (the first one)
         $annotationClass = reset($documentsClassAnnotations);
-        $reflClassAnnotations = new \ReflectionClass($annotationClass);
-        $metadata = $this->addValuesToMetadata(
-            $reflClassAnnotations->getProperties(),
-            $metadata,
-            $annotationClass
-        );
-
-        return $metadata;
+        $this->addValuesToMetadata($metadata, $annotationClass);
     }
 
     /**
      * Extract the property annotations.
      *
-     * @param \ReflectionProperty[] $reflProperties
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
-     *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
+     * @param \ReflectionClass $class
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
      */
-    private function extractPropertiesAnnotations(array $reflProperties, ClassMetadata $metadata)
+    private function extractPropertiesAnnotations(\ReflectionClass $class, ClassMetadata $metadata)
     {
-        $documentsFieldAnnotations = array();
-        foreach ($reflProperties as $reflProperty) {
+        foreach ($class->getProperties() as $reflProperty) {
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
                 foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
@@ -168,22 +150,19 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
                 }
             }
         }
-
-        return $metadata;
     }
 
     /**
      * Extract the methods annotations.
      *
-     * @param \ReflectionMethod[]   $reflMethods
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
+     * @param \ReflectionClass $class
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
      *
      * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
      */
-    private function extractMethodsAnnotations(array $reflMethods, ClassMetadata $metadata)
+    private function extractMethodsAnnotations(\ReflectionClass $class, ClassMetadata $metadata)
     {
-        $documentsFieldAnnotations = array();
-        foreach ($reflMethods as $reflMethod) {
+        foreach ($class->getMethods() as $reflMethod) {
             foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
                 foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
@@ -193,34 +172,31 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
                 }
             }
         }
-
-        return $metadata;
     }
 
     /**
-     * @param \ReflectionProperty[] $reflectedClassProperties
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
-     * @param string                $class
+     * Iterates the given annotation class
      *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
+     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
+     * @param Annotation                $class
      *
      * @throws DriverException\PropertyDoesNotExistsInMetadataException
      */
-    private function addValuesToMetadata(array $reflectedClassProperties, ClassMetadata $metadata, $class)
+    private function addValuesToMetadata(ClassMetadata $metadata, $class)
     {
-        foreach ($reflectedClassProperties as $reflectedProperty) {
+        $reflClassAnnotations = new \ReflectionClass($class);
+
+        foreach ($reflClassAnnotations->getProperties() as $reflectedProperty) {
             $propertyName = $reflectedProperty->getName();
 
             if (false === property_exists($metadata, $propertyName)) {
                 throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
-            } else {
-                if (!is_null($class->$propertyName)) {
-                    $metadata->$propertyName = $class->$propertyName;
-                }
+            }
+
+            if (!is_null($class->$propertyName)) {
+                $metadata->$propertyName = $class->$propertyName;
             }
         }
-
-        return $metadata;
     }
 
     public function getAllClassNames()
