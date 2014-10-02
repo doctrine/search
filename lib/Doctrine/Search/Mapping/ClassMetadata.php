@@ -169,6 +169,7 @@ class ClassMetadata implements ClassMetadataInterface
         return array(
             'boost',
             'className',
+            'methodMappings',
             'fieldMappings',
             'parameters',
             'index',
