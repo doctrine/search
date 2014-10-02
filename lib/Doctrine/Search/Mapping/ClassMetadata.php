@@ -286,12 +286,12 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * This mapping is used in the _wakeup-method to set the parameters after _sleep.
      *
-     * @param \ReflectionProperty $field
+     * @param string $fieldName
      * @param array $mapping
      */
-    public function addParameterMapping(\Reflector $field, $mapping = array())
+    public function addParameterMapping($fieldName, $mapping = array())
     {
-        $this->parameters[$field->getName()] = $mapping;
+        $this->parameters[$fieldName] = $mapping;
     }
 
     /**

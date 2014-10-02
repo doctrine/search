@@ -47,12 +47,6 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
         'Doctrine\\Search\\Mapping\\Annotations\\ElasticRoot' => 3,
     );
 
-    protected $entityRootAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\ElasticRoot';
-
-    protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
-
-    protected $entityParamAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Parameter';
-
     /**
      * Document fields annotation classes, ordered by precedence.
      */
@@ -104,7 +98,7 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
     {
         $documentsClassAnnotations = array();
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
-            if ($annotation instanceof $this->entityRootAnnotationClass) {
+            if ($annotation instanceof Search\ElasticRoot) {
                 $metadata->addRootMapping($annotation);
                 continue;
             }
@@ -138,13 +132,19 @@ class AnnotationDriver extends AbstractAnnotationDriver implements DependentMapp
             foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
                 foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
-                        if ($annotation instanceof $this->entityIdAnnotationClass) {
+                        if ($annotation instanceof Search\Id) {
                             $metadata->setIdentifier($reflProperty->name);
-                        } elseif ($annotation instanceof $this->entityParamAnnotationClass) {
-                            $metadata->addParameterMapping($reflProperty, $annotation);
+
+                        } elseif ($annotation instanceof Search\Parameter) {
+                            $metadata->addParameterMapping($reflProperty, array(
+                                'name' => $annotation->name,
+                                'type' => $annotation->type,
+                            ));
+
                         } else {
                             $metadata->addFieldMapping($reflProperty, $annotation);
                         }
+
                         continue 2;
                     }
                 }

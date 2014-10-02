@@ -30,7 +30,7 @@ final class ElasticRoot extends Annotation
     /**
      * @var string
      */
-     public $name;
+    public $name;
 
     /**
      * @var string
