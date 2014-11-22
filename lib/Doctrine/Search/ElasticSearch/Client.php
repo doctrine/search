@@ -299,6 +299,30 @@ class Client implements SearchClientInterface
                 $properties[$propertyName]['index_name'] = $fieldMapping->indexName;
             }
 
+            if (isset($fieldMapping->indexAnalyzer)) {
+                $properties[$propertyName]['index_analyzer'] = $fieldMapping->indexAnalyzer;
+            }
+
+            if (isset($fieldMapping->searchAnalyzer)) {
+                $properties[$propertyName]['search_analyzer'] = $fieldMapping->searchAnalyzer;
+            }
+
+            if (isset($fieldMapping->payloads)) {
+                $properties[$propertyName]['payloads'] = $fieldMapping->payloads;
+            }
+
+            if (isset($fieldMapping->preserveSeparators)) {
+                $properties[$propertyName]['preserve_separators'] = $fieldMapping->preserveSeparators;
+            }
+
+            if (isset($fieldMapping->preservePositionIncrements)) {
+                $properties[$propertyName]['preserve_position_increments'] = $fieldMapping->preservePositionIncrements;
+            }
+
+            if (isset($fieldMapping->maxInputLength)) {
+                $properties[$propertyName]['max_input_length'] = $fieldMapping->maxInputLength;
+            }
+
             if ($fieldMapping->type == 'attachment' && isset($fieldMapping->fields)) {
                 $callback = function ($field) {
                     unset($field['type']);

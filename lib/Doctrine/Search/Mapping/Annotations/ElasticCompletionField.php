@@ -21,64 +21,36 @@ namespace Doctrine\Search\Mapping\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
 
+
 /**
  * @Annotation
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  */
-class ElasticField extends Field
+class ElasticCompletionField extends ElasticField
 {
-    /**
-     * @var boolean
-     */
-    public $includeInAll;
+	/**
+	 * @var string
+	 */
+	public $type = 'completion';
 
-    /**
-     * @var string
-     */
-    public $index;
+	/**
+	 * @var bool
+	 */
+	public $payloads = false;
 
-    /**
-     * @var array
-     */
-    public $fields;
+	/**
+	 * @var bool
+	 */
+	public $preserveSeparators = true;
 
-    /**
-     * @var array
-     */
-    public $properties;
+	/**
+	 * @var bool
+	 */
+	public $preservePositionIncrements = true;
 
-    /**
-     * @var string
-     */
-    public $analyzer;
+	/**
+	 * @var integer
+	 */
+	public $maxInputLength;
 
-    /**
-     * @var string
-     */
-    public $indexAnalyzer;
-
-    /**
-     * @var string
-     */
-    public $searchAnalyzer;
-
-    /**
-     * @var string
-     */
-    public $path;
-
-    /**
-     * @var string
-     */
-    public $indexName;
-
-    /**
-     * @var boolean
-     */
-    public $store;
-
-    /**
-     * @var mixed
-     */
-    public $nullValue;
 }
