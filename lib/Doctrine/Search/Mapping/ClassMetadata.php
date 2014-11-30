@@ -22,6 +22,7 @@ namespace Doctrine\Search\Mapping;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Search\Mapping\Annotations\ElasticField;
 use Doctrine\Search\Mapping\Annotations\ElasticRoot;
+use Doctrine\Search\Mapping\MappingException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -62,11 +63,6 @@ class ClassMetadata implements ClassMetadataInterface
      * @var int
      */
     public $numberOfReplicas = 0;
-
-    /**
-     * @var int
-     */
-    public $opType = 1;
 
     /**
      * @var string
@@ -134,12 +130,11 @@ class ClassMetadata implements ClassMetadataInterface
     public $reflFields;
 
     /**
-     * READ-ONLY: The field names of all fields that are part of the identifier/primary key
-     * of the mapped entity class.
+     * The field name of the identifier
      *
-     * @var mixed
+     * @var string
      */
-    public $identifier = array();
+    public $identifier;
 
 
     public function __construct($documentName)
@@ -169,7 +164,6 @@ class ClassMetadata implements ClassMetadataInterface
             'index',
             'numberOfReplicas',
             'numberOfShards',
-            'opType',
             'parent',
             'timeToLive',
             'type',
@@ -243,7 +237,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function hasField($fieldName)
     {
-        return false;
+        return isset($this->fieldMappings[$fieldName]);
     }
 
     /**
@@ -256,6 +250,21 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $fieldName = $field->getName();
         $this->fieldMappings[$fieldName] = $mapping;
+    }
+    
+    /**
+     * Adds a mapped field to the class.
+     *
+     * @param array $mapping The field mapping.
+     * @throws MappingException
+     * @return void
+     */
+    public function mapField(array $mapping)
+    {
+        if (isset($this->fieldMappings[$mapping['fieldName']])) {
+            throw MappingException::duplicateFieldMapping($this->className, $mapping['fieldName']);
+        }
+        $this->fieldMappings[$mapping['fieldName']] = $mapping;
     }
 
     /**
@@ -355,7 +364,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function getTypeOfField($fieldName)
     {
         //@todo: check if $field exists
-        return gettype($this->$fieldName);
+        return $this->fieldMappings[$fieldName]['type'];
     }
 
     /**

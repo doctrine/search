@@ -11,7 +11,7 @@ use Doctrine\Search\Mapping\Annotations as MAP;
  * @MAP\ElasticRoot(name="dynamic_templates", id="template_1", match="comment*", mapping={
  *		@MAP\ElasticField(type="multi_field", fields={
  *			@MAP\ElasticField(name="{name}", type="string", includeInAll=false),
- *			@MAP\ElasticField(name="untouched", type="string", index="not_analyzed")
+ *			@MAP\ElasticField(name="untouched", type="string", analyzer="not_analyzed")
  *		})
  * })
  * @MAP\ElasticRoot(name="date_detection", value="false")

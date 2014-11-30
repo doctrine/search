@@ -1,0 +1,63 @@
+Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
+    class: ElasticSearchable
+    type: users
+    index: searchdemo
+    numberOfShards: 2
+    numberOfReplicas: 1
+    timeToLive: 180
+    boost: 2.0
+    source: true
+    id: id
+    root:
+        -
+            name: dynamic_templates
+            id: template_2
+            match: 'description*'
+            mapping:
+                -
+                    name: '{name}'
+                    type: string
+                    includeInAll: false
+                -
+                    name: untouched
+                    type: string
+                    analyzer: not_analyzed
+        -
+            name: date_detection
+            value: false
+    fields:
+        name:
+            type: string
+            includeInAll: false
+            index: no
+            boost: 2.0
+        username:
+            type: multi_field
+            fields:
+                -
+                    name: username
+                    type: string
+                    includeInAll: true
+                    analyzer: whitespace
+                -
+                    name: username.term
+                    type: string
+                    includeInAll: false
+                    analyzer: not_analyzed
+        ip:
+            type: ip
+            includeInAll: false
+            index: no
+            store: true
+            nullValue: 127.0.0.1
+        emails:
+            type: nested
+            properties:
+                -
+                    name: email
+                    type: string
+                    includeInAll: false
+                    analyzer: not_analyzed
+                -
+                    name: createdAt
+                    type: date

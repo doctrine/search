@@ -7,7 +7,14 @@ use Doctrine\Search\Mapping\Annotations as MAP;
 
 /**
  * @JMS\ExclusionPolicy("all")
- * @MAP\ElasticSearchable(index="searchdemo", type="users", source=true)
+ * @MAP\ElasticSearchable(index="searchdemo", type="users", source=true, numberOfShards=2, numberOfReplicas=1)
+ * @MAP\ElasticRoot(name="dynamic_templates", id="template_2", match="description*", mapping={
+ *		@MAP\ElasticField(type="multi_field", fields={
+ *			@MAP\ElasticField(name="{name}", type="string", includeInAll=false),
+ *			@MAP\ElasticField(name="untouched", type="string", analyzer="not_analyzed")
+ *		})
+ * })
+ * @MAP\ElasticRoot(name="date_detection", value="false")
  */
 class User
 {
@@ -25,7 +32,7 @@ class User
     /**
      * @JMS\Type("string")
      * @JMS\Expose @JMS\Groups({"api", "store"})
-     * @MAP\ElasticField(type="string", includeInAll=false, index="no")
+     * @MAP\ElasticField(type="string", includeInAll=false, index="no", boost=2.0)
      */
     private $name;
 
@@ -46,6 +53,13 @@ class User
      */
     private $ip;
 
+    /**
+     * @JMS\Type("string")
+     * @JMS\Expose @JMS\Groups({"api", "store"})
+     * @see dynamic template root mapping
+     */
+    private $description;
+    
     /**
      * @JMS\Type("array")
      * @JMS\Expose @JMS\Groups({"store"})
@@ -103,6 +117,16 @@ class User
         return $this->ip;
     }
 
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+    
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
     public function getFriends()
     {
         return $this->friends;

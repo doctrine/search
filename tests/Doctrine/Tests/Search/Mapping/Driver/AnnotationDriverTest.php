@@ -1,5 +1,5 @@
 <?php
-namespace Unit\Doctrine\Search\Mapping\Driver;
+namespace Doctrine\Tests\Search\Mapping\Driver;
 
 use Doctrine\Search\Mapping\Driver\AnnotationDriver;
 use Doctrine\Search\Mapping\ClassMetadata;
@@ -16,7 +16,7 @@ class AnnotationDriverTest extends \PHPUnit_Framework_TestCase
     private $annotationDriver;
 
     /**
-     * @var \Doctrine\Common\Annotations\Reader|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit_Framework_MockObject_MockObject
      */
     private $reader;
 

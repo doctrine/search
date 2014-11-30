@@ -1,5 +1,6 @@
 <?php
-namespace Unit\Doctrine\Search;
+
+namespace Doctrine\Tests\Search;
 
 use Doctrine\Search\Configuration;
 

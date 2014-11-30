@@ -14,47 +14,28 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
+ * <http://www.phpdoctrine.org>.
  */
 
-namespace Doctrine\Search\Mapping\Annotations;
+namespace Doctrine\Search\Mapping;
 
-use Doctrine\Common\Annotations\Annotation;
+use Exception;
 
 /**
- * @Annotation
- * @Target("CLASS")
+ * A MappingException indicates that something is wrong with the mapping setup.
  */
-final class ElasticSearchable extends Searchable
+class MappingException extends Exception
 {
-    /**
-     * @var int $numberOfShards
-     */
-    public $numberOfShards;
-
-    /**
-     * @var int $numnberOfReplicas
-     */
-    public $numberOfReplicas;
-
-    /**
-     * @var string $parent
-     */
-    public $parent;
-
-    /**
-     * TTL in milliseconds
-     * @var int $timeToLive
-     */
-    public $timeToLive;
-
-    /**
-     * @var float
-     */
-    public $boost;
-
-    /**
-     * @var boolean
-     */
-    public $source;
+    public static function classIsNotAValidDocument($className)
+    {
+        return new self(sprintf(
+            'Class "%s" is not a valid searchable document.',
+            $className
+        ));
+    }
+    
+    public static function duplicateFieldMapping($mapping, $fieldName)
+    {
+        return new self('Property "'.$fieldName.'" in "'.$mapping.'" was already declared, but it must be declared only once');
+    }
 }

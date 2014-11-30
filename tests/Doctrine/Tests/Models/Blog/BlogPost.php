@@ -2,11 +2,10 @@
 
 namespace Doctrine\Tests\Models\Blog;
 
-use Doctrine\Search\Mapping\Annotations as SEARCH;
+use Doctrine\Search\Mapping\Annotations as MAP;
 
 /**
- * @SEARCH\ElasticSearchable(index="blog", type="post", numberOfShards=1, numberOfReplicas=1)
- *
+ * @MAP\ElasticSearchable(index="blog", type="post", numberOfShards=1, numberOfReplicas=1)
  */
 class BlogPost
 {
@@ -15,12 +14,12 @@ class BlogPost
     public $id;
 
     /**
-     * @SEARCH\Field(boost=2.0)
+     * @MAP\Field(boost=2.0)
      */
     public $name;
 
     /**
-     * @SEARCH\Field(boost=1.0)
+     * @MAP\Field(boost=1.0)
      */
     public $title;
 
