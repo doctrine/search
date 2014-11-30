@@ -83,6 +83,13 @@ class User
      * @MAP\ElasticField(type="boolean", nullValue=false)
      */
     private $active;
+    
+    /**
+     * @JMS\Type("string")
+     * @JMS\Expose @JMS\Groups({"store"})
+     * @MAP\Parameter
+     */
+    private $_routing;
 
     public function getId()
     {
@@ -142,5 +149,15 @@ class User
     public function addEmail(Email $email)
     {
         $this->emails[] = $email;
+    }
+    
+    public function getRouting()
+    {
+        return $this->_routing;
+    }
+    
+    public function setRouting($routing)
+    {
+        $this->_routing = $routing;
     }
 }

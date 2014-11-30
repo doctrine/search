@@ -51,7 +51,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
         $expected->boost = 2.0;
         $expected->source = true;
         
-        $expected->addRootMapping(array(
+        $expected->mapRoot(array(
             'name' => 'dynamic_templates',
             'id' => 'template_2',
             'match' => 'description*',
@@ -69,7 +69,7 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
             )
         ));
         
-        $expected->addRootMapping(array(
+        $expected->mapRoot(array(
             'name' => 'date_detection',
             'value' => false
         ));
@@ -125,6 +125,11 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
                      'type' => 'date'
                  )
              )
+        ));
+        
+        $expected->mapParameter(array(
+            'parameterName' => '_routing',
+            'type' => 'string'
         ));
         
         $this->assertEquals($expected, $metadata);

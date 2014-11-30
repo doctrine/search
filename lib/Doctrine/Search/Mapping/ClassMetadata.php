@@ -268,25 +268,31 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
+     * Adds a root mapping to the class.
+     * 
      * @param array $mapping
      */
-    public function addRootMapping($mapping = array())
+    public function mapRoot($mapping = array())
     {
         $this->rootMappings[] = $mapping;
     }
 
     /**
-     * This mapping is used in the _wakeup-method to set the parameters after _sleep.
+     * Adds a mapped parameter to the class.
      *
-     * @param \ReflectionProperty $field
-     * @param array $mapping
+     * @param array $mapping The parameter mapping.
+     * @throws MappingException
+     * @return void
      */
-    public function addParameterMapping(\Reflector $field, $mapping = array())
+    public function mapParameter(array $mapping)
     {
-        $fieldName = $field->getName();
-        $this->parameters[$fieldName] = $mapping;
+        if (isset($this->fieldMappings[$mapping['parameterName']])) {
+    	      throw MappingException::duplicateParameterMapping($this->className, $mapping['parameterName']);
+        }
+        $this->parameters[$mapping['parameterName']] = $mapping;
     }
-
+    
+    
     /**
      * @param \ReflectionProperty $field
      */

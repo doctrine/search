@@ -27,6 +27,11 @@ use Doctrine\Common\Annotations\Annotation;
  */
 final class Parameter extends Annotation
 {
+	 /**
+	  * @var string
+	  */
+	 public $parameterName;
+
     /**
      * @var string
      */

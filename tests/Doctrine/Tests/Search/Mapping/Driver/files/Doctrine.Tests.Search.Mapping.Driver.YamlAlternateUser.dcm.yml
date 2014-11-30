@@ -61,3 +61,7 @@ Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
                 -
                     name: createdAt
                     type: date
+    parameters:
+        _routing:
+            type: string
+            

@@ -101,7 +101,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
             foreach ($this->entityAnnotationClasses as $annotationClass => $index) {
                 if ($annotation instanceof $this->entityRootAnnotationClass) {
-                    $metadata->addRootMapping($annotation);
+                    $metadata->mapRoot((array) $annotation);
                     break;
                 } elseif ($annotation instanceof $annotationClass) {
                     $documentsClassAnnotations[$index] = $annotation;
@@ -144,9 +144,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         if ($annotation instanceof $this->entityIdAnnotationClass) {
                             $metadata->setIdentifier($reflProperty->name);
                         } elseif ($annotation instanceof $this->entityParamAnnotationClass) {
-                            $metadata->addParameterMapping($reflProperty, $annotation);
+                            $annotation->parameterName = $reflProperty->getName();
+                            $metadata->mapParameter((array) $annotation);
                         } else {
-                            $metadata->addFieldMapping($reflProperty, $annotation);
+                            $annotation->fieldName = $reflProperty->getName();
+                            $metadata->mapField((array) $annotation);
                         }
                         continue 2;
                     }
@@ -172,7 +174,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
             foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
                 foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
                     if ($annotation instanceof $fieldAnnotationClass) {
-                        $metadata->addFieldMapping($reflMethod, $annotation);
+                        $annotation->fieldName = $reflMethods->getName();
+                        $metadata->mapField((array) $annotation);
                         continue 2;
                     }
                 }

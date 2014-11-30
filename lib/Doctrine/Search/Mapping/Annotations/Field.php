@@ -41,4 +41,9 @@ class Field extends Annotation
      * @var string
      */
     public $name;
+
+    /**
+     * @var string
+     */
+    public $fieldName;
 }

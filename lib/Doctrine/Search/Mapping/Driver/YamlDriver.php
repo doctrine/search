@@ -91,7 +91,7 @@ class YamlDriver extends FileDriver
         // Evaluate root mappings
         if (isset($element['root'])) {
             foreach ($element['root'] as $rootMapping) {
-                $metadata->addRootMapping($this->rootToArray($rootMapping));
+                $metadata->mapRoot($this->rootToArray($rootMapping));
             }
         }
         
@@ -100,6 +100,14 @@ class YamlDriver extends FileDriver
             foreach ($element['fields'] as $name => $fieldMapping) {
                 $mapping = $this->fieldToArray($name, $fieldMapping);
                 $metadata->mapField($mapping);
+            }
+        }
+        
+        // Evaluate parameter mappings
+        if (isset($element['parameters'])) {
+            foreach ($element['parameters'] as $name => $parameterMapping) {
+                $mapping = $this->parameterToArray($name, $parameterMapping);
+                $metadata->mapParameter($mapping);
             }
         }
         
@@ -195,6 +203,21 @@ class YamlDriver extends FileDriver
                 unset($field['fieldName']);
                 $mapping['mapping'][] = $field;
             }
+        }
+        
+        return $mapping;
+    }
+    
+    private function parameterToArray($name, $parameterMapping)
+    {
+        if (isset($parameterMapping['name'])) {
+            $mapping['parameterName'] = $parameterMapping['name'];
+        } else {
+            $mapping['parameterName'] = $name;
+        }
+        
+        if (isset($parameterMapping['type'])) {
+            $mapping['type'] = $parameterMapping['type'];
         }
         
         return $mapping;
