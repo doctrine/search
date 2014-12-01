@@ -208,7 +208,7 @@ class UnitOfWork
         foreach ($objects as $object) {
             $document = $serialize ? $serializer->serialize($object) : $object;
 
-            $id = $object->getId();
+            $id = (string) $object->getId();
             if (!$id) {
                 throw new DoctrineSearchException('Entity must have an id to be indexed');
             }
