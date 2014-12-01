@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a4467449f522571a52909370014e828d",
+    "hash": "9ec484dadfa30a34d9a583509f595f1a",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -407,16 +407,16 @@
         },
         {
             "name": "doctrine/search",
-            "version": "dev-feature-yaml-driver",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/search.git",
-                "reference": "0f35719e6d1a90b2466b7793952606ac153c34fa"
+                "reference": "76f9949a39d5e84d709177d2f042c6a7b2385b22"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/search/zipball/0f35719e6d1a90b2466b7793952606ac153c34fa",
-                "reference": "0f35719e6d1a90b2466b7793952606ac153c34fa",
+                "url": "https://api.github.com/repos/doctrine/search/zipball/76f9949a39d5e84d709177d2f042c6a7b2385b22",
+                "reference": "76f9949a39d5e84d709177d2f042c6a7b2385b22",
                 "shasum": ""
             },
             "require": {
@@ -428,8 +428,7 @@
                 "phpunit/phpunit": "~4.2"
             },
             "suggest": {
-                "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required.",
-                "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
+                "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
             },
             "type": "library",
             "autoload": {
@@ -449,7 +448,7 @@
                     "homepage": "https://github.com/doctrine/search/graphs/contributors"
                 }
             ],
-            "description": "ElasticSearch and Solr entity mapping library",
+            "description": "Search",
             "homepage": "https://github.com/doctrine/search",
             "keywords": [
                 "elasticsearch",
@@ -460,10 +459,10 @@
                 "solr"
             ],
             "support": {
-                "source": "https://github.com/doctrine/search/tree/feature-yaml-driver",
+                "source": "https://github.com/doctrine/search/tree/develop",
                 "issues": "https://github.com/doctrine/search/issues"
             },
-            "time": "2014-11-30 21:50:08"
+            "time": "2014-09-13 12:46:28"
         },
         {
             "name": "jms/metadata",
@@ -841,13 +840,61 @@
                 "search"
             ],
             "time": "2014-07-27 13:45:09"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v2.6.0",
+            "target-dir": "Symfony/Component/Yaml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Yaml.git",
+                "reference": "51c845cf3e4bfc182d1d5c05ed1c7338361d86f8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/51c845cf3e4bfc182d1d5c05ed1c7338361d86f8",
+                "reference": "51c845cf3e4bfc182d1d5c05ed1c7338361d86f8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Yaml\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-11-20 13:24:23"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "doctrine/search": 20
+        "doctrine/search": 20,
+        "symfony/yaml": 0
     },
     "prefer-stable": false,
     "platform": [],

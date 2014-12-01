@@ -52,6 +52,10 @@ Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
             index: no
             store: true
             nullValue: 127.0.0.1
+        friends:
+            type: string
+            includeInAll: false
+            index: not_analyzed
         emails:
             type: nested
             properties:

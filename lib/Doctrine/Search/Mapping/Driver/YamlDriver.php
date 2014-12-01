@@ -38,6 +38,14 @@ class YamlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
+    protected $entityAnnotationClasses = array(
+        'Doctrine\Search\Mapping\Annotations\Searchable' => 1,
+        'Doctrine\Search\Mapping\Annotations\ElasticSearchable' => 2
+    );    
+    
+    /**
+     * {@inheritDoc}
+     */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
@@ -175,7 +183,7 @@ class YamlDriver extends FileDriver
     {
         $mapping = array();
         if (isset($rootMapping['name'])) {
-            $mapping['name'] = $rootMapping['name'];
+            $mapping['fieldName'] = $rootMapping['name'];
         }
         if (isset($rootMapping['id'])) {
             $mapping['id'] = $rootMapping['id'];

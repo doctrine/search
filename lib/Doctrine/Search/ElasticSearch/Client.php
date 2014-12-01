@@ -258,11 +258,29 @@ class Client implements SearchClientInterface
         $properties = array();
 
         foreach ($mappings as $propertyName => $fieldMapping) {
-            if (isset($fieldMapping['name'])) {
-                $propertyName = $fieldMapping['name'];
+            if (isset($fieldMapping['fieldName'])) {
+                $propertyName = $fieldMapping['fieldName'];
             }
 
-            $properties[$propertyName]['type'] = $fieldMapping['type'];
+            if (isset($fieldMapping['type'])) {
+                $properties[$propertyName]['type'] = $fieldMapping['type'];
+ 
+                if ($fieldMapping[$propertyName]['type'] == 'attachment' && isset($fieldMapping['fields'])) {
+                    $callback = function ($field) {
+                        unset($field['type']);
+                        return $field;
+                    };
+                    $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping['fields']));
+                }
+
+                if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
+                    $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping['fields']);
+                }
+  
+                if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
+                    $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping['properties']);
+                }                
+            }
 
             if (isset($fieldMapping['path'])) {
                 $properties[$propertyName]['path'] = $fieldMapping['path'];
@@ -295,22 +313,6 @@ class Client implements SearchClientInterface
             if (isset($fieldMapping['indexName'])) {
                 $properties[$propertyName]['index_name'] = $fieldMapping['indexName'];
             }
-
-            if ($fieldMapping['type'] == 'attachment' && isset($fieldMapping['fields'])) {
-                $callback = function ($field) {
-                    unset($field['type']);
-                    return $field;
-                };
-                $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping['fields']));
-            }
-
-            if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
-                $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping['fields']);
-            }
-
-            if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
-                $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping['properties']);
-            }
         }
 
         return $properties;
@@ -325,7 +327,7 @@ class Client implements SearchClientInterface
     {
         $parameters = array();
         foreach ($paramMapping as $propertyName => $mapping) {
-            $paramName = isset($mapping['name']) ? $mapping['name'] : $propertyName;
+            $paramName = isset($mapping['fieldName']) ? $mapping['fieldName'] : $propertyName;
             $parameters[$paramName] = $propertyName;
         }
         return $parameters;
@@ -341,7 +343,7 @@ class Client implements SearchClientInterface
         $properties = array();
 
         foreach ($mappings as $rootMapping) {
-            $propertyName = $rootMapping['name'];
+            $propertyName = $rootMapping['fieldName'];
             $mapping = array();
 
             if (isset($rootMapping['value'])) {
@@ -373,7 +375,7 @@ class Client implements SearchClientInterface
             }
 
             if (isset($rootMapping['mapping'])) {
-                $mapping['mapping'] = current($this->getMapping($rootMapping['mapping']));
+                $mapping['mapping'] = current($this->getMapping(array($rootMapping['mapping'])));
             }
 
             if (isset($rootMapping['id'])) {

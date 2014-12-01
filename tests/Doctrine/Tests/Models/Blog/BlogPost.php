@@ -14,12 +14,12 @@ class BlogPost
     public $id;
 
     /**
-     * @MAP\Field(boost=2.0)
+     * @MAP\Field(boost=2.0, type="string")
      */
     public $name;
 
     /**
-     * @MAP\Field(boost=1.0)
+     * @MAP\Field(boost=1.0, type="string")
      */
     public $title;
 

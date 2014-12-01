@@ -37,9 +37,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * {@inheritDoc}
      */
     protected $entityAnnotationClasses = array(
-        'Doctrine\Search\Mapping\Annotations\Searchable',
-        'Doctrine\Search\Mapping\Annotations\ElasticSearchable',
-        'Doctrine\Search\Mapping\Annotations\ElasticRoot'
+        'Doctrine\Search\Mapping\Annotations\Searchable' => 1,
+        'Doctrine\Search\Mapping\Annotations\ElasticSearchable' => 2
     );
 
     protected $entityIdAnnotationClasses = 'Doctrine\Search\Mapping\Annotations\Id';
@@ -215,7 +214,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         $mapping = array();
         if (isset($rootMapping['name'])) {
-            $mapping['name'] = $rootMapping['name'];
+            $mapping['fieldName'] = $rootMapping['name'];
         }
         if (isset($rootMapping['id'])) {
             $mapping['id'] = $rootMapping['id'];

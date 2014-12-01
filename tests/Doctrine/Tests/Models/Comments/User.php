@@ -7,10 +7,10 @@ use Doctrine\Search\Mapping\Annotations as MAP;
 /**
  * @MAP\ElasticSearchable(index="searchdemo", type="users", source=true, numberOfShards=2, numberOfReplicas=1, timeToLive=180, boost=2.0)
  * @MAP\ElasticRoot(name="dynamic_templates", id="template_2", match="description*", mapping=
- *		@MAP\ElasticField(type="multi_field", fields={
- *			@MAP\ElasticField(name="{name}", type="string", includeInAll=false),
- *			@MAP\ElasticField(name="untouched", type="string", index="not_analyzed")
- *		})
+ *    @MAP\ElasticField(type="multi_field", fields={
+ *       @MAP\ElasticField(name="{name}", type="string", includeInAll=false),
+ *       @MAP\ElasticField(name="untouched", type="string", index="not_analyzed")
+ *    })
  * )
  * @MAP\ElasticRoot(name="date_detection", value="false")
  */
@@ -48,6 +48,11 @@ class User
      */
     private $description;
 
+    /**
+     * @MAP\ElasticField(type="string", includeInAll=false, index="not_analyzed")
+     */
+    private $friends = array();    
+    
     /**
      * @MAP\ElasticField(type="nested", properties={
      *    @MAP\ElasticField(name="email", type="string", includeInAll=false, index="not_analyzed"),
@@ -108,7 +113,19 @@ class User
     {
         return $this->description;
     }
+
+    public function getFriends()
+    {
+        return $this->friends;
+    }
     
+    public function addFriend(User $user)
+    {
+        if (!in_array($user->getId(), $this->friends)) {
+            $this->friends[] = $user->getId();
+        }
+    }
+
     public function addEmail(Email $email)
     {
         $this->emails[] = $email;

@@ -19,7 +19,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase {
         $expected->source = true;
 
         $expected->mapRoot(array(
-            'name' => 'dynamic_templates',
+            'fieldName' => 'dynamic_templates',
             'id' => 'template_2',
             'match' => 'description*',
             'mapping' => array(
@@ -40,7 +40,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase {
         ));
 
         $expected->mapRoot(array(
-            'name' => 'date_detection',
+            'fieldName' => 'date_detection',
             'value' => 'false'
         ));
 
@@ -97,6 +97,13 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase {
             )
         ));
 
+        $expected->mapField(array(
+            'fieldName' => 'friends',
+            'type' => 'string',
+            'includeInAll' => false,
+            'index' => 'not_analyzed'
+        ));        
+        
         $expected->mapField(array(
             'fieldName' => 'active',
             'type' => 'boolean',

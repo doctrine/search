@@ -24,16 +24,17 @@ use JMS\Serializer\SerializerBuilder;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
+use JMS\Serializer\Serializer;
 
 class JMSSerializer implements SerializerInterface
 {
     protected $serializer;
     protected $context;
 
-    public function __construct(SerializationContext $context = null)
+    public function __construct(SerializationContext $context = null, Serializer $serializer = null) 
     {
         $this->context = $context;
-        $this->serializer = SerializerBuilder::create()
+        $this->serializer = $serializer ?: SerializerBuilder::create()
             ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
             ->addDefaultHandlers()
             ->build();
