@@ -31,7 +31,7 @@ class JMSSerializer implements SerializerInterface
     protected $serializer;
     protected $context;
 
-    public function __construct(SerializationContext $context = null, Serializer $serializer = null) 
+    public function __construct(SerializationContext $context = null, Serializer $serializer = null)
     {
         $this->context = $context;
         $this->serializer = $serializer ?: SerializerBuilder::create()

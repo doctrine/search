@@ -41,7 +41,7 @@ class YamlDriver extends FileDriver
     protected $entityAnnotationClasses = array(
         'Doctrine\Search\Mapping\Annotations\Searchable' => 1,
         'Doctrine\Search\Mapping\Annotations\ElasticSearchable' => 2
-    );    
+    );
     
     /**
      * {@inheritDoc}
@@ -59,7 +59,7 @@ class YamlDriver extends FileDriver
         /* @var $metadata \Doctrine\Search\Mapping\ClassMetadata */
         $element = $this->getElement($className);
         
-		  $this->annotateClassMetadata($element, $metadata);
+         $this->annotateClassMetadata($element, $metadata);
         
         // Evaluate root mappings
         if (isset($element['root'])) {
@@ -92,37 +92,38 @@ class YamlDriver extends FileDriver
     
     private function annotateClassMetadata($classMapping, $metadata)
     {
-    	  switch ($classMapping['class']) {
-    	      case 'ElasticSearchable':
-    	          if (isset($classMapping['numberOfShards'])) {
-    	              $metadata->numberOfShards = $classMapping['numberOfShards'];
-    	          }
-    	          if (isset($classMapping['numberOfReplicas'])) {
-    	              $metadata->numberOfReplicas = $classMapping['numberOfReplicas'];
-    	          }
-    	          if (isset($classMapping['parent'])) {
-    	              $metadata->parent = $classMapping['parent'];
-    	          }
-    	          if (isset($classMapping['timeToLive'])) {
-    	              $metadata->timeToLive = $classMapping['timeToLive'];
-    	          }
-    	          if (isset($classMapping['boost'])) {
-    	              $metadata->boost = $classMapping['boost'];
-    	          }
-    	          if (isset($classMapping['source'])) {
-    	              $metadata->source = $classMapping['source'];
-    	          }
-    	      case 'Searchable':
-    	          if (isset($classMapping['index'])) {
-    	      	    $metadata->index = $classMapping['index'];
-    	          }
-    	          if (isset($classMapping['type'])) {
-    	      	    $metadata->type = $classMapping['type'];
-    	          }
-    	          break;
-    	      default:
-    	          throw MappingException::classIsNotAValidDocument($className);
-    	  }
+        switch ($classMapping['class']) {
+            case 'ElasticSearchable':
+                if (isset($classMapping['numberOfShards'])) {
+                    $metadata->numberOfShards = $classMapping['numberOfShards'];
+                }
+                if (isset($classMapping['numberOfReplicas'])) {
+                    $metadata->numberOfReplicas = $classMapping['numberOfReplicas'];
+                }
+                if (isset($classMapping['parent'])) {
+                    $metadata->parent = $classMapping['parent'];
+                }
+                if (isset($classMapping['timeToLive'])) {
+                    $metadata->timeToLive = $classMapping['timeToLive'];
+                }
+                if (isset($classMapping['boost'])) {
+                    $metadata->boost = $classMapping['boost'];
+                }
+                if (isset($classMapping['source'])) {
+                    $metadata->source = $classMapping['source'];
+                }
+                // no break
+            case 'Searchable':
+                if (isset($classMapping['index'])) {
+                    $metadata->index = $classMapping['index'];
+                }
+                if (isset($classMapping['type'])) {
+                    $metadata->type = $classMapping['type'];
+                }
+                break;
+            default:
+                throw MappingException::classIsNotAValidDocument($className);
+        }
     }
     
     private function fieldToArray($name, $fieldMapping)
@@ -138,17 +139,17 @@ class YamlDriver extends FileDriver
             $mapping['type'] = $fieldMapping['type'];
             
             if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
-            	foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
-            		$subFieldMapping = (array) $subFieldMapping;
-            		$mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
-            	}
+                foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
+                    $subFieldMapping = (array) $subFieldMapping;
+                    $mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
+                }
             }
             
             if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
-            	foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
-            		$subFieldMapping = (array) $subFieldMapping;
-            		$mapping['properties'][] = $this->fieldToArray($name, $subFieldMapping);
-            	}
+                foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
+                    $subFieldMapping = (array) $subFieldMapping;
+                    $mapping['properties'][] = $this->fieldToArray($name, $subFieldMapping);
+                }
             }
         }
         if (isset($fieldMapping['boost'])) {
@@ -210,10 +211,10 @@ class YamlDriver extends FileDriver
             $mapping['value'] = $rootMapping['value'];
         }
         if (isset($rootMapping['mapping'])) {
-    	      $subFieldMapping = (array) $rootMapping['mapping'];
-    		   $field = $this->fieldToArray(null, $subFieldMapping);
-    		   unset($field['fieldName']);
-    		   $mapping['mapping'] = $field;
+            $subFieldMapping = (array) $rootMapping['mapping'];
+            $field = $this->fieldToArray(null, $subFieldMapping);
+            unset($field['fieldName']);
+            $mapping['mapping'] = $field;
         }
         
         return $mapping;

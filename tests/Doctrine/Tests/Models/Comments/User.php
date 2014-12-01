@@ -51,7 +51,7 @@ class User
     /**
      * @MAP\ElasticField(type="string", includeInAll=false, index="not_analyzed")
      */
-    private $friends = array();    
+    private $friends = array();
     
     /**
      * @MAP\ElasticField(type="nested", properties={

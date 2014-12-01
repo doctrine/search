@@ -4,10 +4,11 @@ namespace Doctrine\Tests\Search\Mapping\Driver;
 
 use Doctrine\Search\Mapping\ClassMetadata;
 
-abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase {
+abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
+{
 
-    protected function loadExpectedMetadataFor($className) {
-
+    protected function loadExpectedMetadataFor($className)
+    {
         $expected = new ClassMetadata($className);
         $expected->type = 'users';
         $expected->identifier = 'id';
@@ -102,7 +103,7 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase {
             'type' => 'string',
             'includeInAll' => false,
             'index' => 'not_analyzed'
-        ));        
+        ));
         
         $expected->mapField(array(
             'fieldName' => 'active',

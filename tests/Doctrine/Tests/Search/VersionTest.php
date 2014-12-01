@@ -4,8 +4,8 @@ namespace Doctrine\Tests\Search;
 
 use Doctrine\Search\Version;
 
-class VersionTest extends \PHPUnit_Framework_TestCase {
-
+class VersionTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @dataProvider getVersions
      */
@@ -14,7 +14,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, Version::compare($version));
     }
 
-    static public function getVersions()
+    public static function getVersions()
     {
         return array(
             array('1.0', 1),
@@ -25,5 +25,4 @@ class VersionTest extends \PHPUnit_Framework_TestCase {
             array('0.1-beta', 1),
         );
     }
-
 }

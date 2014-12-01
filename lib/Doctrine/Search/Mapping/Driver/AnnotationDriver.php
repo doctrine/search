@@ -79,7 +79,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         
         $classMapping = array();
         foreach ($classAnnotations as $annotation) {
-        	   switch(get_class($annotation)) {
+            switch(get_class($annotation)) {
                 case 'Doctrine\Search\Mapping\Annotations\ElasticSearchable':
                     $classMapping = (array) $annotation;
                     $classMapping['class'] = 'ElasticSearchable';
@@ -89,10 +89,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $classMapping['class'] = 'Searchable';
                     break;
                 case 'Doctrine\Search\Mapping\Annotations\ElasticRoot':
-                	  $rootMapping = (array) $annotation;
-                	  $metadata->mapRoot($this->rootToArray($rootMapping));
-                	  break;
-        	   }
+                    $rootMapping = (array) $annotation;
+                    $metadata->mapRoot($this->rootToArray($rootMapping));
+                    break;
+            }
         }
         
         $this->annotateClassMetadata($classMapping, $metadata);
@@ -101,59 +101,59 @@ class AnnotationDriver extends AbstractAnnotationDriver
         foreach ($properties as $property) {
             $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
             foreach ($propertyAnnotations as $annotation) {
-            	switch (get_class($annotation)) {
-            		case 'Doctrine\Search\Mapping\Annotations\Id':
-            	       $metadata->identifier = $property->getName();
-            	       break;
-            		case 'Doctrine\Search\Mapping\Annotations\Parameter':
-            		    $mapping = $this->parameterToArray($property->getName(), (array) $annotation);
-            		    $metadata->mapParameter($mapping);
-            		    break;
-            		case 'Doctrine\Search\Mapping\Annotations\Field':
-            		case 'Doctrine\Search\Mapping\Annotations\ElasticField':
-            		case 'Doctrine\Search\Mapping\Annotations\SolrField':
-            		    $mapping = $this->fieldToArray($property->getName(), (array) $annotation);
-                      $metadata->mapField($mapping);
-               	    break;
-               }
+                switch (get_class($annotation)) {
+                    case 'Doctrine\Search\Mapping\Annotations\Id':
+                        $metadata->identifier = $property->getName();
+                        break;
+                    case 'Doctrine\Search\Mapping\Annotations\Parameter':
+                        $mapping = $this->parameterToArray($property->getName(), (array) $annotation);
+                        $metadata->mapParameter($mapping);
+                        break;
+                    case 'Doctrine\Search\Mapping\Annotations\Field':
+                    case 'Doctrine\Search\Mapping\Annotations\ElasticField':
+                    case 'Doctrine\Search\Mapping\Annotations\SolrField':
+                        $mapping = $this->fieldToArray($property->getName(), (array) $annotation);
+                        $metadata->mapField($mapping);
+                        break;
+                }
             }
         }
-        
     }
     
     private function annotateClassMetadata($classMapping, $metadata)
     {
-    	  switch ($classMapping['class']) {
-    	      case 'ElasticSearchable':
-    	          if (isset($classMapping['numberOfShards'])) {
-    	              $metadata->numberOfShards = $classMapping['numberOfShards'];
-    	          }
-    	          if (isset($classMapping['numberOfReplicas'])) {
-    	              $metadata->numberOfReplicas = $classMapping['numberOfReplicas'];
-    	          }
-    	          if (isset($classMapping['parent'])) {
-    	              $metadata->parent = $classMapping['parent'];
-    	          }
-    	          if (isset($classMapping['timeToLive'])) {
-    	              $metadata->timeToLive = $classMapping['timeToLive'];
-    	          }
-    	          if (isset($classMapping['boost'])) {
-    	              $metadata->boost = $classMapping['boost'];
-    	          }
-    	          if (isset($classMapping['source'])) {
-    	              $metadata->source = $classMapping['source'];
-    	          }
-    	      case 'Searchable':
-    	          if (isset($classMapping['index'])) {
-    	      	    $metadata->index = $classMapping['index'];
-    	          }
-    	          if (isset($classMapping['type'])) {
-    	      	    $metadata->type = $classMapping['type'];
-    	          }
-    	          break;
-    	      default:
-    	          throw MappingException::classIsNotAValidDocument($className);
-    	  }
+        switch ($classMapping['class']) {
+            case 'ElasticSearchable':
+                if (isset($classMapping['numberOfShards'])) {
+                    $metadata->numberOfShards = $classMapping['numberOfShards'];
+                }
+                if (isset($classMapping['numberOfReplicas'])) {
+                    $metadata->numberOfReplicas = $classMapping['numberOfReplicas'];
+                }
+                if (isset($classMapping['parent'])) {
+                    $metadata->parent = $classMapping['parent'];
+                }
+                if (isset($classMapping['timeToLive'])) {
+                    $metadata->timeToLive = $classMapping['timeToLive'];
+                }
+                if (isset($classMapping['boost'])) {
+                    $metadata->boost = $classMapping['boost'];
+                }
+                if (isset($classMapping['source'])) {
+                    $metadata->source = $classMapping['source'];
+                }
+                // no break
+            case 'Searchable':
+                if (isset($classMapping['index'])) {
+                    $metadata->index = $classMapping['index'];
+                }
+                if (isset($classMapping['type'])) {
+                    $metadata->type = $classMapping['type'];
+                }
+                break;
+            default:
+                throw MappingException::classIsNotAValidDocument($className);
+        }
     }
     
     private function fieldToArray($name, $fieldMapping)
@@ -169,17 +169,17 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping['type'] = $fieldMapping['type'];
             
             if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
-            	foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
-            		$subFieldMapping = (array) $subFieldMapping;
-            		$mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
-            	}
+                foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
+                    $subFieldMapping = (array) $subFieldMapping;
+                    $mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
+                }
             }
             
             if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
-            	foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
-            		$subFieldMapping = (array) $subFieldMapping;
-            		$mapping['properties'][] = $this->fieldToArray($name, $subFieldMapping);
-            	}
+                foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
+                    $subFieldMapping = (array) $subFieldMapping;
+                    $mapping['properties'][] = $this->fieldToArray($name, $subFieldMapping);
+                }
             }
         }
         if (isset($fieldMapping['boost'])) {
@@ -241,10 +241,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping['value'] = $rootMapping['value'];
         }
         if (isset($rootMapping['mapping'])) {
-    	      $subFieldMapping = (array) $rootMapping['mapping'];
-    		   $field = $this->fieldToArray(null, $subFieldMapping);
-    		   unset($field['fieldName']);
-    		   $mapping['mapping'] = $field;
+            $subFieldMapping = (array) $rootMapping['mapping'];
+            $field = $this->fieldToArray(null, $subFieldMapping);
+            unset($field['fieldName']);
+            $mapping['mapping'] = $field;
         }
         
         return $mapping;

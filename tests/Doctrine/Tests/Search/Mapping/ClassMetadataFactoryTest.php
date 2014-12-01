@@ -25,20 +25,20 @@ class ClassMetadataFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetSearchManagerWrongParameter()
     {
-       $this->classMetadataFactory->setSearchManager(array());
+        $this->classMetadataFactory->setSearchManager(array());
     }
 
     public function testSetSearchManager()
     {
-       $smMock = $this->getMock('Doctrine\\Search\\SearchManager', array(), array(), '', false);
-       $this->classMetadataFactory->setSearchManager($smMock);
+        $smMock = $this->getMock('Doctrine\\Search\\SearchManager', array(), array(), '', false);
+        $this->classMetadataFactory->setSearchManager($smMock);
 
-       $reflClass = new \ReflectionClass($this->classMetadataFactory);
-       $reflProperty = $reflClass->getProperty('sm');
-       $reflProperty->setAccessible(true);
-       $sm = $reflProperty->getValue($this->classMetadataFactory);
+        $reflClass = new \ReflectionClass($this->classMetadataFactory);
+        $reflProperty = $reflClass->getProperty('sm');
+        $reflProperty->setAccessible(true);
+        $sm = $reflProperty->getValue($this->classMetadataFactory);
 
-       $this->assertInstanceOf('Doctrine\Search\SearchManager', $sm);
+        $this->assertInstanceOf('Doctrine\Search\SearchManager', $sm);
     }
 
     /**

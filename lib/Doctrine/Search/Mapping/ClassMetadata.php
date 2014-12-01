@@ -275,7 +275,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function mapParameter(array $mapping)
     {
         if (isset($this->fieldMappings[$mapping['parameterName']])) {
-    	      throw MappingException::duplicateParameterMapping($this->className, $mapping['parameterName']);
+            throw MappingException::duplicateParameterMapping($this->className, $mapping['parameterName']);
         }
         $this->parameters[$mapping['parameterName']] = $mapping;
     }
