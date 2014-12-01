@@ -78,21 +78,28 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $classAnnotations = $this->reader->getClassAnnotations($class);
         
         $classMapping = array();
+        $validMapping = false;
         foreach ($classAnnotations as $annotation) {
             switch(get_class($annotation)) {
                 case 'Doctrine\Search\Mapping\Annotations\ElasticSearchable':
                     $classMapping = (array) $annotation;
                     $classMapping['class'] = 'ElasticSearchable';
+                    $validMapping = true;
                     break;
                 case 'Doctrine\Search\Mapping\Annotations\Searchable':
                     $classMapping = (array) $annotation;
                     $classMapping['class'] = 'Searchable';
+                    $validMapping = true;
                     break;
                 case 'Doctrine\Search\Mapping\Annotations\ElasticRoot':
                     $rootMapping = (array) $annotation;
                     $metadata->mapRoot($this->rootToArray($rootMapping));
                     break;
             }
+        }
+        
+        if (!$validMapping) {
+            throw MappingException::classIsNotAValidDocument($className);
         }
         
         $this->annotateClassMetadata($classMapping, $metadata);
@@ -122,7 +129,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
     
     private function annotateClassMetadata($classMapping, $metadata)
     {
-        switch ($classMapping['class']) {
+        $className = $classMapping['class'];
+        switch ($className) {
             case 'ElasticSearchable':
                 if (isset($classMapping['numberOfShards'])) {
                     $metadata->numberOfShards = $classMapping['numberOfShards'];
@@ -151,8 +159,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $metadata->type = $classMapping['type'];
                 }
                 break;
-            default:
-                throw MappingException::classIsNotAValidDocument($className);
         }
     }
     

@@ -59,7 +59,7 @@ class YamlDriver extends FileDriver
         /* @var $metadata \Doctrine\Search\Mapping\ClassMetadata */
         $element = $this->getElement($className);
         
-         $this->annotateClassMetadata($element, $metadata);
+        $this->annotateClassMetadata($element, $metadata);
         
         // Evaluate root mappings
         if (isset($element['root'])) {
@@ -92,7 +92,8 @@ class YamlDriver extends FileDriver
     
     private function annotateClassMetadata($classMapping, $metadata)
     {
-        switch ($classMapping['class']) {
+        $className = $classMapping['class'];
+        switch ($className) {
             case 'ElasticSearchable':
                 if (isset($classMapping['numberOfShards'])) {
                     $metadata->numberOfShards = $classMapping['numberOfShards'];
