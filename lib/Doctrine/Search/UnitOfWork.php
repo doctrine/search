@@ -293,7 +293,7 @@ class UnitOfWork
                 $data[$name] = $value;
             } else {
                 foreach ($class->parameters as $param => $mapping) {
-                    if ($mapping->name == $name) {
+                    if (isset($mapping['fieldName']) && $mapping['fieldName'] == $name) {
                         $data[$param] = $value;
                         break;
                     }
