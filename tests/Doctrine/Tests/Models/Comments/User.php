@@ -2,26 +2,22 @@
 
 namespace Doctrine\Tests\Models\Comments;
 
-use JMS\Serializer\Annotation as JMS;
 use Doctrine\Search\Mapping\Annotations as MAP;
 
 /**
- * @JMS\ExclusionPolicy("all")
- * @MAP\ElasticSearchable(index="searchdemo", type="users", source=true, numberOfShards=2, numberOfReplicas=1)
- * @MAP\ElasticRoot(name="dynamic_templates", id="template_2", match="description*", mapping={
+ * @MAP\ElasticSearchable(index="searchdemo", type="users", source=true, numberOfShards=2, numberOfReplicas=1, timeToLive=180, boost=2.0)
+ * @MAP\ElasticRoot(name="dynamic_templates", id="template_2", match="description*", mapping=
  *		@MAP\ElasticField(type="multi_field", fields={
  *			@MAP\ElasticField(name="{name}", type="string", includeInAll=false),
- *			@MAP\ElasticField(name="untouched", type="string", analyzer="not_analyzed")
+ *			@MAP\ElasticField(name="untouched", type="string", index="not_analyzed")
  *		})
- * })
+ * )
  * @MAP\ElasticRoot(name="date_detection", value="false")
  */
 class User
 {
     /**
      * @MAP\Id
-     * @JMS\Type("string")
-     * @JMS\Expose @JMS\Groups({"api"})
      *
      * Using Serialization groups allows us to provide a version of serialized object
      * for storage, and a different one for passing into a document output renderer, such
@@ -30,15 +26,11 @@ class User
     private $id;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\Expose @JMS\Groups({"api", "store"})
      * @MAP\ElasticField(type="string", includeInAll=false, index="no", boost=2.0)
      */
     private $name;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\Expose @JMS\Groups({"api", "store"})
      * @MAP\ElasticField(type="multi_field", fields={
      *    @MAP\ElasticField(name="username", type="string", includeInAll=true, analyzer="whitespace"),
      *    @MAP\ElasticField(name="username.term", type="string", includeInAll=false, index="not_analyzed")
@@ -47,29 +39,16 @@ class User
     private $username;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\Expose @JMS\Groups({"api", "store"})
      * @MAP\ElasticField(type="ip", includeInAll=false, index="no", store=true, nullValue="127.0.0.1")
      */
     private $ip;
 
     /**
-     * @JMS\Type("string")
-     * @JMS\Expose @JMS\Groups({"api", "store"})
      * @see dynamic template root mapping
      */
     private $description;
-    
-    /**
-     * @JMS\Type("array")
-     * @JMS\Expose @JMS\Groups({"store"})
-     * @MAP\ElasticField(type="string", includeInAll=false, index="not_analyzed")
-     */
-    private $friends = array();
 
     /**
-     * @JMS\Type("array<Doctrine\Tests\Models\Comments\Email>")
-     * @JMS\Expose @JMS\Groups({"privateapi", "store"})
      * @MAP\ElasticField(type="nested", properties={
      *    @MAP\ElasticField(name="email", type="string", includeInAll=false, index="not_analyzed"),
      *    @MAP\ElasticField(name="createdAt", type="date")
@@ -78,15 +57,11 @@ class User
     private $emails = array();
 
     /**
-     * @JMS\Type("boolean")
-     * @JMS\Expose @JMS\Groups({"store"})
      * @MAP\ElasticField(type="boolean", nullValue=false)
      */
     private $active;
     
     /**
-     * @JMS\Type("string")
-     * @JMS\Expose @JMS\Groups({"store"})
      * @MAP\Parameter
      */
     private $_routing;
@@ -134,18 +109,6 @@ class User
         return $this->description;
     }
     
-    public function getFriends()
-    {
-        return $this->friends;
-    }
-
-    public function addFriend(User $user)
-    {
-        if (!in_array($user->getId(), $this->friends)) {
-            $this->friends[] = $user->getId();
-        }
-    }
-
     public function addEmail(Email $email)
     {
         $this->emails[] = $email;

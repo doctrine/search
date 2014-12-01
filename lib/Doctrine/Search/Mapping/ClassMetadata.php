@@ -72,12 +72,12 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @var int
      */
-    public $timeToLive = 1;
+    public $timeToLive;
 
     /**
      * @var int
      */
-    public $value = 1;
+    public $value;
 
     /**
      * @var boolean
@@ -241,18 +241,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * This mapping is used in the _wakeup-method to set the reflFields after _sleep.
-     *
-     * @param \ReflectionProperty $field
-     * @param array $mapping
-     */
-    public function addFieldMapping(\Reflector $field, $mapping = array())
-    {
-        $fieldName = $field->getName();
-        $this->fieldMappings[$fieldName] = $mapping;
-    }
-    
-    /**
      * Adds a mapped field to the class.
      *
      * @param array $mapping The field mapping.
@@ -292,17 +280,6 @@ class ClassMetadata implements ClassMetadataInterface
         $this->parameters[$mapping['parameterName']] = $mapping;
     }
     
-    
-    /**
-     * @param \ReflectionProperty $field
-     */
-    /*public function addField(\ReflectionProperty $field)
-    {
-        $fieldName = $field->getName();
-        $this->reflFields[] = $field;
-    }*/
-
-
     /**
      * Checks if the given field is a mapped association for this class.
      *

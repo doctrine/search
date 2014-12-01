@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8a75b9eb185f9aa0a08d8dec77751b0c",
+    "hash": "a4467449f522571a52909370014e828d",
     "packages": [
         {
             "name": "doctrine/annotations",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "d9b1a37e9351ddde1f19f09a02e3d6ee92e82efd"
+                "reference": "6a6bec0670bb6e71a263b08bc1b98ea242928633"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/d9b1a37e9351ddde1f19f09a02e3d6ee92e82efd",
-                "reference": "d9b1a37e9351ddde1f19f09a02e3d6ee92e82efd",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/6a6bec0670bb6e71a263b08bc1b98ea242928633",
+                "reference": "6a6bec0670bb6e71a263b08bc1b98ea242928633",
                 "shasum": ""
             },
             "require": {
@@ -45,17 +45,6 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com",
-                    "homepage": "http://www.instaclick.com"
-                },
-                {
                     "name": "Roman Borschel",
                     "email": "roman@code-factory.org"
                 },
@@ -64,10 +53,16 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
                     "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
-                    "role": "Developer of wrapped JMSSerializerBundle"
+                    "email": "schmittjoh@gmail.com"
                 }
             ],
             "description": "Docblock Annotations Parser",
@@ -77,20 +72,20 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2014-07-06 15:52:21"
+            "time": "2014-09-25 16:45:30"
         },
         {
             "name": "doctrine/cache",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "e16d7adf45664a50fa86f515b6d5e7f670130449"
+                "reference": "cf483685798a72c93bf4206e3dd6358ea07d64e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/e16d7adf45664a50fa86f515b6d5e7f670130449",
-                "reference": "e16d7adf45664a50fa86f515b6d5e7f670130449",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/cf483685798a72c93bf4206e3dd6358ea07d64e7",
+                "reference": "cf483685798a72c93bf4206e3dd6358ea07d64e7",
                 "shasum": ""
             },
             "require": {
@@ -106,7 +101,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "1.4.x-dev"
                 }
             },
             "autoload": {
@@ -120,17 +115,6 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com",
-                    "homepage": "http://www.instaclick.com"
-                },
-                {
                     "name": "Roman Borschel",
                     "email": "roman@code-factory.org"
                 },
@@ -139,10 +123,16 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                },
+                {
                     "name": "Johannes Schmitt",
-                    "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
-                    "role": "Developer of wrapped JMSSerializerBundle"
+                    "email": "schmittjoh@gmail.com"
                 }
             ],
             "description": "Caching library offering an object-oriented API for many cache backends",
@@ -151,7 +141,7 @@
                 "cache",
                 "caching"
             ],
-            "time": "2013-10-25 19:04:14"
+            "time": "2014-09-17 14:24:04"
         },
         {
             "name": "doctrine/collections",
@@ -417,16 +407,16 @@
         },
         {
             "name": "doctrine/search",
-            "version": "dev-master",
+            "version": "dev-feature-yaml-driver",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/search.git",
-                "reference": "5f688f71df89fc569e58a30f5bfd55de8264f169"
+                "reference": "0f35719e6d1a90b2466b7793952606ac153c34fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/search/zipball/5f688f71df89fc569e58a30f5bfd55de8264f169",
-                "reference": "5f688f71df89fc569e58a30f5bfd55de8264f169",
+                "url": "https://api.github.com/repos/doctrine/search/zipball/0f35719e6d1a90b2466b7793952606ac153c34fa",
+                "reference": "0f35719e6d1a90b2466b7793952606ac153c34fa",
                 "shasum": ""
             },
             "require": {
@@ -438,7 +428,8 @@
                 "phpunit/phpunit": "~4.2"
             },
             "suggest": {
-                "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
+                "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required.",
+                "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
             },
             "type": "library",
             "autoload": {
@@ -458,7 +449,7 @@
                     "homepage": "https://github.com/doctrine/search/graphs/contributors"
                 }
             ],
-            "description": "Search",
+            "description": "ElasticSearch and Solr entity mapping library",
             "homepage": "https://github.com/doctrine/search",
             "keywords": [
                 "elasticsearch",
@@ -469,10 +460,10 @@
                 "solr"
             ],
             "support": {
-                "source": "https://github.com/doctrine/search/tree/master",
+                "source": "https://github.com/doctrine/search/tree/feature-yaml-driver",
                 "issues": "https://github.com/doctrine/search/issues"
             },
-            "time": "2014-09-11 20:31:14"
+            "time": "2014-11-30 21:50:08"
         },
         {
             "name": "jms/metadata",

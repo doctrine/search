@@ -20,9 +20,9 @@
 namespace Doctrine\Search\Mapping\Driver;
 
 use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
-use Doctrine\Search\Mapping\Annotations as Search;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Search\Exception\Driver as DriverException;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Search\Mapping\MappingException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -37,30 +37,31 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * {@inheritDoc}
      */
     protected $entityAnnotationClasses = array(
-        'Doctrine\\Search\\Mapping\\Annotations\\Searchable' => 1,
-        'Doctrine\\Search\\Mapping\\Annotations\\ElasticSearchable' => 2,
-        'Doctrine\\Search\\Mapping\\Annotations\\ElasticRoot' => 3,
+        'Doctrine\Search\Mapping\Annotations\Searchable',
+        'Doctrine\Search\Mapping\Annotations\ElasticSearchable',
+        'Doctrine\Search\Mapping\Annotations\ElasticRoot'
     );
 
-    protected $entityRootAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\ElasticRoot';
+    protected $entityIdAnnotationClasses = 'Doctrine\Search\Mapping\Annotations\Id';
 
-    protected $entityIdAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Id';
+    protected $entityFieldAnnotationClasses = array(
+        'Doctrine\Search\Mapping\Annotations\Field',
+        'Doctrine\Search\Mapping\Annotations\ElasticField',
+        'Doctrine\Search\Mapping\Annotations\SolrField',
+    );
 
-    protected $entityParamAnnotationClass = 'Doctrine\\Search\\Mapping\\Annotations\\Parameter';
+    protected $entityParamAnnotationClasses = 'Doctrine\Search\Mapping\Annotations\Parameter';
 
     /**
-     * Document fields annotation classes, ordered by precedence.
+     * Registers annotation classes to the common registry.
+     *
+     * This method should be called when bootstrapping your application.
      */
-    protected $entityFieldAnnotationClasses = array(
-        'Doctrine\\Search\\Mapping\\Annotations\\Id',        //Only here for convenience
-        'Doctrine\\Search\\Mapping\\Annotations\\Parameter', //Only here for convenience
-        'Doctrine\\Search\\Mapping\\Annotations\\Field',
-        'Doctrine\\Search\\Mapping\\Annotations\\ElasticField',
-        'Doctrine\\Search\\Mapping\\Annotations\\SolrField',
-    );
-
-
-
+    public static function registerAnnotationClasses()
+    {
+        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
+    }
+    
     /**
      * @param string $className
      * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
@@ -69,145 +70,200 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        $reflClass = $metadata->getReflectionClass();
+        $class = $metadata->getReflectionClass();
 
-        if (!$reflClass) {
-            $reflClass = new \ReflectionClass((string)$className);
+        if (!$class) {
+            $class = new \ReflectionClass((string) $className);
         }
 
-        $reflProperties = $reflClass->getProperties();
-        $reflMethods = $reflClass->getMethods();
-
-        $this->extractClassAnnotations($reflClass, $metadata);
-        $this->extractPropertiesAnnotations($reflProperties, $metadata);
-        $this->extractMethodsAnnotations($reflMethods, $metadata);
-    }
-
-
-    /**
-     * This function extracts the class annotations for search from the given reflected class and writes
-     * them into metadata.
-     *
-     * @param \ReflectionClass $reflClass
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata    $metadata
-     *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
-     *
-     * @throws DriverException\ClassIsNotAValidDocumentException|DriverException\PropertyDoesNotExistsInMetadataException
-     */
-    private function extractClassAnnotations(\ReflectionClass $reflClass, ClassMetadata $metadata)
-    {
-        $documentsClassAnnotations = array();
-        foreach ($this->reader->getClassAnnotations($reflClass) as $annotation) {
-            foreach ($this->entityAnnotationClasses as $annotationClass => $index) {
-                if ($annotation instanceof $this->entityRootAnnotationClass) {
-                    $metadata->mapRoot((array) $annotation);
+        $classAnnotations = $this->reader->getClassAnnotations($class);
+        
+        $classMapping = array();
+        foreach ($classAnnotations as $annotation) {
+        	   switch(get_class($annotation)) {
+                case 'Doctrine\Search\Mapping\Annotations\ElasticSearchable':
+                    $classMapping = (array) $annotation;
+                    $classMapping['class'] = 'ElasticSearchable';
                     break;
-                } elseif ($annotation instanceof $annotationClass) {
-                    $documentsClassAnnotations[$index] = $annotation;
+                case 'Doctrine\Search\Mapping\Annotations\Searchable':
+                    $classMapping = (array) $annotation;
+                    $classMapping['class'] = 'Searchable';
                     break;
-                }
+                case 'Doctrine\Search\Mapping\Annotations\ElasticRoot':
+                	  $rootMapping = (array) $annotation;
+                	  $metadata->mapRoot($this->rootToArray($rootMapping));
+                	  break;
+        	   }
+        }
+        
+        $this->annotateClassMetadata($classMapping, $metadata);
+
+        $properties = $class->getProperties();
+        foreach ($properties as $property) {
+            $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
+            foreach ($propertyAnnotations as $annotation) {
+            	switch (get_class($annotation)) {
+            		case 'Doctrine\Search\Mapping\Annotations\Id':
+            	       $metadata->identifier = $property->getName();
+            	       break;
+            		case 'Doctrine\Search\Mapping\Annotations\Parameter':
+            		    $mapping = $this->parameterToArray($property->getName(), (array) $annotation);
+            		    $metadata->mapParameter($mapping);
+            		    break;
+            		case 'Doctrine\Search\Mapping\Annotations\Field':
+            		case 'Doctrine\Search\Mapping\Annotations\ElasticField':
+            		case 'Doctrine\Search\Mapping\Annotations\SolrField':
+            		    $mapping = $this->fieldToArray($property->getName(), (array) $annotation);
+                      $metadata->mapField($mapping);
+               	    break;
+               }
             }
         }
-
-        if (!$documentsClassAnnotations) {
-            throw new DriverException\ClassIsNotAValidDocumentException($metadata->getName());
-        }
-
-        //choose only one (the first one)
-        $annotationClass = reset($documentsClassAnnotations);
-        $reflClassAnnotations = new \ReflectionClass($annotationClass);
-        $metadata = $this->addValuesToMetadata(
-            $reflClassAnnotations->getProperties(),
-            $metadata,
-            $annotationClass
-        );
-
-        return $metadata;
+        
     }
-
-    /**
-     * Extract the property annotations.
-     *
-     * @param \ReflectionProperty[] $reflProperties
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
-     *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
-     */
-    private function extractPropertiesAnnotations(array $reflProperties, ClassMetadata $metadata)
+    
+    private function annotateClassMetadata($classMapping, $metadata)
     {
-        $documentsFieldAnnotations = array();
-        foreach ($reflProperties as $reflProperty) {
-            foreach ($this->reader->getPropertyAnnotations($reflProperty) as $annotation) {
-                foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
-                    if ($annotation instanceof $fieldAnnotationClass) {
-                        if ($annotation instanceof $this->entityIdAnnotationClass) {
-                            $metadata->setIdentifier($reflProperty->name);
-                        } elseif ($annotation instanceof $this->entityParamAnnotationClass) {
-                            $annotation->parameterName = $reflProperty->getName();
-                            $metadata->mapParameter((array) $annotation);
-                        } else {
-                            $annotation->fieldName = $reflProperty->getName();
-                            $metadata->mapField((array) $annotation);
-                        }
-                        continue 2;
-                    }
-                }
-            }
-        }
-
-        return $metadata;
+    	  switch ($classMapping['class']) {
+    	      case 'ElasticSearchable':
+    	          if (isset($classMapping['numberOfShards'])) {
+    	              $metadata->numberOfShards = $classMapping['numberOfShards'];
+    	          }
+    	          if (isset($classMapping['numberOfReplicas'])) {
+    	              $metadata->numberOfReplicas = $classMapping['numberOfReplicas'];
+    	          }
+    	          if (isset($classMapping['parent'])) {
+    	              $metadata->parent = $classMapping['parent'];
+    	          }
+    	          if (isset($classMapping['timeToLive'])) {
+    	              $metadata->timeToLive = $classMapping['timeToLive'];
+    	          }
+    	          if (isset($classMapping['boost'])) {
+    	              $metadata->boost = $classMapping['boost'];
+    	          }
+    	          if (isset($classMapping['source'])) {
+    	              $metadata->source = $classMapping['source'];
+    	          }
+    	      case 'Searchable':
+    	          if (isset($classMapping['index'])) {
+    	      	    $metadata->index = $classMapping['index'];
+    	          }
+    	          if (isset($classMapping['type'])) {
+    	      	    $metadata->type = $classMapping['type'];
+    	          }
+    	          break;
+    	      default:
+    	          throw MappingException::classIsNotAValidDocument($className);
+    	  }
     }
-
-    /**
-     * Extract the methods annotations.
-     *
-     * @param \ReflectionMethod[]   $reflMethods
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
-     *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
-     */
-    private function extractMethodsAnnotations(array $reflMethods, ClassMetadata $metadata)
+    
+    private function fieldToArray($name, $fieldMapping)
     {
-        $documentsFieldAnnotations = array();
-        foreach ($reflMethods as $reflMethod) {
-            foreach ($this->reader->getMethodAnnotations($reflMethod) as $annotation) {
-                foreach ($this->entityFieldAnnotationClasses as $fieldAnnotationClass) {
-                    if ($annotation instanceof $fieldAnnotationClass) {
-                        $annotation->fieldName = $reflMethods->getName();
-                        $metadata->mapField((array) $annotation);
-                        continue 2;
-                    }
-                }
+        $mapping = array();
+        if (isset($fieldMapping['name'])) {
+            $mapping['fieldName'] = $fieldMapping['name'];
+        } else {
+            $mapping['fieldName'] = $name;
+        }
+        
+        if (isset($fieldMapping['type'])) {
+            $mapping['type'] = $fieldMapping['type'];
+            
+            if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
+            	foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
+            		$subFieldMapping = (array) $subFieldMapping;
+            		$mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
+            	}
+            }
+            
+            if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
+            	foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
+            		$subFieldMapping = (array) $subFieldMapping;
+            		$mapping['properties'][] = $this->fieldToArray($name, $subFieldMapping);
+            	}
             }
         }
-
-        return $metadata;
+        if (isset($fieldMapping['boost'])) {
+            $mapping['boost'] = $fieldMapping['boost'];
+        }
+        if (isset($fieldMapping['includeInAll'])) {
+            $mapping['includeInAll'] = (bool) $fieldMapping['includeInAll'];
+        }
+        if (isset($fieldMapping['index'])) {
+            $mapping['index'] = $fieldMapping['index'];
+        }
+        if (isset($fieldMapping['analyzer'])) {
+            $mapping['analyzer'] = $fieldMapping['analyzer'];
+        }
+        if (isset($fieldMapping['path'])) {
+            $mapping['path'] = $fieldMapping['path'];
+        }
+        if (isset($fieldMapping['indexName'])) {
+            $mapping['indexName'] = $fieldMapping['indexName'];
+        }
+        if (isset($fieldMapping['store'])) {
+            $mapping['store'] = (bool) $fieldMapping['store'];
+        }
+        if (isset($fieldMapping['nullValue'])) {
+            $mapping['nullValue'] = $fieldMapping['nullValue'];
+        }
+        
+        return $mapping;
     }
-
-    /**
-     * @param \ReflectionProperty[] $reflectedClassProperties
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata         $metadata
-     * @param string                $class
-     *
-     * @return ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata
-     *
-     * @throws DriverException\PropertyDoesNotExistsInMetadataException
-     */
-    private function addValuesToMetadata(array $reflectedClassProperties, ClassMetadata $metadata, $class)
+    
+    private function rootToArray($rootMapping)
     {
-        foreach ($reflectedClassProperties as $reflectedProperty) {
-            $propertyName = $reflectedProperty->getName();
-
-            if (false === property_exists($metadata, $propertyName)) {
-                throw new DriverException\PropertyDoesNotExistsInMetadataException($reflectedProperty->getName());
-            } else {
-                if (!is_null($class->$propertyName)) {
-                    $metadata->$propertyName = $class->$propertyName;
-                }
-            }
+        $mapping = array();
+        if (isset($rootMapping['name'])) {
+            $mapping['name'] = $rootMapping['name'];
         }
-
-        return $metadata;
+        if (isset($rootMapping['id'])) {
+            $mapping['id'] = $rootMapping['id'];
+        }
+        if (isset($rootMapping['match'])) {
+            $mapping['match'] = $rootMapping['match'];
+        }
+        if (isset($rootMapping['unmatch'])) {
+            $mapping['unmatch'] = $rootMapping['unmatch'];
+        }
+        if (isset($rootMapping['pathMatch'])) {
+            $mapping['pathMatch'] = $rootMapping['pathMatch'];
+        }
+        if (isset($rootMapping['pathUnmatch'])) {
+            $mapping['pathUnmatch'] = $rootMapping['pathUnmatch'];
+        }
+        if (isset($rootMapping['matchPattern'])) {
+            $mapping['matchPattern'] = $rootMapping['matchPattern'];
+        }
+        if (isset($rootMapping['matchMappingType'])) {
+            $mapping['matchMappingType'] = $rootMapping['matchMappingType'];
+        }
+        if (isset($rootMapping['value'])) {
+            $mapping['value'] = $rootMapping['value'];
+        }
+        if (isset($rootMapping['mapping'])) {
+    	      $subFieldMapping = (array) $rootMapping['mapping'];
+    		   $field = $this->fieldToArray(null, $subFieldMapping);
+    		   unset($field['fieldName']);
+    		   $mapping['mapping'] = $field;
+        }
+        
+        return $mapping;
+    }
+    
+    private function parameterToArray($name, $parameterMapping)
+    {
+        $mapping = array();
+        if (isset($parameterMapping['name'])) {
+            $mapping['parameterName'] = $parameterMapping['name'];
+        } else {
+            $mapping['parameterName'] = $name;
+        }
+        
+        if (isset($parameterMapping['type'])) {
+            $mapping['type'] = $parameterMapping['type'];
+        }
+        
+        return $mapping;
     }
 }

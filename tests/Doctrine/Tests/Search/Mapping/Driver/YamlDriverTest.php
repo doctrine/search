@@ -9,22 +9,12 @@ use Doctrine\Tests\Models\Comments\User;
 /**
  * Test class for YamlDriver.
  */
-class YamlDriverTest extends \PHPUnit_Framework_TestCase
+class YamlDriverTest extends AbstractDriverTest
 {
     /**
      * @var \Doctrine\Search\Mapping\Driver\YamlDriver
      */
     private $yamlDriver;
-
-    /**
-     * @var \Doctrine\Search\Mapping\ClassMetadata|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $classMetadata;
-
-    /**
-     * @var \ReflectionClass|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $reflectionClass;
 
     protected function setUp()
     {
@@ -38,99 +28,10 @@ class YamlDriverTest extends \PHPUnit_Framework_TestCase
     public function testLoadMetadataForClass()
     {
         $className = __NAMESPACE__.'\YamlAlternateUser';
-        $class = new ClassMetadata($className);
-        $metadata = $this->yamlDriver->loadMetadataForClass($className, $class);
+        $metadata = new ClassMetadata($className);
+        $this->yamlDriver->loadMetadataForClass($className, $metadata);
         
-        $expected = new ClassMetadata($className);
-        $expected->type = 'users';
-        $expected->identifier = 'id';
-        $expected->index = 'searchdemo';
-        $expected->numberOfShards = 2;
-        $expected->numberOfReplicas = 1;
-        $expected->timeToLive = 180;
-        $expected->boost = 2.0;
-        $expected->source = true;
-        
-        $expected->mapRoot(array(
-            'name' => 'dynamic_templates',
-            'id' => 'template_2',
-            'match' => 'description*',
-            'mapping' => array(
-                array(
-                    'name' => '{name}',
-                    'type' => 'string',
-                    'includeInAll' => false
-                ),
-                array(
-                    'name' => 'untouched',
-                    'type' => 'string',
-                    'analyzer' => 'not_analyzed'
-                )
-            )
-        ));
-        
-        $expected->mapRoot(array(
-            'name' => 'date_detection',
-            'value' => false
-        ));
-        
-        $expected->mapField(array(
-            'fieldName' => 'name',
-            'type' => 'string',
-            'includeInAll' => false,
-            'index' => 'no',
-            'boost' => 2.0
-        ));
-        
-        $expected->mapField(array(
-            'fieldName' => 'username',
-            'type' => 'multi_field',
-            'fields' => array(
-                array(
-                    'fieldName' => 'username',
-                    'type' => 'string',
-                    'includeInAll' => true,
-                    'analyzer' => 'whitespace'
-                ),
-                array(
-                    'fieldName' => 'username.term',
-                    'type' => 'string',
-                    'includeInAll' => false,
-                    'analyzer' => 'not_analyzed'
-                )
-            )
-        ));
-        
-        $expected->mapField(array(
-            'fieldName' => 'ip',
-            'type' => 'ip',
-            'includeInAll' => false,
-            'index' => 'no',
-            'store' => true,
-            'nullValue' => '127.0.0.1'
-        ));
-        
-        $expected->mapField(array(
-            'fieldName' => 'emails',
-            'type' => 'nested',
-            'properties' => array(
-                 array(
-                     'fieldName' => 'email',
-                     'type' => 'string',
-                     'includeInAll' => false,
-                     'analyzer' => 'not_analyzed'
-                 ),
-                 array(
-                     'fieldName' => 'createdAt',
-                     'type' => 'date'
-                 )
-             )
-        ));
-        
-        $expected->mapParameter(array(
-            'parameterName' => '_routing',
-            'type' => 'string'
-        ));
+        $expected = $this->loadExpectedMetadataFor($className);
         
         $this->assertEquals($expected, $metadata);
     }

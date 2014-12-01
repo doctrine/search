@@ -7,24 +7,26 @@ Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
     timeToLive: 180
     boost: 2.0
     source: true
-    id: id
     root:
         -
             name: dynamic_templates
             id: template_2
             match: 'description*'
             mapping:
-                -
-                    name: '{name}'
-                    type: string
-                    includeInAll: false
-                -
-                    name: untouched
-                    type: string
-                    analyzer: not_analyzed
+                type: multi_field
+                fields:
+                    -
+                        name: '{name}'
+                        type: string
+                        includeInAll: false
+                    -
+                        name: untouched
+                        type: string
+                        index: not_analyzed
         -
             name: date_detection
-            value: false
+            value: 'false'
+    id: id
     fields:
         name:
             type: string
@@ -43,7 +45,7 @@ Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
                     name: username.term
                     type: string
                     includeInAll: false
-                    analyzer: not_analyzed
+                    index: not_analyzed
         ip:
             type: ip
             includeInAll: false
@@ -57,10 +59,13 @@ Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
                     name: email
                     type: string
                     includeInAll: false
-                    analyzer: not_analyzed
+                    index: not_analyzed
                 -
                     name: createdAt
                     type: date
+        active:
+            type: boolean
+            nullValue: false
     parameters:
         _routing:
             type: string
