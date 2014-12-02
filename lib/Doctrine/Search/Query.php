@@ -114,6 +114,17 @@ class Query
     }
 
     /**
+     * Add a searchable entity class to search against.
+     *
+     * @param string $entityClass
+     */
+    public function addFrom($entityClass)
+    {
+        $this->entityClasses[] = $entityClass;
+        return $this;
+    }
+
+    /**
      * Set the query object to be executed on the search engine
      *
      * @param mixed $query
