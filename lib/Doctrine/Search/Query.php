@@ -20,6 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine\Search\Exception\NoResultException;
 use Elastica;
 
 class Query
@@ -213,6 +214,23 @@ class Query
         }
 
         return $this->hydrationQuery;
+    }
+
+    /**
+     * Execute search for single result and hydrate results if required.
+     *
+     * @param integer $hydrationMode
+     * @throws NoResultException
+     * @return mixed
+     */
+    public function getSingleResult($hydrationMode = null)
+    {
+        $this->query->setSize(1);
+        $results = $this->getResult($hydrationMode);
+        if (count($results) < 1) {
+            throw new NoResultException('No results found');
+        }
+        return $results[0];
     }
 
     /**
