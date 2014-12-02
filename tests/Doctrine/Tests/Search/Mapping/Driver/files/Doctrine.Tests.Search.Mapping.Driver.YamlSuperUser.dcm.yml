@@ -1,0 +1,4 @@
+Doctrine\Tests\Search\Mapping\Driver\YamlSuperUser:
+    class: ElasticSearchable
+    type: superusers
+    index: searchdemo

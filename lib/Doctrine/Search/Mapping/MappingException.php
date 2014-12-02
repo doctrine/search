@@ -43,4 +43,13 @@ class MappingException extends Exception
     {
         return new self('Parameter "'.$parameterName.'" in "'.$mapping.'" was already declared, but it must be declared only once');
     }
+    
+    /**
+     * @param string $entityName
+     * @return MappingException
+     */
+    public static function mappingFileNotFound($entityName)
+    {
+        return new self("No class or parent mapping file found for class '$entityName'.");
+    }
 }

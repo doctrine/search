@@ -6,11 +6,10 @@ use Doctrine\Search\Mapping\ClassMetadata;
 
 abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
-
-    protected function loadExpectedMetadataFor($className)
+    protected function loadExpectedMetadataFor($className, $type)
     {
         $expected = new ClassMetadata($className);
-        $expected->type = 'users';
+        $expected->type = $type;
         $expected->identifier = 'id';
         $expected->index = 'searchdemo';
         $expected->numberOfShards = 2;

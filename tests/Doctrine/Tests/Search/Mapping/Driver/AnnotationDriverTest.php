@@ -35,7 +35,7 @@ class AnnotationDriverTest extends AbstractDriverTest
 
         $this->annotationDriver->loadMetadataForClass($className, $metadata);
 
-        $expected = $this->loadExpectedMetadataFor($className);
+        $expected = $this->loadExpectedMetadataFor($className, 'users');
         
         $this->assertEquals($expected, $metadata);
     }

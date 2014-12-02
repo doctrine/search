@@ -5,6 +5,7 @@ namespace Doctrine\Tests\Search\Mapping\Driver;
 use Doctrine\Search\Mapping\Driver\YamlDriver;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Comments\User;
+use Doctrine\Tests\Models\Comments\SuperUser;
 
 /**
  * Test class for YamlDriver.
@@ -27,23 +28,31 @@ class YamlDriverTest extends AbstractDriverTest
 
     public function testLoadMetadataForClass()
     {
-        $className = __NAMESPACE__.'\YamlAlternateUser';
+        $className = __NAMESPACE__.'\YamlUser';
         $metadata = new ClassMetadata($className);
         $this->yamlDriver->loadMetadataForClass($className, $metadata);
         
-        $expected = $this->loadExpectedMetadataFor($className);
+        $expected = $this->loadExpectedMetadataFor($className, 'users');
+        
+        $this->assertEquals($expected, $metadata);
+    }
+    
+    public function testLoadMetadataForSubClass()
+    {
+        $className = __NAMESPACE__.'\YamlSuperUser';
+        $metadata = new ClassMetadata($className);
+        $this->yamlDriver->loadMetadataForClass($className, $metadata);
+        
+        $expected = $this->loadExpectedMetadataFor($className, 'superusers');
         
         $this->assertEquals($expected, $metadata);
     }
 }
 
-class YamlAlternateUser extends User
+class YamlUser extends User
 {
-    private $id;
-    private $name;
-    private $username;
-    private $ip;
-    private $friends = array();
-    private $emails = array();
-    private $active;
+}
+
+class YamlSuperUser extends YamlUser
+{
 }

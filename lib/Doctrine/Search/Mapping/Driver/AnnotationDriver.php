@@ -41,16 +41,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\Search\Mapping\Annotations\ElasticSearchable' => 2
     );
 
-    protected $entityIdAnnotationClasses = 'Doctrine\Search\Mapping\Annotations\Id';
-
-    protected $entityFieldAnnotationClasses = array(
-        'Doctrine\Search\Mapping\Annotations\Field',
-        'Doctrine\Search\Mapping\Annotations\ElasticField',
-        'Doctrine\Search\Mapping\Annotations\SolrField',
-    );
-
-    protected $entityParamAnnotationClasses = 'Doctrine\Search\Mapping\Annotations\Parameter';
-
     /**
      * Registers annotation classes to the common registry.
      *

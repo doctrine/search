@@ -22,6 +22,7 @@ namespace Doctrine\Search\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Search\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -57,8 +58,21 @@ class YamlDriver extends FileDriver
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         /* @var $metadata \Doctrine\Search\Mapping\ClassMetadata */
-        $element = $this->getElement($className);
+        $hierarchy = array_merge(array($className), class_parents($className));
         
+        // Look for mappings in the class heirarchy and merge
+        $element = array();
+        foreach (array_reverse($hierarchy) as $subClassName) {
+            try {
+                $element = array_merge($element, $this->getElement($subClassName));
+            } catch (CommonMappingException $e) {
+            }
+        }
+        
+        if (empty($element)) {
+            throw MappingException::mappingFileNotFound($className);
+        }
+
         $this->annotateClassMetadata($element, $metadata);
         
         // Evaluate root mappings

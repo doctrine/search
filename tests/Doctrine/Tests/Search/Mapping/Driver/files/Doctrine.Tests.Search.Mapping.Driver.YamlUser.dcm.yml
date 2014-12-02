@@ -1,4 +1,4 @@
-Doctrine\Tests\Search\Mapping\Driver\YamlAlternateUser:
+Doctrine\Tests\Search\Mapping\Driver\YamlUser:
     class: ElasticSearchable
     type: users
     index: searchdemo
