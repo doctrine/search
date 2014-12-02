@@ -229,7 +229,7 @@ class Query
         }
 
         $classes = array();
-        foreach ($this->entityClasses as $entityClass) {
+        foreach (array_unique($this->entityClasses) as $entityClass) {
             $classes[] = $this->sm->getClassMetadata($entityClass);
         }
 
@@ -255,7 +255,7 @@ class Query
 
         // Document ids are used to lookup dbms results
         $fn = function ($result) {
-            return $result->getId();
+            return (string) $result->getId();
         };
         $ids = array_map($fn, $results);
 
