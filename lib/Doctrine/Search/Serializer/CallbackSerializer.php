@@ -20,6 +20,7 @@
 namespace Doctrine\Search\Serializer;
 
 use Doctrine\Search\SerializerInterface;
+use ReflectionClass;
 
 class CallbackSerializer implements SerializerInterface
 {
@@ -39,8 +40,9 @@ class CallbackSerializer implements SerializerInterface
 
     public function deserialize($entityName, $data)
     {
-        $entity = new $entityName();
-        $entity->{$this->deserializerCallback}($data);
+        $reflection = new ReflectionClass($entityName);
+        $entity = $reflection->newInstanceWithoutConstructor();
+        $entity->{$this->deserializerCallback}(json_decode($data, true));
         return $entity;
     }
 }
