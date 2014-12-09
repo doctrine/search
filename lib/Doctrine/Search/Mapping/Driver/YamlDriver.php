@@ -191,6 +191,15 @@ class YamlDriver extends FileDriver
         if (isset($fieldMapping['nullValue'])) {
             $mapping['nullValue'] = $fieldMapping['nullValue'];
         }
+        if (isset($fieldMapping['geohash'])) {
+            $mapping['geohash'] = (bool) $fieldMapping['geohash'];
+        }
+        if (isset($fieldMapping['geohash_precision'])) {
+            $mapping['geohash_precision'] = $fieldMapping['geohash_precision'];
+        }
+        if (isset($fieldMapping['geohash_prefix'])) {
+            $mapping['geohash_prefix'] = (bool) $fieldMapping['geohash_prefix'];
+        }
         
         return $mapping;
     }
