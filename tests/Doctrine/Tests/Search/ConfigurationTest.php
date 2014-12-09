@@ -1,5 +1,6 @@
 <?php
-namespace Unit\Doctrine\Search;
+
+namespace Doctrine\Tests\Search;
 
 use Doctrine\Search\Configuration;
 
@@ -25,8 +26,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function testGetMetadataDriverImpl()
     {
-       $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
-       $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\AnnotationDriver', $metadataDriverImpl);
+        $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
+        $this->assertInstanceOf('\Doctrine\Search\Mapping\Driver\AnnotationDriver', $metadataDriverImpl);
     }
 
     public function testSetMetadataDriverImpl()

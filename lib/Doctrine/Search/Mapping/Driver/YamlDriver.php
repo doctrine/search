@@ -19,20 +19,23 @@
 
 namespace Doctrine\Search\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnotationDriver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Search\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
- * The AnnotationDriver reads the mapping metadata from docblock annotations.
+ * The YamlDriver reads the mapping metadata from yaml schema files.
  *
- * @link        www.doctrine-project.org
  * @since       1.0
- * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class AnnotationDriver extends AbstractAnnotationDriver
+class YamlDriver extends FileDriver
 {
+    const DEFAULT_FILE_EXTENSION = '.dcm.yml';
+
     /**
      * {@inheritDoc}
      */
@@ -40,79 +43,63 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\Search\Mapping\Annotations\Searchable' => 1,
         'Doctrine\Search\Mapping\Annotations\ElasticSearchable' => 2
     );
-
-    /**
-     * Registers annotation classes to the common registry.
-     *
-     * This method should be called when bootstrapping your application.
-     */
-    public static function registerAnnotationClasses()
-    {
-        AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
-    }
     
     /**
-     * @param string $className
-     * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
-     *
-     * @throws \ReflectionException
+     * {@inheritDoc}
+     */
+    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    {
+        parent::__construct($locator, $fileExtension);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
-        $class = $metadata->getReflectionClass();
-
-        if (!$class) {
-            $class = new \ReflectionClass((string) $className);
-        }
-
-        $classAnnotations = $this->reader->getClassAnnotations($class);
+        /* @var $metadata \Doctrine\Search\Mapping\ClassMetadata */
+        $hierarchy = array_merge(array($className), class_parents($className));
         
-        $classMapping = array();
-        $validMapping = false;
-        foreach ($classAnnotations as $annotation) {
-            switch(get_class($annotation)) {
-                case 'Doctrine\Search\Mapping\Annotations\ElasticSearchable':
-                    $classMapping = (array) $annotation;
-                    $classMapping['class'] = 'ElasticSearchable';
-                    $validMapping = true;
-                    break;
-                case 'Doctrine\Search\Mapping\Annotations\Searchable':
-                    $classMapping = (array) $annotation;
-                    $classMapping['class'] = 'Searchable';
-                    $validMapping = true;
-                    break;
-                case 'Doctrine\Search\Mapping\Annotations\ElasticRoot':
-                    $rootMapping = (array) $annotation;
-                    $metadata->mapRoot($this->rootToArray($rootMapping));
-                    break;
+        // Look for mappings in the class heirarchy and merge
+        $element = array();
+        foreach (array_reverse($hierarchy) as $subClassName) {
+            try {
+                $element = array_merge($element, $this->getElement($subClassName));
+            } catch (CommonMappingException $e) {
             }
         }
         
-        if (!$validMapping) {
-            throw MappingException::classIsNotAValidDocument($className);
+        if (empty($element)) {
+            throw MappingException::mappingFileNotFound($className);
+        }
+
+        $this->annotateClassMetadata($element, $metadata);
+        
+        // Evaluate root mappings
+        if (isset($element['root'])) {
+            foreach ($element['root'] as $rootMapping) {
+                $metadata->mapRoot($this->rootToArray($rootMapping));
+            }
+        }
+
+        // Evaluate id
+        if (isset($element['id'])) {
+            $metadata->identifier = $element['id'];
         }
         
-        $this->annotateClassMetadata($classMapping, $metadata);
-
-        $properties = $class->getProperties();
-        foreach ($properties as $property) {
-            $propertyAnnotations = $this->reader->getPropertyAnnotations($property);
-            foreach ($propertyAnnotations as $annotation) {
-                switch (get_class($annotation)) {
-                    case 'Doctrine\Search\Mapping\Annotations\Id':
-                        $metadata->identifier = $property->getName();
-                        break;
-                    case 'Doctrine\Search\Mapping\Annotations\Parameter':
-                        $mapping = $this->parameterToArray($property->getName(), (array) $annotation);
-                        $metadata->mapParameter($mapping);
-                        break;
-                    case 'Doctrine\Search\Mapping\Annotations\Field':
-                    case 'Doctrine\Search\Mapping\Annotations\ElasticField':
-                    case 'Doctrine\Search\Mapping\Annotations\SolrField':
-                        $mapping = $this->fieldToArray($property->getName(), (array) $annotation);
-                        $metadata->mapField($mapping);
-                        break;
-                }
+        // Evaluate field mappings
+        if (isset($element['fields'])) {
+            foreach ($element['fields'] as $name => $fieldMapping) {
+                $mapping = $this->fieldToArray($name, $fieldMapping);
+                $metadata->mapField($mapping);
+            }
+        }
+        
+        // Evaluate parameter mappings
+        if (isset($element['parameters'])) {
+            foreach ($element['parameters'] as $name => $parameterMapping) {
+                $mapping = $this->parameterToArray($name, $parameterMapping);
+                $metadata->mapParameter($mapping);
             }
         }
     }
@@ -149,6 +136,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $metadata->type = $classMapping['type'];
                 }
                 break;
+            default:
+                throw MappingException::classIsNotAValidDocument($className);
         }
     }
     
@@ -260,5 +249,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
         
         return $mapping;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected function loadMappingFile($file)
+    {
+        return Yaml::parse($file);
     }
 }

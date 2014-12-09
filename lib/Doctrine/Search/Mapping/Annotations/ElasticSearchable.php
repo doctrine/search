@@ -38,11 +38,6 @@ final class ElasticSearchable extends Searchable
     public $numberOfReplicas;
 
     /**
-     * @var string $op_type
-     */
-    public $opType;
-
-    /**
      * @var string $parent
      */
     public $parent;
