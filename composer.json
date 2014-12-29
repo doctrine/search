@@ -16,10 +16,14 @@
         "doctrine/common": ">=2.3.0"
     },
     "suggest": {
-        "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
+        "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required.",
+        "nette/neon": "Neon is a developer friendly format for config files, similar to YAML."
     },
     "require-dev": {
         "doctrine/orm": "~2.4",
+        "jms/serializer": "~0.16",
+        "ruflin/elastica": "~1.3.0",
+        "nette/neon": "~2.2",
         "phpunit/phpunit": "~4.2"
     },
     "autoload": {
