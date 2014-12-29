@@ -29,7 +29,10 @@
     "autoload": {
         "psr-0": {
             "Doctrine\\Search": "lib/"
-        }
+        },
+        "classmap": [
+            "lib/Doctrine/Search/exceptions.php"
+        ]
     },
     "autoload-dev": {
         "psr-0": {
