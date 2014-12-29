@@ -19,7 +19,9 @@
 
 namespace Doctrine\Search\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Search\Mapping\Driver\DependentMappingDriver;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Configuration;
 use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
@@ -62,22 +64,40 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $evm;
 
     /**
+     * @var AbstractClassMetadataFactory
+     */
+    private $parentMetadataFactory;
+
+    /**
+     * @var TypeMetadataFactory
+     */
+    private $typeMetadataFactory;
+
+    /**
      * {@inheritDoc}
      */
     protected function initialize()
     {
-        $this->driver = $this->config->getMetadataDriverImpl();
-        $this->evm = $this->sm->getEventManager();
-        $this->initialized = true;
-
         $om = $this->sm->getObjectManager();
-        if ($this->driver instanceof DependentMappingDriver && $om instanceof ObjectManager) {
-            $parentMetadataFactory = $om->getMetadataFactory();
-            if ($parentMetadataFactory instanceof AbstractClassMetadataFactory) {
-                $parentMetadataFactory->initialize();
-                $this->driver->setParentDriver($parentMetadataFactory->getDriver());
-            }
+        $parentMetadataFactory = $om->getMetadataFactory();
+        if (!$parentMetadataFactory instanceof AbstractClassMetadataFactory) {
+            throw new \LogicException("Parent metadata factory must be an instanceof AbstractClassMetadataFactory");
         }
+
+        $parentMetadataFactory->initialize();
+
+        $driver = $this->config->getMetadataDriverImpl();
+        foreach ($driver instanceof MappingDriverChain ? $driver->getDrivers() : array($driver) as $innerDriver) {
+            if (!$innerDriver instanceof DependentMappingDriver) {
+                throw new \LogicException("Driver must implement DependentMappingDriver interface");
+            }
+            $innerDriver->setParentDriver($parentMetadataFactory->getDriver());
+        }
+
+        $this->driver = $driver;
+        $this->evm = $this->sm->getEventManager();
+        $this->parentMetadataFactory = $parentMetadataFactory;
+        $this->initialized = TRUE;
     }
 
     /**
@@ -88,6 +108,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     public function setSearchManager(SearchManager $sm)
     {
         $this->sm = $sm;
+    }
+
+    /**
+     * @param TypeMetadataFactory $factory
+     */
+    public function setTypeMetadataFactory(TypeMetadataFactory $factory)
+    {
+        $this->typeMetadataFactory = $factory;
     }
 
     /**
@@ -151,7 +179,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function newClassMetadataInstance($className)
     {
-        return new ClassMetadata($className);
+        $metadata = new ClassMetadata($className);
+
+        if (empty($metadata->type)) {
+            $metadata->type = $this->typeMetadataFactory->createTypeMetadata($className);
+        }
+
+        if (empty($metadata->index)) {
+            $metadata->index = new IndexMetadata();
+        }
+
+        return $metadata;
     }
 
     /**
@@ -164,7 +202,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        $class->wakeupReflection($reflService);
+        if (!$this->parentMetadataFactory) {
+            $om = $this->sm->getObjectManager();
+            $this->parentMetadataFactory = $om->getMetadataFactory();
+        }
+
+        $class->wakeupReflection($reflService, $this->parentMetadataFactory->getMetadataFor($class->getName()));
     }
 
     /**
@@ -176,7 +219,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        $class->initializeReflection($reflService);
+        $this->wakeupReflection($class, $reflService);
     }
 
     /**

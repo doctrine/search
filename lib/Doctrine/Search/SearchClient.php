@@ -20,13 +20,17 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Search\Mapping\TypeMetadata;
+use Doctrine\Search\Mapping\TypeMetadataFactory;
+
+
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
  *
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  */
-interface SearchClientInterface
+interface SearchClient extends TypeMetadataFactory
 {
     /**
      * Finds document by id.
@@ -34,7 +38,7 @@ interface SearchClientInterface
      * @param ClassMetadata $class
      * @param mixed $id
      * @param array $options
-     * @throws \Doctrine\Search\Exception\NoResultException
+     * @throws \Doctrine\Search\NoResultException
      */
     public function find(ClassMetadata $class, $id, $options = array());
 
@@ -44,7 +48,7 @@ interface SearchClientInterface
      * @param ClassMetadata $class
      * @param string $field
      * @param mixed $value
-     * @throws \Doctrine\Search\Exception\NoResultException
+     * @throws \Doctrine\Search\NoResultException
      */
     public function findOneBy(ClassMetadata $class, $field, $value);
 
@@ -62,50 +66,6 @@ interface SearchClientInterface
      * @param array $classes
      */
     public function search($query, array $classes);
-
-    /**
-     * Creates a document index
-     *
-     * @param string $name The name of the index.
-     * @param string $config The configuration of the index.
-     */
-    public function createIndex($name, array $config = array());
-
-    /**
-     * Gets a document index reference
-     *
-     * @param string $name The name of the index.
-     */
-    public function getIndex($name);
-
-    /**
-     * Deletes an index and its types and documents
-     *
-     * @param string $index
-     */
-    public function deleteIndex($index);
-
-    /**
-     * Refresh the index to make documents available for search
-     *
-     * @param string $index
-     */
-    public function refreshIndex($index);
-
-    /**
-     * Create a document type mapping as defined in the
-     * class annotations
-     *
-     * @param ClassMetadata $metadata
-     */
-    public function createType(ClassMetadata $metadata);
-
-    /**
-     * Delete a document type
-     *
-     * @param ClassMetadata $metadata
-     */
-    public function deleteType(ClassMetadata $metadata);
 
     /**
      * Adds documents of a given type to the specified index
@@ -131,4 +91,18 @@ interface SearchClientInterface
      * @param object $query
      */
     public function removeAll(ClassMetadata $class, $query = null);
+
+    /**
+     * Refresh the index to make documents available for search
+     *
+     * @param string $index
+     */
+    public function refreshIndex($index);
+
+    /**
+     * @param string $className
+     * @return TypeMetadata
+     */
+    public function createTypeMetadata($className);
+
 }

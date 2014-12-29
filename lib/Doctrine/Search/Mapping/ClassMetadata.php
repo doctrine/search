@@ -20,8 +20,7 @@
 namespace Doctrine\Search\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
-use Doctrine\Search\Mapping\Annotations\ElasticField;
-use Doctrine\Search\Mapping\Annotations\ElasticRoot;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
 
 
 
@@ -39,36 +38,21 @@ use Doctrine\Search\Mapping\Annotations\ElasticRoot;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @link        www.doctrine-project.com
- * @since       1.0
- * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
+ * @author Filip Procházka <filip@prochazka.su>
  */
 class ClassMetadata implements ClassMetadataInterface
 {
     /**
-     * @var string
-     */
-    public $index;
-
-    /**
-     * @var string
+     * @todo allow mapping to multiple types
+     * @var TypeMetadata
      */
     public $type;
 
     /**
-     * @var int
+     * @todo allow mapping to multiple indexes
+     * @var IndexMetadata
      */
-    public $numberOfShards = 1;
-
-    /**
-     * @var int
-     */
-    public $numberOfReplicas = 0;
-
-    /**
-     * @var int
-     */
-    public $opType = 1;
+    public $index;
 
     /**
      * @var string
@@ -76,114 +60,59 @@ class ClassMetadata implements ClassMetadataInterface
     public $parent;
 
     /**
-     * @var int
-     */
-    public $timeToLive = 1;
-
-    /**
-     * @var int
-     */
-    public $value = 1;
-
-    /**
-     * @var boolean
-     */
-    public $source = true;
-
-    /**
-     * @var float
-     */
-    public $boost;
-
-    /**
      * @var string
      */
     public $className;
 
     /**
-     * @var array|ElasticField[]
+     * @var ClassMetadataInterface|\Doctrine\ORM\Mapping\ClassMetadata
      */
-    public $fieldMappings = array();
-
-    /**
-     * @var array|ElasticField[]
-     */
-    public $methodMappings = array();
-
-    /**
-     *  Additional root annotations of the mapped class.
-     *
-     * @var array|ElasticRoot[]
-     */
-    public $rootMappings = array();
-
-    /**
-     * The ReflectionProperty parameters of the mapped class.
-     *
-     * @var array
-     */
-    public $parameters = array();
-
-    /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var \ReflectionClass
-     */
-    public $reflClass;
-
-    /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var \ReflectionProperty[]|\ReflectionMethod[]
-     */
-    public $reflFields;
-
-    /**
-     * READ-ONLY: The field names of all fields that are part of the identifier/primary key
-     * of the mapped entity class.
-     *
-     * @var mixed
-     */
-    public $identifier = array();
+    private $parentMetadata;
 
 
-    public function __construct($documentName)
+
+    public function __construct($entityName)
     {
-        $this->className = $documentName;
-        $this->reflClass = new \ReflectionClass($documentName);
+        $this->className = $entityName;
     }
 
-    /** Determines which fields get serialized.
-     *
-     * It is only serialized what is necessary for best unserialization performance.
-     *
-     * Parts that are also NOT serialized because they can not be properly unserialized:
-     *      - reflClass (ReflectionClass)
-     *      - reflFields (ReflectionProperty array)
-     *
+
+
+    /**
      * @return array The names of all the fields that should be serialized.
      */
     public function __sleep()
     {
         // This metadata is always serialized/cached.
         return array(
-            'boost',
-            'className',
-            'methodMappings',
-            'fieldMappings',
-            'parameters',
-            'index',
-            'numberOfReplicas',
-            'numberOfShards',
-            'opType',
-            'parent',
-            'timeToLive',
             'type',
-            'value',
-            'identifier',
-            'rootMappings'
+            'index',
+            'parent',
+            'className',
         );
     }
+
+
+
+    /**
+     * @return string
+     */
+    public function getIndexName()
+    {
+        return $this->index->name;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function getTypeName()
+    {
+        return $this->type->name;
+    }
+
+
 
     /**
      * Get fully-qualified class name of this persistent class.
@@ -193,32 +122,23 @@ class ClassMetadata implements ClassMetadataInterface
     public function getName()
     {
         return $this->className;
-
     }
+
+
 
     /**
      * Gets the mapped identifier field name.
      *
      * The returned structure is an array of the identifier field names.
      *
-     * @return array
+     * @return string
      */
     public function getIdentifier()
     {
-        return $this->identifier;
+        return $this->parentMetadata->getSingleIdentifierFieldName();
     }
 
-    /**
-     * INTERNAL:
-     * Sets the mapped identifier key field of this class.
-     * Mainly used by the ClassMetadataFactory to assign inherited identifiers.
-     *
-     * @param mixed $identifier
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
-    }
+
 
     /**
      * Gets the ReflectionClass instance for this mapped class.
@@ -227,116 +147,80 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getReflectionClass()
     {
-        return $this->reflClass;
+        return $this->parentMetadata->getReflectionClass();
     }
+
+
 
     /**
      * Checks if the given field name is a mapped identifier for this class.
      *
      * @param string $fieldName
+     *
      * @return boolean
      */
     public function isIdentifier($fieldName)
     {
-        return $this->identifier === $fieldName;
+        return $this->parentMetadata->isIdentifier($fieldName);
     }
+
+
 
     /**
      * Checks if the given field is a mapped property for this class.
      *
      * @param string $fieldName
+     *
      * @return boolean
      */
     public function hasField($fieldName)
     {
-        return false;
+        return $this->parentMetadata->hasField($fieldName);
     }
 
-    /**
-     * This mapping is used in the _wakeup-method to set the reflFields after _sleep.
-     *
-     * @param \ReflectionProperty $field
-     * @param array $mapping
-     */
-    public function addFieldMapping(\Reflector $field, $mapping = array())
-    {
-        $this->fieldMappings[$field->getName()] = $mapping;
-        $this->reflFields[$field->getName()] = $field;
-    }
-
-    /**
-     * This mapping is used in the _wakeup-method to set the reflFields after _sleep.
-     *
-     * @param \ReflectionProperty $field
-     * @param array $mapping
-     */
-    public function addMethodMapping(\Reflector $field, $mapping = array())
-    {
-        $this->methodMappings[$field->getName()] = $mapping;
-		$this->reflFields[$field->getName()] = $field;
-    }
-
-    /**
-     * @param array $mapping
-     */
-    public function addRootMapping($mapping = array())
-    {
-        $this->rootMappings[] = $mapping;
-    }
-
-    /**
-     * This mapping is used in the _wakeup-method to set the parameters after _sleep.
-     *
-     * @param string $fieldName
-     * @param array $mapping
-     */
-    public function addParameterMapping($fieldName, $mapping = array())
-    {
-        $this->parameters[$fieldName] = $mapping;
-    }
-
-    /**
-     * @param \ReflectionProperty $field
-     */
-    /*public function addField(\ReflectionProperty $field)
-    {
-        $fieldName = $field->getName();
-        $this->reflFields[] = $field;
-    }*/
 
 
     /**
      * Checks if the given field is a mapped association for this class.
      *
      * @param string $fieldName
+     *
      * @return boolean
      */
     public function hasAssociation($fieldName)
     {
-        return false;
+        return $this->parentMetadata->hasAssociation($fieldName);
     }
+
+
 
     /**
      * Checks if the given field is a mapped single valued association for this class.
      *
      * @param string $fieldName
+     *
      * @return boolean
      */
     public function isSingleValuedAssociation($fieldName)
     {
-        return false;
+        return $this->parentMetadata->isSingleValuedAssociation($fieldName);
     }
+
+
 
     /**
      * Checks if the given field is a mapped collection valued association for this class.
      *
      * @param string $fieldName
+     *
      * @return boolean
      */
     public function isCollectionValuedAssociation($fieldName)
     {
-        return false;
+        return $this->parentMetadata->isCollectionValuedAssociation($fieldName);
     }
+
+
 
     /**
      * A numerically indexed list of field names of this persistent class.
@@ -347,68 +231,10 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getFieldNames()
     {
-        return array_keys($this->reflFields);
+        return $this->parentMetadata->getFieldNames();
     }
 
-    /**
-     * Currently not necessary but needed by Interface
-     *
-     * @return array
-     */
-    public function getAssociationNames()
-    {
-        return array();
-    }
 
-    /**
-     * Returns a type name of this field.
-     *
-     * This type names can be implementation specific but should at least include the php types:
-     * integer, string, boolean, float/double, datetime.
-     *
-     * @param string $fieldName
-     * @return string
-     */
-    public function getTypeOfField($fieldName)
-    {
-        //@todo: check if $field exists
-        return gettype($this->$fieldName);
-    }
-
-    /**
-     * Currently not necessary but needed by Interface
-     *
-     *
-     * @param string $assocName
-     * @return string
-     */
-    public function getAssociationTargetClass($assocName)
-    {
-        return '';
-    }
-
-    public function isAssociationInverseSide($assocName)
-    {
-        return '';
-    }
-
-    public function getAssociationMappedByTargetField($assocName)
-    {
-        return '';
-    }
-
-    /**
-     * Return the identifier of this object as an array with field name as key.
-     *
-     * Has to return an empty array if no identifier isset.
-     *
-     * @param object $object
-     * @return array
-     */
-    public function getIdentifierValues($object)
-    {
-        // TODO: Implement getIdentifierValues() method.
-    }
 
     /**
      * Returns an array of identifier field names numerically indexed.
@@ -417,42 +243,103 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getIdentifierFieldNames()
     {
-        // TODO: Implement getIdentifierFieldNames() method.
+        return $this->parentMetadata->getIdentifierFieldNames();
     }
+
+
 
     /**
-     * Restores some state that can not be serialized/unserialized.
+     * Returns a numerically indexed list of association names of this persistent class.
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
+     * This array includes identifier associations if present on this class.
      *
-     * @return void
+     * @return array
      */
-    public function wakeupReflection($reflService)
+    public function getAssociationNames()
     {
-        // Restore ReflectionClass and properties
-        $this->reflClass = $reflService->getClass($this->className);
-
-        foreach ($this->fieldMappings as $field => $mapping) {
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($this->className, $field);
-        }
-
-        foreach ($this->methodMappings as $field => $mapping) {
-            $this->reflFields[$field] = $reflService->getClass($this->className)->getMethod($field);
-            $this->reflFields[$field]->setAccessible(TRUE);
-        }
+        return $this->parentMetadata->getAssociationNames();
     }
+
+
 
     /**
-     * Initializes a new ClassMetadata instance that will hold the object-relational mapping
-     * metadata of the class with the given name.
+     * Returns a type name of this field.
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService The reflection service.
+     * This type names can be implementation specific but should at least include the php types:
+     * integer, string, boolean, float/double, datetime.
      *
-     * @return void
+     * @param string $fieldName
+     *
+     * @return string
      */
-    public function initializeReflection($reflService)
+    public function getTypeOfField($fieldName)
     {
-        $this->reflClass = $reflService->getClass($this->className);
-        $this->className = $this->reflClass->getName(); // normalize classname
+        return $this->parentMetadata->getTypeOfField($fieldName);
     }
+
+
+
+    /**
+     * Returns the target class name of the given association.
+     *
+     * @param string $assocName
+     *
+     * @return string
+     */
+    public function getAssociationTargetClass($assocName)
+    {
+        return $this->parentMetadata->getAssociationTargetClass($assocName);
+    }
+
+
+
+    /**
+     * Checks if the association is the inverse side of a bidirectional association.
+     *
+     * @param string $assocName
+     *
+     * @return boolean
+     */
+    public function isAssociationInverseSide($assocName)
+    {
+        return $this->parentMetadata->isAssociationInverseSide($assocName);
+    }
+
+
+
+    /**
+     * Returns the target field of the owning side of the association.
+     *
+     * @param string $assocName
+     *
+     * @return string
+     */
+    public function getAssociationMappedByTargetField($assocName)
+    {
+        return $this->parentMetadata->getAssociationMappedByTargetField($assocName);
+    }
+
+
+
+    /**
+     * Returns the identifier of this object as an array with field name as key.
+     *
+     * Has to return an empty array if no identifier isset.
+     *
+     * @param object $object
+     *
+     * @return array
+     */
+    public function getIdentifierValues($object)
+    {
+        return $this->parentMetadata->getIdentifierValues($object);
+    }
+
+
+
+    public function wakeupReflection(ReflectionService $reflService, ClassMetadataInterface $parentMetadata)
+    {
+        $this->parentMetadata = $parentMetadata;
+    }
+
 }
