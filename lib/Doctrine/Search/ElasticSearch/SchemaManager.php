@@ -104,7 +104,7 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 				$aliases[$indexAlias] = $class->getIndexName();
 
 				$fakeMetadata = clone $class;
-				$fakeMetadata->index['name'] = $indexAlias;
+				$fakeMetadata->index->name = $indexAlias;
 
 				$class = $fakeMetadata;
 			}
@@ -144,12 +144,12 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	{
 		$index = $this->elastica->getIndex($class->getIndexName());
 		$response = $index->create(array(
-			'number_of_shards' => $class->index['number_of_shards'],
-			'number_of_replicas' => $class->index['number_of_replicas'],
+			'number_of_shards' => $class->index->numberOfShards,
+			'number_of_replicas' => $class->index->numberOfReplicas,
 			'analysis' => array(
-				'char_filter' => $class->index['char_filter'],
-				'analyzer' => $class->index['analyzer'],
-				'filter' => $class->index['filter'],
+				'char_filter' => $class->index->charFilter,
+				'analyzer' => $class->index->analyzer,
+				'filter' => $class->index->filter,
 			),
 		), TRUE);
 
