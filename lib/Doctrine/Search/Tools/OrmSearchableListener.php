@@ -8,18 +8,20 @@
  * For the full copyright and license information, please view the file license.txt that was distributed with this source code.
  */
 
-namespace Doctrine\Search;
+namespace Doctrine\Search\Tools;
 
 use Doctrine;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Search\Event\LifecycleEventArgs;
+use Doctrine\Search\Searchable;
+use Doctrine\Search\SearchManager;
 
 
 
 /**
  * @author Filip Procházka <filip@prochazka.su>
  */
-class SearchableListener implements EventSubscriber
+class OrmSearchableListener implements EventSubscriber
 {
 
 	/**
