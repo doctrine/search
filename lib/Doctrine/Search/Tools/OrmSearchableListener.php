@@ -12,7 +12,7 @@ namespace Doctrine\Search\Tools;
 
 use Doctrine;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\Search\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Search\Searchable;
 use Doctrine\Search\SearchManager;
 
