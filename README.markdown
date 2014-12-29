@@ -47,8 +47,8 @@ $searchManager = new Doctrine\Search\SearchManager(
 ```
 
 ## Mappings ##
-Basic entity mappings for index and type generation can be annotated as shown in the following example. Mappings 
-can be rendered into a format suitable for automatically generating indexes and types using a build script 
+Basic entity mappings for index and type generation can be annotated as shown in the following example. Mappings
+can be rendered into a format suitable for automatically generating indexes and types using a build script
 (advanced setup required).
 ```php
 <?php
@@ -64,7 +64,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Post
 {
   /**
-   * @ORM\Id 
+   * @ORM\Id
    * @ORM\GeneratedValue(strategy="AUTO")
    * @MAP\ElasticField(type="integer", includeInAll=false)
    */
@@ -81,7 +81,7 @@ class Post
    * @MAP\ElasticField(type="string", includeInAll=true)
    */
   private $content;
-   
+
   /**
    * @MAP\ElasticField(name="tags", type="string", includeInAll=false, index="not_analyzed")
    */
@@ -92,37 +92,12 @@ class Post
 ```
 
 ## Indexing ##
-Documents can be serialized for indexing currently in the following ways. If required an event listener can 
+Documents can be serialized for indexing currently in the following ways. If required an event listener can
 be used with your ORM as shown in this example. If an event listener is not needed, entities can be persisted
 or removed directly using the search manager.
-```php
-<?php
-namespace Entities\Listener;
 
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Entities\Behaviour\SearchableEntityInterface;
+The repository contains `OrmSearchableListener`, which can be used for this.
 
-class SearchableListener implements
-{
-	  protected function getSearchManager() {	
-		    return $this->getDatabaseConnection('elasticsearch');
-	  }
-	
-	  public function postPersist(LifecycleEventArgs $oArgs) {
-	    	$oEntity = $oArgs->getEntity();
-		    if($oEntity instanceof SearchableEntityInterface) {
-		  	    $this->getSearchManager()->persist($oEntity);
-	  	  }
-	  }
-	
-    public function postRemove(LifecycleEventArgs $oArgs) {
-        $oEntity = $oArgs->getEntity();
-        if($oEntity instanceof SearchableEntityInterface) {
-            $this->getSearchManager()->remove($oEntity);
-        }
-    }
-}
-```
 
 ### CallbackSerializer ###
 This approach simply expects a `toArray()` method on the entity, although this method be configured as required.
@@ -132,7 +107,7 @@ entities that need to be persisted to the search engine (see above example).
 ...
 use Entities\Behaviour\SearchableEntityInterface
 
-class Post implements SearchableEntityInterface 
+class Post implements SearchableEntityInterface
 {
   ...
   public function toArray() {
@@ -147,7 +122,7 @@ class Post implements SearchableEntityInterface
 ```
 
 ### JMS Serializer ###
-You can alternatively use the advanced serialization power of the `JMS Serializer` to automatically handle 
+You can alternatively use the advanced serialization power of the `JMS Serializer` to automatically handle
 serialization for you based on annotations such as those shown in this example.
 ```php
 ...
@@ -169,11 +144,11 @@ class Post implements SearchableEntityInterface
    * @JMS\Groups({"public", "search"})
    */
   private $title;
-    
+
   /**
    * @ORM\Column(type="text")
    * @MAP\ElasticField(type="string", includeInAll=true)
-   * @JMS\Expose 
+   * @JMS\Expose
    * @JMS\Groups({"public", "search"})
    */
   private $content;
@@ -197,7 +172,7 @@ $hydrationQuery = $entityManager->createQueryBuilder()
 	->where('p.id IN (:ids)')
 	->orderBy('field')
 	->getQuery();
-	
+
 $query = $searchManager->createQuery()
   ->from('Entities\Post')
   ->searchWith(new Elastica\Query())
