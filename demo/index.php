@@ -34,7 +34,7 @@ $sm->flush();
 echo PHP_EOL."*** Single lookup with no results ***".PHP_EOL;
 try {
     $user = $sm->find('Doctrine\Tests\Models\Comments\User', 'unknownid');
-} catch (Doctrine\Search\Exception\NoResultException $exception) {
+} catch (\Doctrine\Search\NoResultException $exception) {
     print_r($exception->getMessage());
     echo PHP_EOL;
 }
