@@ -20,7 +20,8 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Search\Exception\DoctrineSearchException;
+
+
 
 class EntityRepositoryCollection implements ObjectRepository
 {
@@ -67,7 +68,7 @@ class EntityRepositoryCollection implements ObjectRepository
      */
     public function findAll()
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        throw new NotImplementedException;
     }
 
     /**
@@ -86,7 +87,7 @@ class EntityRepositoryCollection implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        throw new NotImplementedException;
     }
 
     /**
@@ -97,7 +98,7 @@ class EntityRepositoryCollection implements ObjectRepository
      */
     public function findOneBy(array $criteria)
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        throw new NotImplementedException;
     }
 
     /**

@@ -20,32 +20,32 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Search\SearchManager;
 use Doctrine\Search\Mapping\ClassMetadata;
-use Doctrine\Search\Exception\DoctrineSearchException;
+
+
 
 class EntityRepository implements ObjectRepository
 {
     /**
      * @var string
      */
-    protected $_entityName;
+    protected $entityName;
 
     /**
      * @var \Doctrine\Search\Mapping\ClassMetadata
      */
-    private $_class;
+    private $class;
 
     /**
      * @var \Doctrine\Search\SearchManager
      */
-    private $_sm;
+    private $sm;
 
     public function __construct(SearchManager $sm, ClassMetadata $class)
     {
-        $this->_sm = $sm;
-        $this->_entityName = $class->className;
-        $this->_class = $class;
+        $this->sm = $sm;
+        $this->entityName = $class->className;
+        $this->class = $class;
     }
 
     /**
@@ -56,7 +56,7 @@ class EntityRepository implements ObjectRepository
      */
     public function find($id)
     {
-        return $this->_sm->find($this->_entityName, $id);
+        return $this->sm->find($this->entityName, $id);
     }
 
     /**
@@ -66,7 +66,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findAll()
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        throw new NotImplementedException;
     }
 
     /**
@@ -85,7 +85,7 @@ class EntityRepository implements ObjectRepository
      */
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
     {
-        throw new DoctrineSearchException('Not yet implemented.');
+        throw new NotImplementedException();
     }
 
     /**
@@ -98,7 +98,7 @@ class EntityRepository implements ObjectRepository
     {
         $options = array('field' => key($criteria));
         $value = current($criteria);
-        return $this->_sm->getUnitOfWork()->load($this->_class, $value, $options);
+        return $this->sm->getUnitOfWork()->load($this->class, $value, $options);
     }
 
     /**
@@ -108,7 +108,7 @@ class EntityRepository implements ObjectRepository
      */
     public function search($query)
     {
-        return $this->_sm->getUnitOfWork()->loadCollection(array($this->_class), $query);
+        return $this->sm->getUnitOfWork()->loadCollection(array($this->class), $query);
     }
 
     /**
@@ -118,7 +118,7 @@ class EntityRepository implements ObjectRepository
      */
     public function delete($query)
     {
-        $this->_sm->getClient()->removeAll($this->_class, $query);
+        $this->sm->getClient()->removeAll($this->class, $query);
     }
 
     /**
@@ -128,7 +128,7 @@ class EntityRepository implements ObjectRepository
      */
     public function getClassName()
     {
-        return $this->_entityName;
+        return $this->entityName;
     }
 
     /**
@@ -138,7 +138,7 @@ class EntityRepository implements ObjectRepository
      */
     public function getClassMetadata()
     {
-        return $this->_class;
+        return $this->class;
     }
 
     /**
@@ -148,6 +148,6 @@ class EntityRepository implements ObjectRepository
      */
     public function getSearchManager()
     {
-        return $this->_sm;
+        return $this->sm;
     }
 }
