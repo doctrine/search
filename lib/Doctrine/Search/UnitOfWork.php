@@ -19,11 +19,13 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Search\SearchManager;
-use Doctrine\Search\Exception\DoctrineSearchException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Elastica\Document;
+use Elastica\Search;
 use Traversable;
+
+
 
 class UnitOfWork
 {
@@ -79,7 +81,8 @@ class UnitOfWork
         }
 
         $oid = spl_object_hash($entity);
-        $this->scheduledForPersist[$oid] = $entity;
+        $class = get_class($entity);
+        $this->scheduledForPersist[$class][$oid] = $entity;
 
         if ($this->evm->hasListeners(Events::postPersist)) {
             $this->evm->dispatchEvent(Events::postPersist, new Event\LifecycleEventArgs($entity, $this->sm));
@@ -98,7 +101,9 @@ class UnitOfWork
         }
 
         $oid = spl_object_hash($entity);
-        $this->scheduledForDelete[$oid] = $entity;
+        $class = get_class($entity);
+        unset($this->scheduledForPersist[$class][$oid]);
+        $this->scheduledForDelete[$class][$oid] = $entity;
 
         if ($this->evm->hasListeners(Events::postRemove)) {
             $this->evm->dispatchEvent(Events::postRemove, new Event\LifecycleEventArgs($entity, $this->sm));
@@ -117,7 +122,7 @@ class UnitOfWork
             $this->scheduledForPersist =
             $this->updatedIndexes = array();
         } else {
-            //TODO: implement for named entity classes
+            throw new NotImplementedException;
         }
 
         if ($this->evm->hasListeners(Events::onClear)) {
@@ -142,16 +147,20 @@ class UnitOfWork
             $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->sm));
         }
 
-        //TODO: single/array entity commit handling
-        $this->commitRemoved();
-        $this->commitPersisted();
+        if (is_object($entity)) {
+            throw new NotImplementedException;
 
-        //Force refresh of updated indexes
-        if ($entity === true) {
-            $client = $this->sm->getClient();
-            foreach (array_unique($this->updatedIndexes) as $index) {
-                $client->refreshIndex($index);
-            }
+        } elseif (is_array($entity)) {
+            throw new NotImplementedException;
+
+        } else {
+            $this->commitRemoved();
+            $this->commitPersisted();
+        }
+
+        $client = $this->sm->getClient();
+        foreach (array_unique($this->updatedIndexes) as $index) {
+            $client->refreshIndex($index);
         }
 
         $this->clear();
@@ -171,8 +180,8 @@ class UnitOfWork
 
         foreach ($sortedDocuments as $entityName => $documents) {
             $classMetadata = $this->sm->getClassMetadata($entityName);
-            $this->updatedIndexes[] = $classMetadata->index;
             $client->addDocuments($classMetadata, $documents);
+            $this->updatedIndexes[] = $classMetadata->getIndexName();
         }
     }
 
@@ -181,13 +190,13 @@ class UnitOfWork
      */
     private function commitRemoved()
     {
-        $documents = $this->sortObjects($this->scheduledForDelete, false);
+        $sortedDocuments = $this->sortObjects($this->scheduledForDelete, false);
         $client = $this->sm->getClient();
 
-        foreach ($documents as $entityName => $documents) {
+        foreach ($sortedDocuments as $entityName => $documents) {
             $classMetadata = $this->sm->getClassMetadata($entityName);
-            $this->updatedIndexes[] = $classMetadata->index;
             $client->removeDocuments($classMetadata, $documents);
+            $this->updatedIndexes[] = $classMetadata->getIndexName();
         }
     }
 
@@ -195,25 +204,29 @@ class UnitOfWork
      * Prepare entities for commit. Entities scheduled for deletion do not need
      * to be serialized.
      *
-     * @param array $objects
+     * @param array $scheduledObjects
      * @param boolean $serialize
      * @throws DoctrineSearchException
      * @return array
      */
-    private function sortObjects(array $objects, $serialize = true)
+    private function sortObjects(array $scheduledObjects, $serialize = true)
     {
         $documents = array();
         $serializer = $this->sm->getSerializer();
 
-        foreach ($objects as $object) {
-            $document = $serialize ? $serializer->serialize($object) : $object;
+        foreach ($scheduledObjects as $type => $objects) {
+            $metadata = $this->sm->getClassMetadata($type);
 
-            $id = $object->getId();
-            if (!$id) {
-                throw new DoctrineSearchException('Entity must have an id to be indexed');
+            foreach ($objects as $object) {
+                $document = $serialize ? $serializer->serialize($object) : $object;
+
+                if (!$metadata->getIdentifier()) {
+                    throw new DoctrineSearchException('Entity must have an id to be indexed');
+                }
+
+                $id = implode('-', (array) $metadata->getIdentifierValues($object));
+                $documents[$type][$id] = $document;
             }
-
-            $documents[get_class($object)][$id] = $document;
         }
 
         return $documents;
@@ -243,7 +256,8 @@ class UnitOfWork
      * Load and hydrate a document collection
      *
      * @param array $classes
-     * @param unknown $query
+     * @param mixed $query
+     * @return ArrayCollection|Searchable[]
      */
     public function loadCollection(array $classes, $query)
     {
@@ -254,34 +268,55 @@ class UnitOfWork
     /**
      * Construct an entity collection
      *
-     * @param array $classes
-     * @param Traversable $resultSet
+     * @param array|ClassMetadata[] $classes
+     * @param Traversable|Document[] $resultSet
+     * @return ArrayCollection|Searchable[]
      */
     public function hydrateCollection(array $classes, Traversable $resultSet)
     {
+        $map = array();
+        foreach ($classes as $class) {
+            $map[$class->getIndexName()][$class->getTypeName()] = $class;
+        }
+
+        if ($om = $this->sm->getObjectManager()) { // preload entities by one query
+            $documentsByType = array();
+            foreach ($resultSet as $document) {
+                /** @var ClassMetadata $class */
+                $class = $map[$document->getIndex()][$document->getType()];
+                $documentsByType[$class->className][$document->getId()] = $document;
+            }
+
+            foreach ($documentsByType as $className => $documents) {
+                $metadata = $this->sm->getClassMetadata($className);
+
+                $repository = $om->getRepository($className);
+                $repository->findBy([$metadata->getIdentifier() => array_keys($documents)]);
+            }
+        }
+
         $collection = new ArrayCollection();
         foreach ($resultSet as $document) {
-            foreach ($classes as $class) {
-                if ($document->getIndex() == $class->index && $document->getType() == $class->type) {
-                    break;
-                }
-            }
+            /** @var ClassMetadata $class */
+            $class = $map[$document->getIndex()][$document->getType()];
             $collection[] = $this->hydrateEntity($class, $document);
         }
 
         return $collection;
     }
 
+
+
     /**
      * Construct an entity object
      *
      * @param ClassMetadata $class
-     * @param object $document
+     * @param object|Document $document
+     * @return Searchable
      */
     public function hydrateEntity(ClassMetadata $class, $document)
     {
-        // TODO: add support for different result set types from different clients
-        // perhaps by wrapping documents in a layer of abstraction
+        // TODO: add support for different result set types from different clients by implementing Persisters per client
         $data = $document->getData();
         $fields = array_merge(
             $document->hasFields() ? $document->getFields() : array(),
@@ -289,24 +324,25 @@ class UnitOfWork
         );
 
         foreach ($fields as $name => $value) {
-            if (isset($class->parameters[$name])) {
+            if (isset($class->type->parameters[$name])) {
                 $data[$name] = $value;
-            } else {
-                foreach ($class->parameters as $param => $mapping) {
-                    if ($mapping->name == $name) {
-                        $data[$param] = $value;
-                        break;
-                    }
-                }
+
+            } elseif ($key = array_search($name, $class->type->parameters, TRUE)) {
+                $data[$key] = $value;
             }
         }
 
         $data[$class->getIdentifier()] = $document->getId();
 
-        $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
+        if ($om = $this->sm->getObjectManager()) {
+            $entity = $om->find($class->className, $document->getId());
+
+        } else {
+            $entity = $this->sm->getSerializer()->deserialize($class->className, json_encode($data));
+        }
 
         if ($this->evm->hasListeners(Events::postLoad)) {
-            $this->evm->dispatchEvent(Events::postLoad, new Event\LifecycleEventArgs($entity, $this->sm));
+            $this->evm->dispatchEvent(Events::postLoad, new Event\PostLoadEventArgs($entity, $data, $this->sm));
         }
 
         return $entity;
@@ -315,13 +351,15 @@ class UnitOfWork
     /**
      * Checks whether an entity is registered in the identity map of this UnitOfWork.
      *
-     * @param object $entity
-     *
+     * @param Searchable $entity
      * @return boolean
      */
     public function isInIdentityMap($entity)
     {
         $oid = spl_object_hash($entity);
-        return isset($this->scheduledForPersist[$oid]) || isset($this->scheduledForDelete[$oid]);
+        $class = get_class($entity);
+        return isset($this->scheduledForPersist[$class][$oid])
+            || isset($this->scheduledForDelete[$class][$oid]);
     }
+
 }

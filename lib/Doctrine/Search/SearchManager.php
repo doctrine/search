@@ -19,9 +19,10 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Search\Exception\UnexpectedTypeException;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\ObjectManager;
+
+
 
 /**
  * Interface for a Doctrine SearchManager class to implement.
@@ -31,7 +32,7 @@ use Doctrine\Common\EventManager;
 class SearchManager implements ObjectManager
 {
     /**
-     * @var SearchClientInterface
+     * @var SearchClient
      */
     private $client;
 
@@ -80,10 +81,10 @@ class SearchManager implements ObjectManager
      * Constructor
      *
      * @param Configuration         $config
-     * @param SearchClientInterface $client
+     * @param SearchClient $client
      * @param EventManager          $eventManager
      */
-    public function __construct(Configuration $config, SearchClientInterface $client, EventManager $eventManager)
+    public function __construct(Configuration $config, SearchClient $client, EventManager $eventManager)
     {
         $this->configuration = $config;
         $this->client = $client;
@@ -91,6 +92,7 @@ class SearchManager implements ObjectManager
 
         $this->metadataFactory = $this->configuration->getClassMetadataFactory();
         $this->metadataFactory->setSearchManager($this);
+        $this->metadataFactory->setTypeMetadataFactory($client);
         $this->metadataFactory->setConfiguration($this->configuration);
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
 
@@ -165,7 +167,7 @@ class SearchManager implements ObjectManager
     }
 
     /**
-     * @return SearchClientInterface
+     * @return SearchClient
      */
     public function getClient()
     {
@@ -275,23 +277,7 @@ class SearchManager implements ObjectManager
     }
 
     /**
-     * Gets a collection of entity repositories.
-     *
-     * @param array $entityNames The names of the entities.
-     * @return EntityRepositoryCollection The repository class.
-     */
-    public function getRepositories(array $entityNames)
-    {
-        $repositoryCollection = new EntityRepositoryCollection($this);
-        foreach ($entityNames as $entityName) {
-            $repositoryCollection->addRepository($this->getRepository($entityName));
-        }
-        return $repositoryCollection;
-    }
-
-    /**
-     * Returns a search engine Query wrapper which can be executed
-     * to retrieve results.
+     * Returns a search engine Query wrapper which can be executed to retrieve results.
      *
      * @return Query
      */
@@ -331,24 +317,4 @@ class SearchManager implements ObjectManager
     {
     }
 
-
-    /**
-     * Inject a Doctrine 2 object manager
-     *
-     * @deprecated
-     * @param ObjectManager $om
-     */
-    public function setEntityManager(ObjectManager $om)
-    {
-        $this->setObjectManager($om);
-    }
-
-    /**
-     * @deprecated
-     * @return ObjectManager|\Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->getObjectManager();
-    }
 }

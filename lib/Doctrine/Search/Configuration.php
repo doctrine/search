@@ -46,11 +46,11 @@ class Configuration
      */
     public function getMetadataDriverImpl()
     {
-        if (!isset($this->attributes['concreteMetadataDriver'])) {
-            $this->attributes['concreteMetadataDriver'] = $this->newDefaultAnnotationDriver();
+        if (!isset($this->attributes['metadataDriver'])) {
+            $this->attributes['metadataDriver'] = $this->newDefaultAnnotationDriver();
         }
 
-        return $this->attributes['concreteMetadataDriver'];
+        return $this->attributes['metadataDriver'];
     }
 
     /**
@@ -60,7 +60,7 @@ class Configuration
      */
     public function setMetadataDriverImpl(MappingDriver $concreteDriver)
     {
-        $this->attributes['concreteMetadataDriver'] = $concreteDriver;
+        $this->attributes['metadataDriver'] = $concreteDriver;
     }
 
     /**
@@ -94,9 +94,9 @@ class Configuration
      */
     public function newDefaultAnnotationDriver(array $paths = array())
     {
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
-
-        return new \Doctrine\Search\Mapping\Driver\AnnotationDriver($reader, $paths);
+        throw new NotImplementedException;
+//        $reader = new \Doctrine\Common\Annotations\AnnotationReader();
+//        return new \Doctrine\Search\Mapping\Driver\AnnotationDriver($reader, $paths);
     }
 
     /**
@@ -178,21 +178,4 @@ class Configuration
         }
     }
 
-    /**
-     * @deprecated
-     */
-    public function setEntityManager(ObjectManager $objectManager)
-    {
-        $this->setObjectManager($objectManager);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getEntityManager()
-    {
-        if (isset($this->attributes['objectManager'])) {
-            return $this->attributes['objectManager'];
-        }
-    }
 }

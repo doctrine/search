@@ -66,33 +66,53 @@ class Client implements SearchClient
     }
 
     /**
+     * @param string $name
+     * @return Index
+     */
+    protected function getIndex($name)
+    {
+        return $this->client->getIndex($name);
+    }
+
+    /**
+     * @param ClassMetadata $class
+     * @return \Elastica\Type
+     */
+    protected function getType(ClassMetadata $class)
+    {
+        return $this->getIndex($class->getIndexName())->getType($class->getTypeName());
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function addDocuments(ClassMetadata $class, array $documents)
     {
-        $type = $this->getIndex($class->index)->getType($class->type);
-
-        $parameters = $this->getParameters($class->parameters);
-
         $bulk = array();
         foreach ($documents as $id => $document) {
             $elasticaDoc = new Document($id);
-            foreach ($parameters as $name => $value) {
-                if (isset($document[$value])) {
-                    if (method_exists($elasticaDoc, "set{$name}")) {
-                        $elasticaDoc->{"set{$name}"}($document[$value]);
-                    } else {
-                        $elasticaDoc->setParam($name, $document[$value]);
-                    }
-                    unset($document[$value]);
+
+            foreach ($class->type->parameters as $name => $value) {
+                if (!isset($document[$value])) {
+                    continue;
                 }
+
+                if (method_exists($elasticaDoc, "set{$name}")) {
+                    $elasticaDoc->{"set{$name}"}($document[$value]);
+                } else {
+                    $elasticaDoc->setParam($name, $document[$value]);
+                }
+                unset($document[$value]);
             }
-            $elasticaDoc->setData($document);
-            $bulk[] = $elasticaDoc;
+
+            $bulk[] = $elasticaDoc->setData($document);
         }
+
+        $type = $this->getType($class);
 
         if (count($bulk) > 1) {
             $type->addDocuments($bulk);
+
         } else {
             $type->addDocument($bulk[0]);
         }
@@ -103,8 +123,7 @@ class Client implements SearchClient
      */
     public function removeDocuments(ClassMetadata $class, array $documents)
     {
-        $type = $this->getIndex($class->index)->getType($class->type);
-        $type->deleteIds(array_keys($documents));
+        $this->getType($class)->deleteIds(array_keys($documents));
     }
 
     /**
@@ -112,9 +131,8 @@ class Client implements SearchClient
      */
     public function removeAll(ClassMetadata $class, $query = null)
     {
-        $type = $this->getIndex($class->index)->getType($class->type);
         $query = $query ?: new MatchAll();
-        $type->deleteByQuery($query);
+        $this->getType($class)->deleteByQuery($query);
     }
 
     /**
@@ -123,8 +141,7 @@ class Client implements SearchClient
     public function find(ClassMetadata $class, $id, $options = array())
     {
         try {
-            $type = $this->getIndex($class->index)->getType($class->type);
-            $document = $type->getDocument($id, $options);
+            $document = $this->getType($class)->getDocument($id, $options);
         } catch (NotFoundException $ex) {
             throw new NoResultException();
         }
@@ -158,16 +175,20 @@ class Client implements SearchClient
         return $this->buildQuery($classes)->search();
     }
 
+    /**
+     * @param array|ClassMetadata[] $classes
+     * @return Search
+     */
     protected function buildQuery(array $classes)
     {
         $searchQuery = new Search($this->client);
         $searchQuery->setOption(Search::OPTION_VERSION, true);
         foreach ($classes as $class) {
             if ($class->index) {
-                $indexObject = $this->getIndex($class->index);
+                $indexObject = $this->getIndex($class->getIndexName());
                 $searchQuery->addIndex($indexObject);
                 if ($class->type) {
-                    $searchQuery->addType($indexObject->getType($class->type));
+                    $searchQuery->addType($indexObject->getType($class->getTypeName()));
                 }
             }
         }
