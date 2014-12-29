@@ -19,14 +19,16 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine;
 use Elastica;
+
+
 
 class Query
 {
     const HYDRATE_BYPASS = -1;
-
     const HYDRATE_INTERNAL = -2;
+    const HYDRATE_QUERY = NULL;
 
     const HYDRATION_PARAMETER = 'ids';
 
@@ -36,7 +38,7 @@ class Query
     protected $sm;
 
     /**
-     * @var object
+     * @var Elastica\Query
      */
     protected $query;
 
@@ -58,7 +60,7 @@ class Query
     /**
      * @var integer
      */
-    protected $hydrationMode;
+    protected $hydrationMode = self::HYDRATE_INTERNAL;
 
     /**
      * @var boolean
@@ -71,6 +73,11 @@ class Query
     protected $cacheLifetime;
 
     /**
+     * @var string
+     */
+    protected $resultCacheId;
+
+    /**
      * @var integer
      */
     protected $count;
@@ -80,10 +87,24 @@ class Query
      */
     protected $facets;
 
+    /**
+     * @var integer
+     */
+    protected $firstResult;
+
+    /**
+     * @var integer
+     */
+    protected $maxResults;
+
+
+
     public function __construct(SearchManager $sm)
     {
         $this->sm = $sm;
     }
+
+
 
     /**
      * Magic method to pass query building to the underlying query
@@ -91,6 +112,7 @@ class Query
      *
      * @param string $method
      * @param array $arguments
+     * @return Query
      */
     public function __call($method, $arguments)
     {
@@ -102,10 +124,13 @@ class Query
         return $this;
     }
 
+
+
     /**
      * Specifies the searchable entity class to search against.
      *
-     * @param mixed $entityClasses
+     * @param string|array $entityClasses
+     * @return Query
      */
     public function from($entityClasses)
     {
@@ -113,27 +138,44 @@ class Query
         return $this;
     }
 
+
+
     /**
      * Set the query object to be executed on the search engine
      *
      * @param mixed $query
+     * @return Query
      */
     public function searchWith($query)
     {
+        $client = $this->sm->getClient();
+
+        if ($client instanceof ElasticSearch\Client) {
+            $query = Elastica\Query::create($query);
+
+        } else {
+            throw new NotImplementedException;
+        }
+
         $this->query = $query;
         return $this;
     }
+
+
 
     protected function getSearchManager()
     {
         return $this->sm;
     }
 
+
+
     /**
      * Set the hydration mode from the underlying query modes
      * or bypass and return search result directly from the client
      *
      * @param integer $mode
+     * @return Query
      */
     public function setHydrationMode($mode)
     {
@@ -141,36 +183,70 @@ class Query
         return $this;
     }
 
+
+
     /**
      * If hydrating with Doctrine then you can use the result cache
      * on the default or provided query
      *
      * @param boolean $useCache
      * @param integer $cacheLifetime
+     * @param string $resultCacheId
+     * @return Query
      */
-    public function useResultCache($useCache, $cacheLifetime = null)
+    public function useResultCache($useCache, $cacheLifetime = null, $resultCacheId = NULL)
     {
         $this->useResultCache = $useCache;
         $this->cacheLifetime = $cacheLifetime;
+        $this->resultCacheId = $resultCacheId;
         return $this;
     }
 
-    /**
-     * Return the total hit count for the given query as provided by
-     * the search engine.
-     */
-    public function count()
-    {
-        return $this->count;
-    }
+
 
     /**
-     * @return array
+     * @return int
      */
-    public function getFacets()
+    public function getFirstResult()
     {
-        return $this->facets;
+        return $this->firstResult;
     }
+
+
+
+    /**
+     * @param int $firstResult
+     * @return Query
+     */
+    public function setFirstResult($firstResult)
+    {
+        $this->firstResult = $firstResult;
+        return $this;
+    }
+
+
+
+    /**
+     * @return int
+     */
+    public function getMaxResults()
+    {
+        return $this->maxResults;
+    }
+
+
+
+    /**
+     * @param int $maxResults
+     * @return Query
+     */
+    public function setMaxResults($maxResults)
+    {
+        $this->maxResults = $maxResults;
+        return $this;
+    }
+
+
 
     /**
      * Set a custom Doctrine Query to execute in order to hydrate the search
@@ -180,36 +256,57 @@ class Query
      *
      * @param object $hydrationQuery
      * @param string $parameter
+     * @return Query
      */
     public function hydrateWith($hydrationQuery, $parameter = null)
     {
+        if ($hydrationQuery instanceof Doctrine\ORM\QueryBuilder) {
+            if (!$this->entityClasses) {
+                $this->entityClasses = $hydrationQuery->getRootEntities();
+            }
+
+            $hydrationQuery = $hydrationQuery->getQuery();
+
+        } elseif ($hydrationQuery instanceof Doctrine\ORM\AbstractQuery) {
+            // pass
+
+        } else {
+            throw new NotImplementedException(sprintf('Unsupported type of hydration query provided: %s', get_class($hydrationQuery)));
+        }
+
+        $this->hydrationMode = self::HYDRATE_QUERY;
         $this->hydrationQuery = $hydrationQuery;
         if ($parameter) {
             $this->hydrationParameter = $parameter;
         }
+
         return $this;
     }
+
+
 
     /**
      * Return a provided hydration query
      *
-     * @return object
+     * @return Doctrine\ORM\AbstractQuery
      */
     protected function getHydrationQuery()
     {
         if (!$this->hydrationQuery) {
-            throw new DoctrineSearchException('A hydration query is required for hydrating results to entities.');
+            throw new InvalidStateException('A hydration query is required for hydrating results to entities.');
         }
 
         return $this->hydrationQuery;
     }
 
+
+
     /**
      * Execute search and hydrate results if required.
      *
      * @param integer $hydrationMode
-     * @throws DoctrineSearchException
-     * @return mixed
+     * @throws InvalidStateException
+     * @return array|Searchable[]
      */
     public function getResult($hydrationMode = null)
     {
@@ -222,35 +319,66 @@ class Query
             $classes[] = $this->sm->getClassMetadata($entityClass);
         }
 
-        $resultSet = $this->getSearchManager()->getClient()->search($this->query, $classes);
+        if ($this->query instanceof Elastica\Query) {
+            if ($this->maxResults) {
+                $this->query->setSize($this->maxResults);
+            }
+            if ($this->firstResult) {
+                $this->query->setFrom($this->firstResult);
+            }
+        }
 
-        // TODO: abstraction of support for different result sets
+        $client = $this->getSearchManager()->getClient();
+        $resultSet = $client->search($this->query, $classes);
+
         if ($resultSet instanceof Elastica\ResultSet) {
             $this->count = $resultSet->getTotalHits();
             $this->facets = $resultSet->getFacets();
             $results = $resultSet->getResults();
 
         } else {
-            $resultClass = get_class($resultSet);
-            throw new DoctrineSearchException("Unexpected result set class '$resultClass'");
+            throw new NotImplementedException(sprintf('Unexpected result set class \'%s\'', get_class($resultSet)));
         }
 
         // Return results depending on hydration mode
         if ($this->hydrationMode == self::HYDRATE_BYPASS) {
             return $resultSet;
+
         } elseif ($this->hydrationMode == self::HYDRATE_INTERNAL) {
             return $this->sm->getUnitOfWork()->hydrateCollection($classes, $resultSet);
         }
 
         // Document ids are used to lookup dbms results
-        $fn = function ($result) {
+        $ids = array_map(function ($result) {
+            /** @var Elastica\Document $result */
             return $result->getId();
-        };
-        $ids = array_map($fn, $results);
+        }, $results);
 
         return $this->getHydrationQuery()
             ->setParameter($this->hydrationParameter, $ids ?: null)
-            ->useResultCache($this->useResultCache, $this->cacheLifetime)
+            ->useResultCache($this->useResultCache, $this->cacheLifetime, $this->resultCacheId)
             ->getResult($this->hydrationMode);
     }
+
+
+
+    /**
+     * Return the total hit count for the given query as provided by
+     * the search engine.
+     */
+    public function count()
+    {
+        return $this->count;
+    }
+
+
+
+    /**
+     * @return array
+     */
+    public function getFacets()
+    {
+        return $this->facets;
+    }
+
 }
