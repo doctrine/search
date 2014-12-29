@@ -56,7 +56,10 @@ class NeonDriver implements MappingDriver
 	 */
 	public function loadMetadataForClass($className, ClassMetadata $metadata)
 	{
-		$typeMapping = $this->getTypeMapping($className);
+		if (!$typeMapping = $this->getTypeMapping($className)) {
+			return;
+		}
+
 		$this->loadTypeMapping($metadata->type, $typeMapping);
 
 		$indexMapping = $this->getIndexMapping($typeMapping['index']);
@@ -77,9 +80,13 @@ class NeonDriver implements MappingDriver
 			$type->setParameters($typeMapping['parameters']);
 		}
 
-		$settings = $typeMapping;
-		unset($settings['class'], $settings['index'], $settings['type'], $settings['properties'], $settings['parameters'], $settings['serializer']);
-		$type->setSettings((array) $settings);
+		unset($typeMapping['properties'], $typeMapping['parameters']);
+
+		$type->source = !empty($typeMapping['source']);
+		$type->boost = !empty($typeMapping['boost']) ? $typeMapping['boost'] : NULL;
+
+		unset($typeMapping['class'], $typeMapping['index'], $typeMapping['source'], $typeMapping['type']);
+		$type->setSettings((array) $typeMapping);
 	}
 
 
@@ -121,7 +128,7 @@ class NeonDriver implements MappingDriver
 	 */
 	public function isTransient($className)
 	{
-		return (bool) $this->getTypeMapping($className);
+		return ! $this->getTypeMapping($className);
 	}
 
 
