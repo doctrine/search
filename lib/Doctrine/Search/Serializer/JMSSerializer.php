@@ -20,33 +20,66 @@
 namespace Doctrine\Search\Serializer;
 
 use Doctrine\Search\SerializerInterface;
-use JMS\Serializer\SerializerBuilder;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
 use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
+use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerBuilder;
+
+
 
 class JMSSerializer implements SerializerInterface
 {
+
+    /**
+     * @var Serializer
+     */
     protected $serializer;
+
+    /**
+     * @var SerializationContext
+     */
     protected $context;
 
-    public function __construct(SerializationContext $context = null)
+
+
+    public function __construct(Serializer $serializer = NULL, SerializationContext $context = NULL)
     {
         $this->context = $context;
-        $this->serializer = SerializerBuilder::create()
-            ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
-            ->addDefaultHandlers()
-            ->build();
+        $this->serializer = $serializer;
     }
+
+
 
     public function serialize($object)
     {
-        $context = $this->context ? clone $this->context : null;
-        return json_decode($this->serializer->serialize($object, 'json', $context), true);
+        $context = $this->context ? clone $this->context : NULL;
+
+        return json_decode($this->getSerializer()->serialize($object, 'json', $context), TRUE);
     }
+
+
 
     public function deserialize($entityName, $data)
     {
-        return $this->serializer->deserialize($data, $entityName, 'json');
+        return $this->getSerializer()->deserialize($data, $entityName, 'json');
     }
+
+
+
+    /**
+     * @return Serializer
+     */
+    protected function getSerializer()
+    {
+        if (!$this->serializer === NULL) {
+            $this->serializer = SerializerBuilder::create()
+                ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
+                ->addDefaultHandlers()
+                ->build();
+        }
+
+        return $this->serializer;
+    }
+
 }
