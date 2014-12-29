@@ -79,7 +79,7 @@ class NeonDriver implements MappingDriver
 
 		$settings = $typeMapping;
 		unset($settings['class'], $settings['index'], $settings['type'], $settings['properties'], $settings['parameters'], $settings['serializer']);
-		$type->setSettings($settings);
+		$type->setSettings((array) $settings);
 	}
 
 
