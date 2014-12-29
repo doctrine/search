@@ -32,47 +32,35 @@ use Doctrine\Search\SearchManager;
  * @author Roman Borschel <roman@code-factory.de>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LifecycleEventArgs extends EventArgs
+class PostLoadEventArgs extends LifecycleEventArgs
 {
-    /**
-     * @var \Doctrine\Search\SearchManager
-     */
-    private $sm;
 
-    /**
-     * @var object
-     */
-    private $entity;
+	/**
+	 * @var array
+	 */
+	private $data;
 
-    /**
-     * Constructor
-     *
-     * @param Searchable $entity
-     * @param \Doctrine\Search\SearchManager $sm
-     */
-    public function __construct($entity, SearchManager $sm)
-    {
-        $this->entity = $entity;
-        $this->sm = $sm;
-    }
 
-    /**
-     * Retrieve associated Entity.
-     *
-     * @return Searchable
-     */
-    public function getEntity()
-    {
-        return $this->entity;
-    }
 
-    /**
-     * Retrieve associated SearchManager.
-     *
-     * @return \Doctrine\Search\SearchManager
-     */
-    public function getSearchManager()
-    {
-        return $this->sm;
-    }
+	/**
+	 * @param Searchable $entity
+	 * @param array $data
+	 * @param SearchManager $sm
+	 */
+	public function __construct($entity, $data, SearchManager $sm)
+	{
+		parent::__construct($entity, $sm);
+		$this->data = $data;
+	}
+
+
+
+	/**
+	 * @return array
+	 */
+	public function getRawData()
+	{
+		return $this->data;
+	}
+
 }

@@ -46,7 +46,7 @@ class LoadClassMetadataEventArgs extends EventArgs
      * Constructor.
      *
      * @param \Doctrine\Search\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\Search\EntityManager $sm
+     * @param \Doctrine\Search\SearchManager $sm
      */
     public function __construct(ClassMetadata $classMetadata, SearchManager $sm)
     {
