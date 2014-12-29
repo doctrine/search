@@ -8,6 +8,7 @@ use Doctrine\Search\InvalidArgumentException;
 use Doctrine\Search\Mapping\IndexMetadata;
 use Doctrine\Search\Mapping\TypeMetadata;
 use Nette\Neon\Neon;
+use Nette\DI\Config;
 
 
 
@@ -201,10 +202,33 @@ class NeonDriver implements MappingDriver
 			return $this->indexesMapping;
 		}
 
+		// todo: refactor away usage of Nette\DI
+		$adapter = new Config\Adapters\NeonAdapter();
+
 		$this->indexesMapping = array();
 		foreach (glob($this->metadataDirectory . '/*.index.neon') as $file) {
-			$meta = Neon::decode(file_get_contents($file));
+			$meta = $adapter->load($file);
 			$meta['name'] = basename($file, '.index.neon');
+
+			// $indexConfig = Config\Helpers::merge($meta, $this->indexDefaults);
+			unset($analysisSection);
+			foreach (array('charFilter', 'filter', 'analyzer') as $analysisType) {
+				$analysisSection = $meta[$analysisType];
+				unset($setup);
+				foreach ($analysisSection as $name => $setup) {
+					if (!Config\Helpers::isInheriting($setup)) {
+						continue;
+					}
+					$parent = Config\Helpers::takeParent($setup);
+					if (!isset($analysisSection[$parent])) {
+						throw new \Nette\Utils\AssertionException(sprintf('The %s.%s cannot inherit undefined %s.%s', $analysisType, $name, $analysisType, $parent));
+					}
+					$analysisSection[$name] = Config\Helpers::merge($setup, $analysisSection[$parent]);
+				}
+
+				$meta[$analysisType] = $analysisSection;
+			}
+
 			$this->indexesMapping[$meta['name']] = $meta;
 		}
 
