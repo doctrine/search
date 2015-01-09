@@ -98,9 +98,10 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 	public function createMappings(array $classes, $withAliases = FALSE)
 	{
 		$aliases = [];
+		$date = date('YmdHis');
 		foreach ($classes as $class) {
 			if ($withAliases) {
-				$indexAlias = $class->getIndexName() . '_' . date('YmdHis');
+				$indexAlias = $class->getIndexName() . '_' . $date;
 				$aliases[$indexAlias] = $class->getIndexName();
 
 				$fakeMetadata = clone $class;
