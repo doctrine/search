@@ -175,7 +175,7 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 
 	public function createType(ClassMetadata $class)
 	{
-		$mapping = new ElasticaTypeMapping($this->getType($class), $class->type->properties);
+		$mapping = new ElasticaTypeMapping($this->getType($class), self::settingsToUnderscore($class->type->properties));
 		$mapping->disableSource($class->type->source);
 
 		if ($class->type->boost !== NULL) {
@@ -214,6 +214,43 @@ class SchemaManager implements Doctrine\Search\SchemaManager
 		}
 
 		$this->elastica->request(sprintf('/%s/_alias/%s', $alias, $original), Request::PUT);
+	}
+
+
+
+	private static function settingsToUnderscore($properties)
+	{
+		foreach ($properties as $name => $settings) {
+			$fixed = [];
+			foreach ($settings as $key => $value) {
+				$fixed[self::toUnderscore($key)] = $value;
+			}
+
+			if (isset($settings['properties'])) {
+				$fixed['properties'] = self::settingsToUnderscore($settings['properties']);
+			}
+
+			$properties[$name] = $fixed;
+		}
+
+		return $properties;
+	}
+
+
+
+	/**
+	 * camelCaseField name -> underscore_separated.
+	 *
+	 * @param string $s
+	 * @return string
+	 */
+	private static function toUnderscore($s)
+	{
+		$s = preg_replace('#(.)(?=[A-Z])#', '$1_', $s);
+		$s = strtolower($s);
+		$s = rawurlencode($s);
+
+		return $s;
 	}
 
 }
