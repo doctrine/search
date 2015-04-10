@@ -65,6 +65,11 @@ class ClassMetadata implements ClassMetadataInterface
     public $className;
 
     /**
+     * @var string with class implementing \Doctrine\Search\EntityRiver
+     */
+    public $riverImplementation;
+
+    /**
      * @var ClassMetadataInterface|\Doctrine\ORM\Mapping\ClassMetadata
      */
     private $parentMetadata;

@@ -65,6 +65,10 @@ class NeonDriver implements MappingDriver
 
 		$indexMapping = $this->getIndexMapping($typeMapping['index']);
 		$this->loadIndexMapping($metadata->index, $indexMapping);
+
+		if (!empty($typeMapping['river'])) {
+			$metadata->riverImplementation = $typeMapping['river'];
+		}
 	}
 
 
@@ -86,7 +90,7 @@ class NeonDriver implements MappingDriver
 		$type->source = !empty($typeMapping['source']);
 		$type->boost = !empty($typeMapping['boost']) ? $typeMapping['boost'] : NULL;
 
-		unset($typeMapping['class'], $typeMapping['index'], $typeMapping['source'], $typeMapping['type']);
+		unset($typeMapping['class'], $typeMapping['river'], $typeMapping['index'], $typeMapping['source'], $typeMapping['type']);
 		$type->setSettings((array) $typeMapping);
 	}
 
