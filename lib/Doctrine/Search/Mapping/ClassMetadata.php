@@ -348,4 +348,12 @@ class ClassMetadata implements ClassMetadataInterface
         $this->parentMetadata = $parentMetadata;
     }
 
+
+
+    public function __clone()
+    {
+        $this->type = clone $this->type;
+        $this->index = clone $this->index;
+    }
+
 }
