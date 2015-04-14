@@ -99,7 +99,7 @@ class NeonDriver implements MappingDriver
 	protected function loadIndexMapping(IndexMetadata $index, $indexMapping)
 	{
 		foreach (array('name', 'numberOfShards', 'numberOfReplicas', 'charFilter', 'filter', 'analyzer') as $key) {
-			if (empty($indexMapping[$key])) {
+			if (!array_key_exists($key, $indexMapping)) {
 				continue;
 			}
 
