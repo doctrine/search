@@ -20,9 +20,9 @@
 namespace Doctrine\Search;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Elastica\Document;
-use Elastica\Search;
 use Traversable;
 
 
@@ -81,7 +81,7 @@ class UnitOfWork
         }
 
         $oid = spl_object_hash($entity);
-        $class = get_class($entity);
+        $class = ClassUtils::getRealClass($entity);
         $this->scheduledForPersist[$class][$oid] = $entity;
 
         if ($this->evm->hasListeners(Events::postPersist)) {
@@ -101,7 +101,7 @@ class UnitOfWork
         }
 
         $oid = spl_object_hash($entity);
-        $class = get_class($entity);
+        $class = ClassUtils::getRealClass($entity);
         unset($this->scheduledForPersist[$class][$oid]);
         $this->scheduledForDelete[$class][$oid] = $entity;
 
@@ -357,7 +357,7 @@ class UnitOfWork
     public function isInIdentityMap($entity)
     {
         $oid = spl_object_hash($entity);
-        $class = get_class($entity);
+        $class = ClassUtils::getRealClass($entity);
         return isset($this->scheduledForPersist[$class][$oid])
             || isset($this->scheduledForDelete[$class][$oid]);
     }
