@@ -81,7 +81,7 @@ class UnitOfWork
         }
 
         $oid = spl_object_hash($entity);
-        $class = ClassUtils::getRealClass($entity);
+        $class = ClassUtils::getRealClass(get_class($entity));
         $this->scheduledForPersist[$class][$oid] = $entity;
 
         if ($this->evm->hasListeners(Events::postPersist)) {
@@ -101,7 +101,7 @@ class UnitOfWork
         }
 
         $oid = spl_object_hash($entity);
-        $class = ClassUtils::getRealClass($entity);
+        $class = ClassUtils::getRealClass(get_class($entity));
         unset($this->scheduledForPersist[$class][$oid]);
         $this->scheduledForDelete[$class][$oid] = $entity;
 
@@ -357,7 +357,7 @@ class UnitOfWork
     public function isInIdentityMap($entity)
     {
         $oid = spl_object_hash($entity);
-        $class = ClassUtils::getRealClass($entity);
+        $class = ClassUtils::getRealClass(get_class($entity));
         return isset($this->scheduledForPersist[$class][$oid])
             || isset($this->scheduledForDelete[$class][$oid]);
     }
