@@ -306,7 +306,7 @@ class Query
      *
      * @param integer $hydrationMode
      * @throws InvalidStateException
-     * @return array|Searchable[]
+     * @return array|Elastica\ResultSet|Searchable[]
      */
     public function getResult($hydrationMode = null)
     {
