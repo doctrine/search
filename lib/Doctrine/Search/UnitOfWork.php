@@ -362,4 +362,24 @@ class UnitOfWork
             || isset($this->scheduledForDelete[$class][$oid]);
     }
 
+
+
+    /**
+     * @return array
+     */
+    public function getScheduledForDelete()
+    {
+        return $this->scheduledForDelete;
+    }
+
+
+
+    /**
+     * @return array
+     */
+    public function getScheduledForPersist()
+    {
+        return $this->scheduledForPersist;
+    }
+
 }
