@@ -39,6 +39,22 @@ class Configuration
     private $attributes;
 
     /**
+     * @param string $prefix
+     */
+    public function setIndexPrefix($prefix)
+    {
+        $this->attributes['indexPrefix'] = $prefix;
+    }
+
+    /**
+     * @return string|NULL
+     */
+    public function getIndexPrefix()
+    {
+        return isset($this->attributes['indexPrefix']) ? $this->attributes['indexPrefix'] : NULL;
+    }
+
+    /**
      * Gets the cache driver implementation that is used for the mapping metadata.
      * (Annotation is the default)
      *

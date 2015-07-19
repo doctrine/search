@@ -165,6 +165,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         //Manipulates $classMetadata;
         $this->driver->loadMetadataForClass($class->getName(), $class);
 
+        if (($prefix = $this->config->getIndexPrefix()) !== NULL) {
+            $class->index->name = $prefix . $class->index->name;
+        }
+
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($class, $this->sm);
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
