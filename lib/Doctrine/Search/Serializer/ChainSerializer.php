@@ -28,7 +28,7 @@ class ChainSerializer implements SerializerInterface
 
 	public function addSerializer($classType, SerializerInterface $serializer)
 	{
-		$this->serializers[strtolower($classType)] = $serializer;
+		$this->serializers[$classType] = $serializer;
 	}
 
 
@@ -47,9 +47,10 @@ class ChainSerializer implements SerializerInterface
 	 */
 	public function serialize($object)
 	{
-		$lName = strtolower(ClassUtils::getClass($object));
-		if (isset($this->serializers[$lName])) {
-			return $this->serializers[$lName]->serialize($object);
+		foreach ($this->serializers as $classType => $serializer) {
+			if ($object instanceof $classType) {
+				return $serializer->serialize($object);
+			}
 		}
 
 		if (!$this->defaultSerializer) {
@@ -69,9 +70,9 @@ class ChainSerializer implements SerializerInterface
 	 */
 	public function deserialize($entityName, $data)
 	{
-		$lName = strtolower($entityName);
-		if (isset($this->serializers[$lName])) {
-			return $this->serializers[$lName]->deserialize($entityName, $data);
+		$classType = $entityName;
+		if (isset($this->serializers[$classType])) {
+			return $this->serializers[$classType]->deserialize($entityName, $data);
 		}
 
 		if (!$this->defaultSerializer) {
