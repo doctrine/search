@@ -90,7 +90,7 @@ class NeonDriver implements MappingDriver
 		$type->source = !empty($typeMapping['source']);
 		$type->boost = !empty($typeMapping['boost']) ? $typeMapping['boost'] : NULL;
 
-		unset($typeMapping['class'], $typeMapping['river'], $typeMapping['index'], $typeMapping['source'], $typeMapping['type']);
+		unset($typeMapping['class'], $typeMapping['subclasses'], $typeMapping['river'], $typeMapping['index'], $typeMapping['source'], $typeMapping['type']);
 		$type->setSettings((array) $typeMapping);
 	}
 
@@ -146,6 +146,10 @@ class NeonDriver implements MappingDriver
 	{
 		foreach ($this->getTypesMapping() as $mapping) {
 			if ($mapping['class'] === $className) {
+				return $mapping;
+			}
+
+			if (isset($mapping['subclasses']) && in_array($className, $mapping['subclasses'])) {
 				return $mapping;
 			}
 		}
