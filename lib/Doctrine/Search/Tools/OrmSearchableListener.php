@@ -64,7 +64,7 @@ class OrmSearchableListener implements EventSubscriber
 	{
 		$oEntity = $oArgs->getEntity();
 		if ($oEntity instanceof Searchable) {
-			$this->sm->remove($oEntity);
+			$this->sm->remove(clone $oEntity);
 		}
 	}
 
