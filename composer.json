@@ -4,7 +4,7 @@
     "keywords": ["elasticsearch", "solr", "lucene", "search", "odm", "orm"],
     "homepage": "https://github.com/doctrine/search",
     "type": "library",
-    "licence": "MIT",
+    "license": "MIT",
     "authors": [
         {
             "name": "Doctrine Search Community",
