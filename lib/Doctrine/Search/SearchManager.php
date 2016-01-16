@@ -53,7 +53,7 @@ class SearchManager implements ObjectManager
     /**
      * @var ObjectManager
      */
-    private $entityManager;
+    private $objectManager;
 
     /**
      * The event manager that is the central point of the event system.
@@ -95,27 +95,25 @@ class SearchManager implements ObjectManager
         $this->metadataFactory->setCacheDriver($this->configuration->getMetadataCacheImpl());
 
         $this->serializer = $this->configuration->getEntitySerializer();
-        $this->entityManager = $this->configuration->getEntityManager();
+        $this->objectManager = $this->configuration->getObjectManager();
 
         $this->unitOfWork = new UnitOfWork($this);
     }
 
     /**
-     * Inject a Doctrine 2 object manager
-     *
-     * @param ObjectManager $om
+     * @param ObjectManager $objectManager
      */
-    public function setEntityManager(ObjectManager $om)
+    public function setObjectManager(ObjectManager $objectManager)
     {
-        $this->entityManager = $om;
+        $this->objectManager = $objectManager;
     }
 
     /**
-     * @return ObjectManager|\Doctrine\ORM\EntityManager
+     * @return ObjectManager
      */
-    public function getEntityManager()
+    public function getObjectManager()
     {
-        return $this->entityManager;
+        return $this->objectManager;
     }
 
     /**
@@ -331,5 +329,26 @@ class SearchManager implements ObjectManager
 
     public function refresh($object)
     {
+    }
+
+
+    /**
+     * Inject a Doctrine 2 object manager
+     *
+     * @deprecated
+     * @param ObjectManager $om
+     */
+    public function setEntityManager(ObjectManager $om)
+    {
+        $this->setObjectManager($om);
+    }
+
+    /**
+     * @deprecated
+     * @return ObjectManager|\Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->getObjectManager();
     }
 }

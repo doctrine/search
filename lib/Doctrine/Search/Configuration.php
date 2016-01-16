@@ -161,20 +161,38 @@ class Configuration
     }
 
     /**
-     * @param ObjectManager $entityManager
+     * @param ObjectManager $objectManager
      */
-    public function setEntityManager(ObjectManager $entityManager)
+    public function setObjectManager(ObjectManager $objectManager)
     {
-        $this->attributes['entityManager'] = $entityManager;
+        $this->attributes['objectManager'] = $objectManager;
     }
 
     /**
      * @return ObjectManager
      */
+    public function getObjectManager()
+    {
+        if (isset($this->attributes['objectManager'])) {
+            return $this->attributes['objectManager'];
+        }
+    }
+
+    /**
+     * @deprecated
+     */
+    public function setEntityManager(ObjectManager $objectManager)
+    {
+        $this->setObjectManager($objectManager);
+    }
+
+    /**
+     * @deprecated
+     */
     public function getEntityManager()
     {
-        if (isset($this->attributes['entityManager'])) {
-            return $this->attributes['entityManager'];
+        if (isset($this->attributes['objectManager'])) {
+            return $this->attributes['objectManager'];
         }
     }
 }
