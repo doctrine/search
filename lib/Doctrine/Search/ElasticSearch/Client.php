@@ -30,9 +30,7 @@ use Elastica\Query\MatchAll;
 use Elastica\Filter\Term;
 use Elastica\Exception\NotFoundException;
 use Elastica\Search;
-use Doctrine\Common\Collections\ArrayCollection;
 use Elastica\Query;
-use Elastica\Query\Filtered;
 
 /**
  * SearchManager for ElasticSearch-Backend
@@ -133,8 +131,10 @@ class Client implements SearchClientInterface
     public function findOneBy(ClassMetadata $class, $field, $value)
     {
         $filter = new Term(array($field => $value));
+        $boolQuery = new Query\BoolQuery();
+        $boolQuery->addFilter($filter);
 
-        $query = new Query(new Filtered(null, $filter));
+        $query = new Query($boolQuery);
         $query->setVersion(true);
         $query->setSize(1);
 
@@ -241,17 +241,18 @@ class Client implements SearchClientInterface
 
     /**
      * {@inheritDoc}
+     * @deprecated elasticsearch no longer supports type deletion
      */
     public function deleteType(ClassMetadata $metadata)
     {
-        $type = $this->getIndex($metadata->index)->getType($metadata->type);
-        return $type->delete();
+
     }
 
     /**
      * Generates property mapping from entity annotations
      *
      * @param array $mappings
+     * @return array
      */
     protected function getMapping($mappings)
     {
@@ -304,7 +305,7 @@ class Client implements SearchClientInterface
                 $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping->fields));
             }
 
-            if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {
+            if (isset($fieldMapping->fields)) {
                 $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping->fields);
             }
 
@@ -320,6 +321,7 @@ class Client implements SearchClientInterface
      * Generates parameter mapping from entity annotations
      *
      * @param array $paramMapping
+     * @return array
      */
     protected function getParameters($paramMapping)
     {
@@ -335,6 +337,7 @@ class Client implements SearchClientInterface
      * Generates root mapping from entity annotations
      *
      * @param array $mappings
+     * @return array
      */
     protected function getRootMapping($mappings)
     {
