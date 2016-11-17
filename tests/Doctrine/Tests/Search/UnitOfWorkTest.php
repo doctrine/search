@@ -138,6 +138,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
         $this->searchClient->expects($this->once())
             ->method('findOneBy')
             ->willReturn($result);
+
         $this->metadataMock->parameters = array(
             'testField1' => 'mapping',
             'testField2' => 'mapping',
@@ -175,6 +176,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
             ->method('getIdentifier')
             ->willReturn('123');
         $query = new Query($this->sm);
+
         $this->_unitOfWork->loadCollection(array($this->metadataMock), $query);
     }
 
