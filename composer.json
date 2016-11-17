@@ -21,7 +21,8 @@
     },
     "require-dev": {
         "doctrine/orm": "~2.4",
-        "phpunit/phpunit": "~4.2"
+        "phpunit/phpunit": "~4.2",
+        "squizlabs/php_codesniffer": "~2.3"
     },
     "autoload": {
         "psr-0": {
@@ -35,6 +36,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "vendor/bin/phpunit",
+        "code-sniffer": "vendor/bin/phpcs --extensions=php --standard=psr2 lib tests"
     }
 }
