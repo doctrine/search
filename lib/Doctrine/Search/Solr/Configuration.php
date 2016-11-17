@@ -26,10 +26,7 @@ namespace Doctrine\Search\Solr;
  */
 class Configuration
 {
-
-
     public function __construct()
     {
-
     }
 }

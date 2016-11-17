@@ -33,17 +33,21 @@ class MappingException extends Exception
             $className
         ));
     }
-    
+
     public static function duplicateFieldMapping($mapping, $fieldName)
     {
-        return new self('Field "'.$fieldName.'" in "'.$mapping.'" was already declared, but it must be declared only once');
+        return new self(
+            'Field "'.$fieldName.'" in "'.$mapping.'" was already declared, but it must be declared only once'
+        );
     }
-    
+
     public static function duplicateParameterMapping($mapping, $parameterName)
     {
-        return new self('Parameter "'.$parameterName.'" in "'.$mapping.'" was already declared, but it must be declared only once');
+        return new self(
+            'Parameter "'.$parameterName.'" in "'.$mapping.'" was already declared, but it must be declared only once'
+        );
     }
-    
+
     /**
      * @param string $entityName
      * @return MappingException

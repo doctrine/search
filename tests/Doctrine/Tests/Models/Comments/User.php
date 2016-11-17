@@ -7,9 +7,9 @@ use Doctrine\Search\Mapping\Annotations as MAP;
 /**
  * @MAP\ElasticSearchable(index="searchdemo", type="users", source=true, numberOfShards=2, numberOfReplicas=1, timeToLive=180, boost=2.0)
  * @MAP\ElasticRoot(name="dynamic_templates", id="template_2", match="description*", mapping=
- *    @MAP\ElasticField(type="multi_field", fields={
- *       @MAP\ElasticField(name="{name}", type="string", includeInAll=false),
- *       @MAP\ElasticField(name="untouched", type="string", index="not_analyzed")
+ *     @MAP\ElasticField(type="multi_field", fields={
+ *         @MAP\ElasticField(name="{name}", type="string", includeInAll=false),
+ *         @MAP\ElasticField(name="untouched", type="string", index="not_analyzed")
  *    })
  * )
  * @MAP\ElasticRoot(name="date_detection", value="false")
@@ -32,8 +32,8 @@ class User
 
     /**
      * @MAP\ElasticField(type="multi_field", fields={
-     *    @MAP\ElasticField(name="username", type="string", includeInAll=true, analyzer="whitespace"),
-     *    @MAP\ElasticField(name="username.term", type="string", includeInAll=false, index="not_analyzed")
+     *     @MAP\ElasticField(name="username", type="string", includeInAll=true, analyzer="whitespace"),
+     *     @MAP\ElasticField(name="username.term", type="string", includeInAll=false, index="not_analyzed")
      * })
      */
     private $username;
@@ -52,11 +52,11 @@ class User
      * @MAP\ElasticField(type="string", includeInAll=false, index="not_analyzed")
      */
     private $friends = array();
-    
+
     /**
      * @MAP\ElasticField(type="nested", properties={
-     *    @MAP\ElasticField(name="email", type="string", includeInAll=false, index="not_analyzed"),
-     *    @MAP\ElasticField(name="createdAt", type="date")
+     *     @MAP\ElasticField(name="email", type="string", includeInAll=false, index="not_analyzed"),
+     *     @MAP\ElasticField(name="createdAt", type="date")
      * })
      */
     private $emails = array();
@@ -65,7 +65,7 @@ class User
      * @MAP\ElasticField(type="boolean", nullValue=false)
      */
     private $active;
-    
+
     /**
      * @MAP\Parameter
      */
@@ -108,7 +108,7 @@ class User
     {
         $this->description = $description;
     }
-    
+
     public function getDescription()
     {
         return $this->description;
@@ -118,7 +118,7 @@ class User
     {
         return $this->friends;
     }
-    
+
     public function addFriend(User $user)
     {
         if (!in_array($user->getId(), $this->friends)) {
@@ -130,12 +130,12 @@ class User
     {
         $this->emails[] = $email;
     }
-    
+
     public function getRouting()
     {
         return $this->_routing;
     }
-    
+
     public function setRouting($routing)
     {
         $this->_routing = $routing;

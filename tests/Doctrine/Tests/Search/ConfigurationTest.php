@@ -40,7 +40,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
         $metadataDriverImpl = $this->configuration->getMetadataDriverImpl();
         $this->assertInstanceOf('Doctrine\Common\Persistence\Mapping\Driver\MappingDriver', $metadataDriverImpl);
-
     }
 
     /**

@@ -258,7 +258,6 @@ class Query
             $this->count = $resultSet->getTotalHits();
             $this->facets = $resultSet->getFacets();
             $results = $resultSet->getResults();
-
         } else {
             $resultClass = get_class($resultSet);
             throw new DoctrineSearchException("Unexpected result set class '$resultClass'");

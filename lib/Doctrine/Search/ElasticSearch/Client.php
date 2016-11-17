@@ -264,19 +264,22 @@ class Client implements SearchClientInterface
 
             if (isset($fieldMapping['type'])) {
                 $properties[$propertyName]['type'] = $fieldMapping['type'];
- 
+
                 if ($fieldMapping['type'] == 'attachment' && isset($fieldMapping['fields'])) {
                     $callback = function ($field) {
                         unset($field['type']);
                         return $field;
                     };
-                    $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping['fields']));
+                    $properties[$propertyName]['fields'] = array_map(
+                        $callback,
+                        $this->getMapping($fieldMapping['fields'])
+                    );
                 }
 
                 if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
                     $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping['fields']);
                 }
-  
+
                 if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
                     $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping['properties']);
                 }

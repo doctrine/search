@@ -30,7 +30,6 @@ use Doctrine\Common\Persistence\ObjectManager;
  */
 class Client implements SearchClientInterface
 {
-
     private $config;
 
     private $connection;
@@ -47,51 +46,41 @@ class Client implements SearchClientInterface
 
     public function find($index, $type, $query)
     {
-
     }
 
     public function createIndex($index, array $data)
     {
-
     }
 
     public function createType(ClassMetadata $metadata)
     {
-
     }
 
     public function deleteType(ClassMetadata $metadata)
     {
-
     }
 
     public function getIndex($index)
     {
-
     }
 
     public function deleteIndex($index)
     {
-
     }
 
     public function refreshIndex($index)
     {
-
     }
 
     public function addDocuments($index, $type, array $documents)
     {
-
     }
 
     public function removeDocuments($index, $type, array $documents)
     {
-
     }
 
     public function removeAll($index, $type)
     {
-
     }
 }

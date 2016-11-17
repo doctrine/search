@@ -181,7 +181,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function getName()
     {
         return $this->className;
-
     }
 
     /**
@@ -257,7 +256,7 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * Adds a root mapping to the class.
-     * 
+     *
      * @param array $mapping
      */
     public function mapRoot($mapping = array())
@@ -279,7 +278,7 @@ class ClassMetadata implements ClassMetadataInterface
         }
         $this->parameters[$mapping['parameterName']] = $mapping;
     }
-    
+
     /**
      * Checks if the given field is a mapped association for this class.
      *

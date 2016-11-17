@@ -46,6 +46,5 @@ class Connection
 
     public function initialize()
     {
-
     }
 }
