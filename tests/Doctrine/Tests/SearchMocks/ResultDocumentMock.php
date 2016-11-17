@@ -23,11 +23,11 @@ class ResultDocumentMock
 {
     public function getData()
     {
-        $data = [
+        $data = array(
             'testField1' => 'test data 1',
             'testField2' => 'test data 2',
             'testField3' => 'test data 3',
-        ];
+        );
 
         return $data;
     }
@@ -44,11 +44,11 @@ class ResultDocumentMock
 
     public function getFields()
     {
-        $data = [
+        $data = array(
             'testField1' => 'test data 1',
             'testField2' => 'test data 2',
             'testField3' => 'test data 3',
-        ];
+        );
 
         return $data;
     }
