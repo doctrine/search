@@ -30,6 +30,11 @@ final class Parameter extends Annotation
     /**
      * @var string
      */
+    public $parameterName;
+
+    /**
+     * @var string
+     */
     public $name;
 
     /**

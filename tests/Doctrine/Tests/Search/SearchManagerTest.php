@@ -1,11 +1,11 @@
 <?php
+
 namespace Doctrine\Tests\Search;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Search\SearchManager;
 use Doctrine\Search\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Blog\BlogPost;
-
 
 class SearchManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -93,7 +93,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+            'This test has not been implemented yet.'
         );
     }
 
@@ -104,7 +104,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+            'This test has not been implemented yet.'
         );
     }
 
@@ -115,7 +115,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+            'This test has not been implemented yet.'
         );
     }
 
@@ -126,7 +126,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+            'This test has not been implemented yet.'
         );
     }
 
@@ -137,7 +137,7 @@ class SearchManagerTest extends \PHPUnit_Framework_TestCase
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
-          'This test has not been implemented yet.'
+            'This test has not been implemented yet.'
         );
     }
 }

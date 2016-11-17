@@ -20,6 +20,7 @@
 namespace Doctrine\Search;
 
 use Doctrine\Search\Exception\DoctrineSearchException;
+use Doctrine\Search\Exception\NoResultException;
 use Elastica;
 
 class Query
@@ -110,6 +111,17 @@ class Query
     public function from($entityClasses)
     {
         $this->entityClasses = (array)$entityClasses;
+        return $this;
+    }
+
+    /**
+     * Add a searchable entity class to search against.
+     *
+     * @param string $entityClass
+     */
+    public function addFrom($entityClass)
+    {
+        $this->entityClasses[] = $entityClass;
         return $this;
     }
 
@@ -205,6 +217,23 @@ class Query
     }
 
     /**
+     * Execute search for single result and hydrate results if required.
+     *
+     * @param integer $hydrationMode
+     * @throws NoResultException
+     * @return mixed
+     */
+    public function getSingleResult($hydrationMode = null)
+    {
+        $this->query->setSize(1);
+        $results = $this->getResult($hydrationMode);
+        if (count($results) < 1) {
+            throw new NoResultException('No results found');
+        }
+        return $results[0];
+    }
+
+    /**
      * Execute search and hydrate results if required.
      *
      * @param integer $hydrationMode
@@ -218,7 +247,7 @@ class Query
         }
 
         $classes = array();
-        foreach ($this->entityClasses as $entityClass) {
+        foreach (array_unique($this->entityClasses) as $entityClass) {
             $classes[] = $this->sm->getClassMetadata($entityClass);
         }
 
@@ -244,7 +273,7 @@ class Query
 
         // Document ids are used to lookup dbms results
         $fn = function ($result) {
-            return $result->getId();
+            return (string) $result->getId();
         };
         $ids = array_map($fn, $results);
 

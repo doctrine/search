@@ -258,58 +258,72 @@ class Client implements SearchClientInterface
         $properties = array();
 
         foreach ($mappings as $propertyName => $fieldMapping) {
-            if (isset($fieldMapping->name)) {
-                $propertyName = $fieldMapping->name;
+            if (isset($fieldMapping['fieldName'])) {
+                $propertyName = $fieldMapping['fieldName'];
             }
 
-            $properties[$propertyName]['type'] = $fieldMapping->type;
+            if (isset($fieldMapping['type'])) {
+                $properties[$propertyName]['type'] = $fieldMapping['type'];
+ 
+                if ($fieldMapping['type'] == 'attachment' && isset($fieldMapping['fields'])) {
+                    $callback = function ($field) {
+                        unset($field['type']);
+                        return $field;
+                    };
+                    $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping['fields']));
+                }
 
-            if (isset($fieldMapping->path)) {
-                $properties[$propertyName]['path'] = $fieldMapping->path;
+                if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
+                    $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping['fields']);
+                }
+  
+                if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
+                    $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping['properties']);
+                }
             }
 
-            if (isset($fieldMapping->includeInAll)) {
-                $properties[$propertyName]['include_in_all'] = $fieldMapping->includeInAll;
+            if (isset($fieldMapping['path'])) {
+                $properties[$propertyName]['path'] = $fieldMapping['path'];
             }
 
-            if (isset($fieldMapping->nullValue)) {
-                $properties[$propertyName]['null_value'] = $fieldMapping->nullValue;
+            if (isset($fieldMapping['includeInAll'])) {
+                $properties[$propertyName]['include_in_all'] = $fieldMapping['includeInAll'];
             }
 
-            if (isset($fieldMapping->store)) {
-                $properties[$propertyName]['store'] = $fieldMapping->store;
+            if (isset($fieldMapping['nullValue'])) {
+                $properties[$propertyName]['null_value'] = $fieldMapping['nullValue'];
             }
 
-            if (isset($fieldMapping->index)) {
-                $properties[$propertyName]['index'] = $fieldMapping->index;
+            if (isset($fieldMapping['store'])) {
+                $properties[$propertyName]['store'] = $fieldMapping['store'];
             }
 
-            if (isset($fieldMapping->boost)) {
-                $properties[$propertyName]['boost'] = $fieldMapping->boost;
+            if (isset($fieldMapping['index'])) {
+                $properties[$propertyName]['index'] = $fieldMapping['index'];
             }
 
-            if (isset($fieldMapping->analyzer)) {
-                $properties[$propertyName]['analyzer'] = $fieldMapping->analyzer;
+            if (isset($fieldMapping['boost'])) {
+                $properties[$propertyName]['boost'] = $fieldMapping['boost'];
             }
 
-            if (isset($fieldMapping->indexName)) {
-                $properties[$propertyName]['index_name'] = $fieldMapping->indexName;
+            if (isset($fieldMapping['analyzer'])) {
+                $properties[$propertyName]['analyzer'] = $fieldMapping['analyzer'];
             }
 
-            if ($fieldMapping->type == 'attachment' && isset($fieldMapping->fields)) {
-                $callback = function ($field) {
-                    unset($field['type']);
-                    return $field;
-                };
-                $properties[$propertyName]['fields'] = array_map($callback, $this->getMapping($fieldMapping->fields));
+            if (isset($fieldMapping['indexName'])) {
+                $properties[$propertyName]['index_name'] = $fieldMapping['indexName'];
             }
 
-            if ($fieldMapping->type == 'multi_field' && isset($fieldMapping->fields)) {
-                $properties[$propertyName]['fields'] = $this->getMapping($fieldMapping->fields);
+            if (isset($fieldMapping['geohash'])) {
+                $properties[$propertyName]['geohash'] = $fieldMapping['geohash'];
             }
 
-            if (in_array($fieldMapping->type, array('nested', 'object')) && isset($fieldMapping->properties)) {
-                $properties[$propertyName]['properties'] = $this->getMapping($fieldMapping->properties);
+            if (isset($fieldMapping['geohash_precision'])) {
+                $properties[$propertyName]['geohash_precision'] = $fieldMapping['geohash_precision'];
+            }
+
+            if (isset($fieldMapping['geohash_prefix'])) {
+                $properties[$propertyName]['geohash_prefix'] = $fieldMapping['geohash_prefix'];
             }
         }
 
@@ -325,7 +339,7 @@ class Client implements SearchClientInterface
     {
         $parameters = array();
         foreach ($paramMapping as $propertyName => $mapping) {
-            $paramName = isset($mapping->name) ? $mapping->name : $propertyName;
+            $paramName = isset($mapping['fieldName']) ? $mapping['fieldName'] : $propertyName;
             $parameters[$paramName] = $propertyName;
         }
         return $parameters;
@@ -341,43 +355,43 @@ class Client implements SearchClientInterface
         $properties = array();
 
         foreach ($mappings as $rootMapping) {
-            $propertyName = $rootMapping->name;
+            $propertyName = $rootMapping['fieldName'];
             $mapping = array();
 
-            if (isset($rootMapping->value)) {
-                $mapping = $rootMapping->value;
+            if (isset($rootMapping['value'])) {
+                $mapping = $rootMapping['value'];
             }
 
-            if (isset($rootMapping->match)) {
-                $mapping['match'] = $rootMapping->match;
+            if (isset($rootMapping['match'])) {
+                $mapping['match'] = $rootMapping['match'];
             }
 
-            if (isset($rootMapping->pathMatch)) {
-                $mapping['path_match'] = $rootMapping->pathMatch;
+            if (isset($rootMapping['pathMatch'])) {
+                $mapping['path_match'] = $rootMapping['pathMatch'];
             }
 
-            if (isset($rootMapping->unmatch)) {
-                $mapping['unmatch'] = $rootMapping->unmatch;
+            if (isset($rootMapping['unmatch'])) {
+                $mapping['unmatch'] = $rootMapping['unmatch'];
             }
 
-            if (isset($rootMapping->pathUnmatch)) {
-                $mapping['path_unmatch'] = $rootMapping->pathUnmatch;
+            if (isset($rootMapping['pathUnmatch'])) {
+                $mapping['path_unmatch'] = $rootMapping['pathUnmatch'];
             }
 
-            if (isset($rootMapping->matchPattern)) {
-                $mapping['match_pattern'] = $rootMapping->matchPattern;
+            if (isset($rootMapping['matchPattern'])) {
+                $mapping['match_pattern'] = $rootMapping['matchPattern'];
             }
 
-            if (isset($rootMapping->matchMappingType)) {
-                $mapping['match_mapping_type'] = $rootMapping->matchMappingType;
+            if (isset($rootMapping['matchMappingType'])) {
+                $mapping['match_mapping_type'] = $rootMapping['matchMappingType'];
             }
 
-            if (isset($rootMapping->mapping)) {
-                $mapping['mapping'] = current($this->getMapping($rootMapping->mapping));
+            if (isset($rootMapping['mapping'])) {
+                $mapping['mapping'] = current($this->getMapping(array($rootMapping['mapping'])));
             }
 
-            if (isset($rootMapping->id)) {
-                $properties[$propertyName][][$rootMapping->id] = $mapping;
+            if (isset($rootMapping['id'])) {
+                $properties[$propertyName][][$rootMapping['id']] = $mapping;
             } else {
                 $properties[$propertyName] = $mapping;
             }

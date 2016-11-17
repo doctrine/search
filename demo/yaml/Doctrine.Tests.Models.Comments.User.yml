@@ -1,0 +1,2 @@
+Doctrine\Tests\Models\Comments\User:
+    exclusion_policy: none

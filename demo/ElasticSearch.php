@@ -11,6 +11,9 @@ use Doctrine\Search\ElasticSearch\Client as ElasticaAdapter;
 use Doctrine\Search\Serializer\JMSSerializer;
 use JMS\Serializer\SerializationContext;
 use Doctrine\Common\Cache\ArrayCache;
+use JMS\Serializer\SerializerBuilder;
+use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
+use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
 
 class ElasticSearch
 {
@@ -26,9 +29,16 @@ class ElasticSearch
         $config->setMetadataCacheImpl(new ArrayCache());
 
         //Set and configure preferred serializer for persistence
-        //If using serialaztion groups you can sepcify the names here
+        $serializer = SerializerBuilder::create()
+            ->addMetadataDir(__DIR__.'/yaml')
+            ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()))
+            ->addDefaultHandlers()
+            ->build();
+
+        //If using serialization groups you can sepcify the names here
         $config->setEntitySerializer(new JMSSerializer(
-            SerializationContext::create()->setGroups('store')
+            SerializationContext::create()->setGroups(array('Default')),
+            $serializer
         ));
 
         //Add event listeners here

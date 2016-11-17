@@ -71,4 +71,19 @@ final class ElasticField extends Field
      * @var mixed
      */
     public $nullValue;
+
+    /**
+     * @var boolean
+     */
+    public $geohash;
+
+    /**
+     * @var string
+     */
+    public $geohash_precision;
+
+    /**
+     * @var boolean
+     */
+    public $geohash_prefix;
 }

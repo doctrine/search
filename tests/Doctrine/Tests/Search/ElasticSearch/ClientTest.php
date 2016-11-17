@@ -5,8 +5,6 @@ namespace Doctrine\Tests\Search\ElasticSearch;
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Mapping\ClassMetadata;
 
-
-
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */

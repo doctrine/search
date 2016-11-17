@@ -1,6 +1,6 @@
 {
     "name": "doctrine/search",
-    "description": "Search",
+    "description": "ElasticSearch and Solr entity mapping library",
     "keywords": ["elasticsearch", "solr", "lucene", "search", "odm", "orm"],
     "homepage": "https://github.com/doctrine/search",
     "type": "library",
@@ -16,7 +16,8 @@
         "doctrine/common": ">=2.3.0"
     },
     "suggest": {
-        "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required."
+        "ruflin/Elastica": "Elastica version correlating to your ElasticSearch installation is required.",
+        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "require-dev": {
         "doctrine/orm": "~2.4",

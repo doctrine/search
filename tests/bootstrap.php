@@ -1,6 +1,9 @@
 <?php
 
-// use statements
-use Doctrine\Common\Annotations\AnnotationRegistry;
+if (!file_exists($file = __DIR__.'/../vendor/autoload.php')) {
+    throw new RuntimeException('Install dependencies to run test suite.');
+}
 
-require_once __DIR__.'/../vendor/autoload.php';
+$loader = require $file;
+
+\Doctrine\Search\Mapping\Driver\AnnotationDriver::registerAnnotationClasses();

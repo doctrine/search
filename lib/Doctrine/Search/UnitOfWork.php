@@ -208,7 +208,7 @@ class UnitOfWork
         foreach ($objects as $object) {
             $document = $serialize ? $serializer->serialize($object) : $object;
 
-            $id = $object->getId();
+            $id = (string) $object->getId();
             if (!$id) {
                 throw new DoctrineSearchException('Entity must have an id to be indexed');
             }
@@ -293,7 +293,7 @@ class UnitOfWork
                 $data[$name] = $value;
             } else {
                 foreach ($class->parameters as $param => $mapping) {
-                    if ($mapping->name == $name) {
+                    if (isset($mapping['fieldName']) && $mapping['fieldName'] == $name) {
                         $data[$param] = $value;
                         break;
                     }

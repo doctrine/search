@@ -16,8 +16,8 @@ class Config
     public static function getEntityNamespacePath()
     {
         return array(
-            'namespace' => 'Doctrine\Tests\Models\Comments',
-            'path' => __DIR__ . '/../tests/Doctrine/Tests/Models/Comments/'
+            'namespace' => 'Doctrine\Tests\Models',
+            'path' => __DIR__ . '/../tests/Doctrine/Tests/Models'
         );
     }
 }
