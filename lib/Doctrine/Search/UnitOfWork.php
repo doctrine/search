@@ -19,7 +19,6 @@
 
 namespace Doctrine\Search;
 
-use Doctrine\Search\SearchManager;
 use Doctrine\Search\Exception\DoctrineSearchException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Search\Mapping\ClassMetadata;
@@ -70,7 +69,7 @@ class UnitOfWork
     /**
      * Persists an entity as part of the current unit of work.
      *
-     * @param object $entity The entity to persist.
+     * @param object $entity The entity to persist
      */
     public function persist($entity)
     {
@@ -89,7 +88,7 @@ class UnitOfWork
     /**
      * Deletes an entity as part of the current unit of work.
      *
-     * @param object $entity The entity to remove.
+     * @param object $entity The entity to remove
      */
     public function remove($entity)
     {
@@ -162,7 +161,7 @@ class UnitOfWork
     }
 
     /**
-     * Commit persisted entities to the database
+     * Commit persisted entities to the database.
      */
     private function commitPersisted()
     {
@@ -177,7 +176,7 @@ class UnitOfWork
     }
 
     /**
-     * Commit deleted entities to the database
+     * Commit deleted entities to the database.
      */
     private function commitRemoved()
     {
@@ -196,8 +195,10 @@ class UnitOfWork
      * to be serialized.
      *
      * @param array $objects
-     * @param boolean $serialize
+     * @param bool  $serialize
+     *
      * @throws DoctrineSearchException
+     *
      * @return array
      */
     private function sortObjects(array $objects, $serialize = true)
@@ -220,11 +221,11 @@ class UnitOfWork
     }
 
     /**
-     * Load and hydrate a document model
+     * Load and hydrate a document model.
      *
      * @param ClassMetadata $class
-     * @param mixed $value
-     * @param array $options
+     * @param mixed         $value
+     * @param array         $options
      */
     public function load(ClassMetadata $class, $value, $options = array())
     {
@@ -240,21 +241,22 @@ class UnitOfWork
     }
 
     /**
-     * Load and hydrate a document collection
+     * Load and hydrate a document collection.
      *
      * @param array $classes
-     * @param unknown $query
+     * @param $query
      */
     public function loadCollection(array $classes, $query)
     {
         $results = $this->sm->getClient()->search($query, $classes);
+
         return $this->hydrateCollection($classes, $results);
     }
 
     /**
-     * Construct an entity collection
+     * Construct an entity collection.
      *
-     * @param array $classes
+     * @param array       $classes
      * @param Traversable $resultSet
      */
     public function hydrateCollection(array $classes, Traversable $resultSet)
@@ -273,10 +275,10 @@ class UnitOfWork
     }
 
     /**
-     * Construct an entity object
+     * Construct an entity object.
      *
      * @param ClassMetadata $class
-     * @param object $document
+     * @param object        $document
      */
     public function hydrateEntity(ClassMetadata $class, $document)
     {
@@ -317,11 +319,38 @@ class UnitOfWork
      *
      * @param object $entity
      *
-     * @return boolean
+     * @return bool
      */
     public function isInIdentityMap($entity)
     {
         $oid = spl_object_hash($entity);
+
         return isset($this->scheduledForPersist[$oid]) || isset($this->scheduledForDelete[$oid]);
+    }
+
+    /**
+     * Checks whether an entity is registered as removed/deleted with the unit
+     * of work.
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    public function isScheduledForDelete($entity)
+    {
+        return isset($this->scheduledForDelete[spl_object_hash($entity)]);
+    }
+
+    /**
+     * Checks whether an entity is registered as persist with the unit
+     * of work.
+     *
+     * @param object $entity
+     *
+     * @return bool
+     */
+    public function isScheduledForPersist($entity)
+    {
+        return isset($this->scheduledForPersist[spl_object_hash($entity)]);
     }
 }
