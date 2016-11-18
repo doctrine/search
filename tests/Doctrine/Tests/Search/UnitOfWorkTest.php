@@ -173,6 +173,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
             ->method('getIdentifier')
             ->willReturn('123');
         $query = new Query($this->sm);
+
         $this->_unitOfWork->loadCollection(array($this->metadataMock), $query);
     }
 

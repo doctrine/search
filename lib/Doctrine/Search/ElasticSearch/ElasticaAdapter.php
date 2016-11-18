@@ -17,57 +17,60 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\Tests\SearchMocks;
+namespace Doctrine\Search\ElasticSearch;
 
 use Doctrine\Search\ResultDocumentInterface;
 
-class ResultDocumentMock implements ResultDocumentInterface
+class ElasticaAdapter implements ResultDocumentInterface
 {
-    public function getData()
-    {
-        $data = array(
-            'testField1' => 'test data 1',
-            'testField2' => 'test data 2',
-            'testField3' => 'test data 3',
-        );
+    protected $elasticaDocument;
 
-        return $data;
+    /**
+     * ElasticaAdapter constructor.
+     */
+    public function __construct($document)
+    {
+        $this->elasticaDocument = $document;
     }
 
-    public function getVersion()
-    {
-        return 'v_1';
-    }
-
-    public function hasFields()
-    {
-        return true;
-    }
-
-    public function getFields()
-    {
-        $data = array(
-            'testField1' => 'test data 1',
-            'testField2' => 'test data 2',
-            'testField3' => 'test data 3',
-        );
-
-        return $data;
-    }
-
+    /**
+     * @return mixed
+     */
     public function getId()
     {
-        return 10;
+        $this->elasticaDocument->getId();
     }
 
-    public function getIndex()
-    {
-        return 'testIndex';
-    }
-
+    /**
+     * @return mixed
+     */
     public function getType()
     {
-        return 'testType';
+        $this->elasticaDocument->getType();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFields()
+    {
+        $this->elasticaDocument->getFields();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function hasFields()
+    {
+        $this->elasticaDocument->hasFields();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIndex()
+    {
+        $this->elasticaDocument->getIndex();
     }
 
     /**
@@ -75,7 +78,7 @@ class ResultDocumentMock implements ResultDocumentInterface
      */
     public function getScore()
     {
-        // TODO: Implement getScore() method.
+        $this->elasticaDocument->getScore();
     }
 
     /**
@@ -83,7 +86,23 @@ class ResultDocumentMock implements ResultDocumentInterface
      */
     public function getHit()
     {
-        // TODO: Implement getHit() method.
+        $this->elasticaDocument->getHit();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVersion()
+    {
+        $this->elasticaDocument->getVersion();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        $this->elasticaDocument->getData();
     }
 
     /**
@@ -91,7 +110,7 @@ class ResultDocumentMock implements ResultDocumentInterface
      */
     public function getSource()
     {
-        // TODO: Implement getSource() method.
+        $this->elasticaDocument->getSource();
     }
 
     /**
@@ -99,6 +118,6 @@ class ResultDocumentMock implements ResultDocumentInterface
      */
     public function getDocument()
     {
-        // TODO: Implement getDocument() method.
+        $this->elasticaDocument->getDocument();
     }
 }
