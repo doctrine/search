@@ -280,10 +280,8 @@ class UnitOfWork
      * @param ClassMetadata $class
      * @param object        $document
      */
-    public function hydrateEntity(ClassMetadata $class, $document)
+    public function hydrateEntity(ClassMetadata $class, ResultDocumentInterface $document)
     {
-        // TODO: add support for different result set types from different clients
-        // perhaps by wrapping documents in a layer of abstraction
         $data = $document->getData();
         $fields = array_merge(
             $document->hasFields() ? $document->getFields() : array(),

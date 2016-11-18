@@ -30,12 +30,11 @@ use Elastica\Query\MatchAll;
 use Elastica\Filter\Term;
 use Elastica\Exception\NotFoundException;
 use Elastica\Search;
-use Doctrine\Common\Collections\ArrayCollection;
 use Elastica\Query;
 use Elastica\Query\Filtered;
 
 /**
- * SearchManager for ElasticSearch-Backend
+ * SearchManager for ElasticSearch-Backend.
  *
  * @author  Mike Lohmann <mike.h.lohmann@googlemail.com>
  * @author  Markus Bachmann <markus.bachmann@bachi.biz>
@@ -64,7 +63,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function addDocuments(ClassMetadata $class, array $documents)
     {
@@ -97,7 +96,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function removeDocuments(ClassMetadata $class, array $documents)
     {
@@ -106,7 +105,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function removeAll(ClassMetadata $class, $query = null)
     {
@@ -116,7 +115,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function find(ClassMetadata $class, $id, $options = array())
     {
@@ -127,7 +126,7 @@ class Client implements SearchClientInterface
             throw new NoResultException();
         }
 
-        return $document;
+        return new ElasticaAdapter($document);
     }
 
     public function findOneBy(ClassMetadata $class, $field, $value)
@@ -144,11 +143,11 @@ class Client implements SearchClientInterface
             throw new NoResultException();
         }
 
-        return $results[0];
+        return new ElasticaAdapter($results[0]);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function findAll(array $classes)
     {
@@ -168,11 +167,12 @@ class Client implements SearchClientInterface
                 }
             }
         }
+
         return $searchQuery;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function search($query, array $classes)
     {
@@ -180,17 +180,18 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function createIndex($name, array $config = array())
     {
         $index = $this->getIndex($name);
         $index->create($config, true);
+
         return $index;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getIndex($name)
     {
@@ -198,7 +199,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function deleteIndex($index)
     {
@@ -206,7 +207,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function refreshIndex($index)
     {
@@ -214,7 +215,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function createType(ClassMetadata $metadata)
     {
@@ -240,16 +241,17 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function deleteType(ClassMetadata $metadata)
     {
         $type = $this->getIndex($metadata->index)->getType($metadata->type);
+
         return $type->delete();
     }
 
     /**
-     * Generates property mapping from entity annotations
+     * Generates property mapping from entity annotations.
      *
      * @param array $mappings
      */
@@ -268,6 +270,7 @@ class Client implements SearchClientInterface
                 if ($fieldMapping['type'] == 'attachment' && isset($fieldMapping['fields'])) {
                     $callback = function ($field) {
                         unset($field['type']);
+
                         return $field;
                     };
                     $properties[$propertyName]['fields'] = array_map(
@@ -334,7 +337,7 @@ class Client implements SearchClientInterface
     }
 
     /**
-     * Generates parameter mapping from entity annotations
+     * Generates parameter mapping from entity annotations.
      *
      * @param array $paramMapping
      */
@@ -345,11 +348,12 @@ class Client implements SearchClientInterface
             $paramName = isset($mapping['fieldName']) ? $mapping['fieldName'] : $propertyName;
             $parameters[$paramName] = $propertyName;
         }
+
         return $parameters;
     }
 
     /**
-     * Generates root mapping from entity annotations
+     * Generates root mapping from entity annotations.
      *
      * @param array $mappings
      */

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\Search\ElasticSearch;
 
 use Doctrine\Search\ElasticSearch\Client;
 use Doctrine\Search\Mapping\ClassMetadata;
+use Doctrine\Tests\SearchMocks\ResultDocumentMock;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -32,10 +33,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('getType'))
             ->getMock();
 
-        $result = $this->getMockBuilder('Elastica\ResultSet')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->elasticaClient->expects($this->once())
             ->method('getIndex')
             ->with('comments')
@@ -51,9 +48,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->with('comment')
             ->will($this->returnValue($type));
 
-        $document = $this->getMockBuilder('Elastica\Document')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $document = new ResultDocumentMock();
 
         $type->expects($this->once())
             ->method('getDocument')
@@ -64,7 +59,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $class->index = 'comments';
         $class->type = 'comment';
 
-        $this->assertSame($document, $this->client->find($class, '123', array('foo' => 'bar')));
+        $this->assertInstanceOf('Doctrine\Search\ResultDocumentInterface', $this->client->find($class, '123', array('foo' => 'bar')));
     }
 
     public function testCreateIndex()
