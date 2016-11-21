@@ -144,6 +144,7 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
             'testField3' => 'mapping',
             '_version' => 'v_1',
         );
+
         $this->metadataMock->expects($this->once())
             ->method('getIdentifier')
             ->willReturn('123');
@@ -167,12 +168,14 @@ class UnitOfWorkTest extends \PHPUnit_Framework_TestCase
             'testField3' => 'mapping',
             '_version' => 'v_1',
         );
+
         $this->metadataMock->index = 'testIndex';
         $this->metadataMock->index = 'testType';
         $this->metadataMock->expects($this->any())
             ->method('getIdentifier')
             ->willReturn('123');
         $query = new Query($this->sm);
+
         $this->_unitOfWork->loadCollection(array($this->metadataMock), $query);
     }
 
