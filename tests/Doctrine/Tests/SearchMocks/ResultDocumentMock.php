@@ -21,6 +21,8 @@ namespace Doctrine\Tests\SearchMocks;
 
 class ResultDocumentMock
 {
+    private $id = 10;
+
     public function getData()
     {
         $data = array(
@@ -55,7 +57,14 @@ class ResultDocumentMock
 
     public function getId()
     {
-        return 10;
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getIndex()

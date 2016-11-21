@@ -57,22 +57,22 @@ class Query
     protected $entityClasses;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $hydrationMode;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $useResultCache;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $cacheLifetime;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $count;
 
@@ -91,7 +91,7 @@ class Query
      * object, saving the need to abstract.
      *
      * @param string $method
-     * @param array $arguments
+     * @param array  $arguments
      */
     public function __call($method, $arguments)
     {
@@ -100,6 +100,7 @@ class Query
         }
 
         call_user_func_array(array($this->query, $method), $arguments);
+
         return $this;
     }
 
@@ -110,7 +111,8 @@ class Query
      */
     public function from($entityClasses)
     {
-        $this->entityClasses = (array)$entityClasses;
+        $this->entityClasses = (array) $entityClasses;
+
         return $this;
     }
 
@@ -122,17 +124,27 @@ class Query
     public function addFrom($entityClass)
     {
         $this->entityClasses[] = $entityClass;
+
         return $this;
     }
 
     /**
-     * Set the query object to be executed on the search engine
+     * @return array
+     */
+    public function getFrom()
+    {
+        return $this->entityClasses;
+    }
+
+    /**
+     * Set the query object to be executed on the search engine.
      *
      * @param mixed $query
      */
     public function searchWith($query)
     {
         $this->query = $query;
+
         return $this;
     }
 
@@ -143,28 +155,54 @@ class Query
 
     /**
      * Set the hydration mode from the underlying query modes
-     * or bypass and return search result directly from the client
+     * or bypass and return search result directly from the client.
      *
-     * @param integer $mode
+     * @param int $mode
      */
     public function setHydrationMode($mode)
     {
         $this->hydrationMode = $mode;
+
         return $this;
     }
 
     /**
-     * If hydrating with Doctrine then you can use the result cache
-     * on the default or provided query
+     * Get the hydration mode from the underlying query modes
+     * or bypass and return search result directly from the client.
      *
-     * @param boolean $useCache
-     * @param integer $cacheLifetime
+     * @param int $mode
+     */
+    public function getHydrationMode()
+    {
+        return $this->hydrationMode;
+    }
+
+    /**
+     * If hydrating with Doctrine then you can use the result cache
+     * on the default or provided query.
+     *
+     * @param bool $useCache
+     * @param int  $cacheLifetime
      */
     public function useResultCache($useCache, $cacheLifetime = null)
     {
         $this->useResultCache = $useCache;
         $this->cacheLifetime = $cacheLifetime;
+
         return $this;
+    }
+
+    /**
+     * Get all cache params.
+     *
+     * @return array
+     */
+    public function getResultCache()
+    {
+        return array(
+            'useResultCache' => $this->useResultCache,
+            'cacheLifetime' => $this->cacheLifetime,
+        );
     }
 
     /**
@@ -199,11 +237,12 @@ class Query
         if ($parameter) {
             $this->hydrationParameter = $parameter;
         }
+
         return $this;
     }
 
     /**
-     * Return a provided hydration query
+     * Return a provided hydration query.
      *
      * @return object
      */
@@ -219,8 +258,10 @@ class Query
     /**
      * Execute search for single result and hydrate results if required.
      *
-     * @param integer $hydrationMode
+     * @param int $hydrationMode
+     *
      * @throws NoResultException
+     *
      * @return mixed
      */
     public function getSingleResult($hydrationMode = null)
@@ -230,14 +271,17 @@ class Query
         if (count($results) < 1) {
             throw new NoResultException('No results found');
         }
+
         return $results[0];
     }
 
     /**
      * Execute search and hydrate results if required.
      *
-     * @param integer $hydrationMode
+     * @param int $hydrationMode
+     *
      * @throws DoctrineSearchException
+     *
      * @return mixed
      */
     public function getResult($hydrationMode = null)
