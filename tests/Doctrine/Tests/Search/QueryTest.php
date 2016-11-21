@@ -88,28 +88,28 @@ class QueryTest extends \PHPUnit_Framework_TestCase
 
     public function testFrom()
     {
-        $classes = array(BlogPost::class, User::class);
+        $classes = array(get_class(new BlogPost), get_class(new User));
         $this->assertInstanceOf(Query::class, $this->_query->from($classes));
         $this->assertEquals($classes, $this->_query->getFrom());
     }
 
     public function testAddFrom()
     {
-        $class = User::class;
-        $this->assertInstanceOf(Query::class, $this->_query->addFrom(User::class));
+        $class = get_class(new User);
+        $this->assertInstanceOf('Doctrine\Search\Query', $this->_query->addFrom($class));
         $this->assertEquals(array($class), $this->_query->getFrom());
     }
 
     public function testSearchWith()
     {
         $query = array('query' => 'match_all');
-        $this->assertInstanceOf(Query::class, $this->_query->searchWith($query));
+        $this->assertInstanceOf('Doctrine\Search\Query', $this->_query->searchWith($query));
     }
 
     public function testSetHydrationMode()
     {
         $hydrationMode = Query::HYDRATE_BYPASS;
-        $this->assertInstanceOf(Query::class, $this->_query->setHydrationMode($hydrationMode));
+        $this->assertInstanceOf('Doctrine\Search\Query', $this->_query->setHydrationMode($hydrationMode));
         $this->assertEquals($hydrationMode, $this->_query->getHydrationMode());
     }
 
@@ -121,7 +121,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             'useResultCache' => $useCache,
             'cacheLifetime' => $cacheTtl,
         );
-        $this->assertInstanceOf(Query::class, $this->_query->useResultCache($useCache, $cacheTtl));
+        $this->assertInstanceOf('Doctrine\Search\Query', $this->_query->useResultCache($useCache, $cacheTtl));
         $this->assertEquals($resultArray, $this->_query->getResultCache());
     }
 
@@ -129,7 +129,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
     {
         $hydrationQuery = new Query($this->sm);
         $hydrationParameter = Query::HYDRATION_PARAMETER;
-        $this->assertInstanceOf(Query::class, $this->_query->hydrateWith($hydrationQuery, $hydrationParameter));
+        $this->assertInstanceOf('Doctrine\Search\Query', $this->_query->hydrateWith($hydrationQuery, $hydrationParameter));
     }
 
     public function testGetSingleResult()
@@ -159,7 +159,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             ->willReturn($resultSetMock);
 
         $this->_query->searchWith($queryMock);
-        $this->_query->addFrom(BlogPost::class);
+        $this->_query->addFrom(get_class(new BlogPost));
         $this->_query->getResult(Query::HYDRATE_BYPASS);
     }
 }
