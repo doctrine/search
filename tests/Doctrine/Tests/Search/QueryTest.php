@@ -89,7 +89,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
     public function testFrom()
     {
         $classes = array(get_class(new BlogPost), get_class(new User));
-        $this->assertInstanceOf(Query::class, $this->_query->from($classes));
+        $this->assertInstanceOf('Doctrine\Search\Query', $this->_query->from($classes));
         $this->assertEquals($classes, $this->_query->getFrom());
     }
 
