@@ -26,7 +26,6 @@ use Doctrine\Search\Mapping\MappingException;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
- *
  * @link        www.doctrine-project.org
  * @since       1.0
  * @author      Mike Lohmann <mike.h.lohmann@googlemail.com>
@@ -43,16 +42,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     /**
      * Registers annotation classes to the common registry.
-     *
      * This method should be called when bootstrapping your application.
      */
     public static function registerAnnotationClasses()
     {
         AnnotationRegistry::registerFile(__DIR__ . '/../Annotations/DoctrineAnnotations.php');
     }
-    
+
     /**
-     * @param string $className
+     * @param string                                               $className
      * @param ClassMetadata|\Doctrine\Search\Mapping\ClassMetadata $metadata
      *
      * @throws \ReflectionException
@@ -62,36 +60,36 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $class = $metadata->getReflectionClass();
 
         if (!$class) {
-            $class = new \ReflectionClass((string) $className);
+            $class = new \ReflectionClass((string)$className);
         }
 
         $classAnnotations = $this->reader->getClassAnnotations($class);
-        
+
         $classMapping = array();
         $validMapping = false;
         foreach ($classAnnotations as $annotation) {
-            switch(get_class($annotation)) {
+            switch (get_class($annotation)) {
                 case 'Doctrine\Search\Mapping\Annotations\ElasticSearchable':
-                    $classMapping = (array) $annotation;
+                    $classMapping = (array)$annotation;
                     $classMapping['class'] = 'ElasticSearchable';
                     $validMapping = true;
                     break;
                 case 'Doctrine\Search\Mapping\Annotations\Searchable':
-                    $classMapping = (array) $annotation;
+                    $classMapping = (array)$annotation;
                     $classMapping['class'] = 'Searchable';
                     $validMapping = true;
                     break;
                 case 'Doctrine\Search\Mapping\Annotations\ElasticRoot':
-                    $rootMapping = (array) $annotation;
+                    $rootMapping = (array)$annotation;
                     $metadata->mapRoot($this->rootToArray($rootMapping));
                     break;
             }
         }
-        
+
         if (!$validMapping) {
             throw MappingException::classIsNotAValidDocument($className);
         }
-        
+
         $this->annotateClassMetadata($classMapping, $metadata);
 
         $properties = $class->getProperties();
@@ -103,20 +101,20 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata->identifier = $property->getName();
                         break;
                     case 'Doctrine\Search\Mapping\Annotations\Parameter':
-                        $mapping = $this->parameterToArray($property->getName(), (array) $annotation);
+                        $mapping = $this->parameterToArray($property->getName(), (array)$annotation);
                         $metadata->mapParameter($mapping);
                         break;
                     case 'Doctrine\Search\Mapping\Annotations\Field':
                     case 'Doctrine\Search\Mapping\Annotations\ElasticField':
                     case 'Doctrine\Search\Mapping\Annotations\SolrField':
-                        $mapping = $this->fieldToArray($property->getName(), (array) $annotation);
+                        $mapping = $this->fieldToArray($property->getName(), (array)$annotation);
                         $metadata->mapField($mapping);
                         break;
                 }
             }
         }
     }
-    
+
     private function annotateClassMetadata($classMapping, $metadata)
     {
         $className = $classMapping['class'];
@@ -140,7 +138,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 if (isset($classMapping['source'])) {
                     $metadata->source = $classMapping['source'];
                 }
-                // no break
+            // no break
             case 'Searchable':
                 if (isset($classMapping['index'])) {
                     $metadata->index = $classMapping['index'];
@@ -151,7 +149,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 break;
         }
     }
-    
+
     private function fieldToArray($name, $fieldMapping)
     {
         $mapping = array();
@@ -160,20 +158,20 @@ class AnnotationDriver extends AbstractAnnotationDriver
         } else {
             $mapping['fieldName'] = $name;
         }
-        
+
         if (isset($fieldMapping['type'])) {
             $mapping['type'] = $fieldMapping['type'];
-            
-            if ($fieldMapping['type'] == 'multi_field' && isset($fieldMapping['fields'])) {
+
+            if (in_array($fieldMapping['type'], array('multi_field', 'text')) && isset($fieldMapping['fields'])) {
                 foreach ($fieldMapping['fields'] as $name => $subFieldMapping) {
-                    $subFieldMapping = (array) $subFieldMapping;
+                    $subFieldMapping = (array)$subFieldMapping;
                     $mapping['fields'][] = $this->fieldToArray($name, $subFieldMapping);
                 }
             }
-            
+
             if (in_array($fieldMapping['type'], array('nested', 'object')) && isset($fieldMapping['properties'])) {
                 foreach ($fieldMapping['properties'] as $name => $subFieldMapping) {
-                    $subFieldMapping = (array) $subFieldMapping;
+                    $subFieldMapping = (array)$subFieldMapping;
                     $mapping['properties'][] = $this->fieldToArray($name, $subFieldMapping);
                 }
             }
@@ -182,7 +180,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping['boost'] = $fieldMapping['boost'];
         }
         if (isset($fieldMapping['includeInAll'])) {
-            $mapping['includeInAll'] = (bool) $fieldMapping['includeInAll'];
+            $mapping['includeInAll'] = (bool)$fieldMapping['includeInAll'];
         }
         if (isset($fieldMapping['index'])) {
             $mapping['index'] = $fieldMapping['index'];
@@ -197,15 +195,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping['indexName'] = $fieldMapping['indexName'];
         }
         if (isset($fieldMapping['store'])) {
-            $mapping['store'] = (bool) $fieldMapping['store'];
+            $mapping['store'] = (bool)$fieldMapping['store'];
         }
         if (isset($fieldMapping['nullValue'])) {
             $mapping['nullValue'] = $fieldMapping['nullValue'];
         }
-        
+
         return $mapping;
     }
-    
+
     private function rootToArray($rootMapping)
     {
         $mapping = array();
@@ -237,15 +235,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $mapping['value'] = $rootMapping['value'];
         }
         if (isset($rootMapping['mapping'])) {
-            $subFieldMapping = (array) $rootMapping['mapping'];
+            $subFieldMapping = (array)$rootMapping['mapping'];
             $field = $this->fieldToArray(null, $subFieldMapping);
             unset($field['fieldName']);
             $mapping['mapping'] = $field;
         }
-        
+
         return $mapping;
     }
-    
+
     private function parameterToArray($name, $parameterMapping)
     {
         $mapping = array();
@@ -254,11 +252,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
         } else {
             $mapping['parameterName'] = $name;
         }
-        
+
         if (isset($parameterMapping['type'])) {
             $mapping['type'] = $parameterMapping['type'];
         }
-        
+
         return $mapping;
     }
 }
